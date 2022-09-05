@@ -49,4 +49,8 @@
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BPR_RazorLibrary\BPR_RazorLibrary.csproj" />
+    </ItemGroup>
+
 </Project>

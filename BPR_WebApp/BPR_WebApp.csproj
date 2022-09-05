@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BPR_RazorLib\BPR_RazorLib.csproj" />
+    <ProjectReference Include="..\BPR_RazorLibrary\BPR_RazorLibrary.csproj" />
   </ItemGroup>
 
 </Project>
