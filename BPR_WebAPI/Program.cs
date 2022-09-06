@@ -1,3 +1,5 @@
+using BPR_WebAPI.Data.Accounts;
+
 namespace BPR_WebAPI
 {
 	public class Program
@@ -12,6 +14,12 @@ namespace BPR_WebAPI
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
+			builder.Services.AddSingleton<IAccountService, AccountService>();
+
+			builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+			{
+				builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+			}));
 
 			var app = builder.Build();
 
@@ -23,9 +31,14 @@ namespace BPR_WebAPI
 			}
 
 			app.UseHttpsRedirection();
-
+			app.UseCors("corsapp");
 			app.UseAuthorization();
 
+			app.UseRouting();
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllers();
+			});
 
 			app.MapControllers();
 
