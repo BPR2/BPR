@@ -32,9 +32,9 @@ namespace BPR_WebAPI
 
 			app.UseHttpsRedirection();
 			app.UseCors("corsapp");
-			app.UseAuthorization();
 
 			app.UseRouting();
+			app.UseAuthorization();
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();

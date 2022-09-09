@@ -1,4 +1,5 @@
-﻿using BPR_WebAPI.Models;
+﻿using BPR_RazorLib.Models;
+using BPR_WebAPI.Models;
 using Npgsql;
 
 namespace BPR_WebAPI.Persistence
@@ -14,95 +15,133 @@ namespace BPR_WebAPI.Persistence
 			connectionString = configuration["ConnectionStrings:DefaultConnection"];
 		}
 
-		public async Task CreateAccountAsync(Account account)
+		public async Task<WebResponse> CreateAccountAsync(Account account)
 		{
-			using var con = new NpgsqlConnection(connectionString);
-			con.Open();
+			if (String.IsNullOrEmpty(account.Email) || String.IsNullOrEmpty(account.Password)) return WebResponse.ContentDataCorrupted;
 
-			string command = $"INSERT INTO public.\"Account\"(\"Username\", \"Password\", \"Name\", \"Contact\", \"Email\", \"Location\") VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
-			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			try
 			{
-				cmd.Parameters.AddWithValue("@Username", account.Username);
-				cmd.Parameters.AddWithValue("@Password", account.Password);
-				cmd.Parameters.AddWithValue("@Name", account.Name);
-				cmd.Parameters.AddWithValue("@Contact", account.Contact);
-				cmd.Parameters.AddWithValue("@Email", account.Email);
-				cmd.Parameters.AddWithValue("@Location", account.Location);
+				using var con = new NpgsqlConnection(connectionString);
+				con.Open();
 
-				cmd.ExecuteNonQuery();
+				string command = $"INSERT INTO public.\"Account\"(\"Username\", \"Password\", \"Name\", \"Contact\", \"Email\", \"Location\") VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
+				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+				{
+					cmd.Parameters.AddWithValue("@Username", account.Username);
+					cmd.Parameters.AddWithValue("@Password", account.Password);
+					cmd.Parameters.AddWithValue("@Name", account.Name);
+					cmd.Parameters.AddWithValue("@Contact", account.Contact);
+					cmd.Parameters.AddWithValue("@Email", account.Email);
+					cmd.Parameters.AddWithValue("@Location", account.Location);
+
+					cmd.ExecuteNonQuery();
+				}
+				con.Close();
+				return WebResponse.ContentCreateSuccess;
 			}
-			con.Close();
+			catch (Exception e)
+			{
+				return WebResponse.ContentCreateFailure;
+			}
 		}
 
-		public async Task<Account> GetAccountAsync(string email)
+		public async Task<WebContent> GetAccountAsync(string email)
 		{
-			using var con = new NpgsqlConnection(connectionString);
-			con.Open();
+			if (String.IsNullOrEmpty(email)) return new WebContent(WebResponse.ContentDataCorrupted, null);
 
-			string command = $"SELECT * FROM public.\"Account\" where \"Email\" = @Email ;";
-			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			try
 			{
-				cmd.Parameters.AddWithValue("@Email", NpgsqlTypes.NpgsqlDbType.Varchar, email);
+				using var con = new NpgsqlConnection(connectionString);
+				con.Open();
 
-				await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
-					while (await reader.ReadAsync())
-					{
-						Models.Account account = ReadAccount(reader);
-						con.Close();
-						return account;
-					}
+				WebContent result = new WebContent(WebResponse.Empty, null);
+				string command = $"SELECT * FROM public.\"Account\" where \"Email\" = @Email ;";
+				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+				{
+					cmd.Parameters.AddWithValue("@Email", NpgsqlTypes.NpgsqlDbType.Varchar, email);
+
+					await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+						while (await reader.ReadAsync())
+						{
+							result = ReadAccount(reader);
+							con.Close();
+						}
+				}
+				con.Close();
+				return result;
 			}
-			con.Close();
-			return null;
+			catch (Exception e)
+			{
+				return new WebContent(WebResponse.ContentRetrievalFailure, null);
+			}
 		}
 
-		public async Task<Account> GetAccountAsync(int id)
+		public async Task<WebContent> GetAccountAsync(int id)
 		{
-			using var con = new NpgsqlConnection(connectionString);
-			con.Open();
+			if (id < 0) return new WebContent(WebResponse.ContentDataCorrupted, null);
 
-			string command = $"SELECT * FROM public.\"Account\" where \"UserID\" = @ID ;";
-			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			try
 			{
-				cmd.Parameters.AddWithValue("@ID", id);
+				using var con = new NpgsqlConnection(connectionString);
+				con.Open();
 
-				await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
-					while (await reader.ReadAsync())
-					{
-						Models.Account account = ReadAccount(reader);
-						con.Close();
-						return account;
-					}
+				string command = $"SELECT * FROM public.\"Account\" where \"UserID\" = @ID ;";
+				WebContent result = new WebContent(WebResponse.Empty, null);
+				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+				{
+					cmd.Parameters.AddWithValue("@ID", id);
+
+					await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+						while (await reader.ReadAsync())
+						{
+							result = ReadAccount(reader);
+							con.Close();
+						}
+				}
+				con.Close();
+				return result;
 			}
-			con.Close();
-			return null;
+			catch (Exception e)
+			{
+				return new WebContent(WebResponse.ContentRetrievalFailure, null);
+			}
 		}
 
-		public async Task UpdateAccountAsync(Account account)
+		public async Task<WebResponse> UpdateAccountAsync(Account account)
 		{
-			using var con = new NpgsqlConnection(connectionString);
-			con.Open();
+			if (String.IsNullOrEmpty(account.Email) || String.IsNullOrEmpty(account.Password)) return WebResponse.ContentDataCorrupted;
 
-			string command = $"INSERT INTO public.\"Account\"(\"Username\", \"Password\", \"Name\", \"Contact\", \"Email\", \"Location\") VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
-			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			try
 			{
-				cmd.Parameters.AddWithValue("@Username", account.Username);
-				cmd.Parameters.AddWithValue("@Password", account.Password);
-				cmd.Parameters.AddWithValue("@Name", account.Name);
-				cmd.Parameters.AddWithValue("@Contact", account.Contact);
-				cmd.Parameters.AddWithValue("@Email", account.Email);
-				cmd.Parameters.AddWithValue("@Location", account.Location);
+				using var con = new NpgsqlConnection(connectionString);
+				con.Open();
 
-				cmd.ExecuteNonQuery();
+				string command = $"INSERT INTO public.\"Account\"(\"Username\", \"Password\", \"Name\", \"Contact\", \"Email\", \"Location\") VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
+				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+				{
+					cmd.Parameters.AddWithValue("@Username", account.Username);
+					cmd.Parameters.AddWithValue("@Password", account.Password);
+					cmd.Parameters.AddWithValue("@Name", account.Name);
+					cmd.Parameters.AddWithValue("@Contact", account.Contact);
+					cmd.Parameters.AddWithValue("@Email", account.Email);
+					cmd.Parameters.AddWithValue("@Location", account.Location);
+
+					cmd.ExecuteNonQuery();
+				}
+				con.Close();
+				return WebResponse.ContentUpdateSuccess;
 			}
-			con.Close();
+			catch (Exception e)
+			{
+				return WebResponse.ContentUpdateFailure;
+			}
 		}
 
-		private static Models.Account ReadAccount(NpgsqlDataReader reader)
+		private static WebContent ReadAccount(NpgsqlDataReader reader)
 		{
 			try
 			{
-				Models.Account account = new Models.Account
+				Account account = new Account
 				{
 					AccountId = reader["AccountId"] as int?,
 					Username = reader["Username"] as string,
@@ -112,11 +151,11 @@ namespace BPR_WebAPI.Persistence
 					Email = reader["Email"] as string,
 					Location = reader["Location"] as string,
 				};
-				return account;
+				return new WebContent(WebResponse.ContentRetrievalSuccess, account);
 			}
 			catch (Exception ex)
 			{
-				return null;
+				return new WebContent(WebResponse.ContentRetrievalFailure, null);
 			}
 		}
 	}

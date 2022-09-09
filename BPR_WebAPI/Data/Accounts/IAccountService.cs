@@ -1,11 +1,13 @@
-﻿namespace BPR_WebAPI.Data.Accounts
+﻿using BPR_RazorLib.Models;
+
+namespace BPR_WebAPI.Data.Accounts
 {
 	public interface IAccountService
 	{
-		Task<Models.Account> ValidateAccount(Models.Account account);
-		Task<Models.Account> GetAccountAsync(string email);
-		Task<Models.Account> GetAccountAsync(int id);
-		Task CreateAccountAsync(Models.Account account);
-		Task UpdateAccountAsync(Models.Account account);
+		Task<WebContent> ValidateAccount(Account account);
+		Task<WebContent> GetAccountAsync(string email);
+		Task<WebContent> GetAccountAsync(int id);
+		Task<WebResponse> CreateAccountAsync(Account account);
+		Task<WebResponse> UpdateAccountAsync(Account account);
 	}
 }

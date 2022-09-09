@@ -1,4 +1,5 @@
-﻿using BPR_WebAPI.Data.Accounts;
+﻿using BPR_RazorLib.Models;
+using BPR_WebAPI.Data.Accounts;
 using BPR_WebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,12 +22,15 @@ namespace BPR_WebAPI.Controllers
 		[HttpGet("validate")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<Account>> ValidateUser([FromQuery] string email, [FromQuery] string password)
+		public async Task<ActionResult<WebContent>> ValidateUser([FromQuery] string email, [FromQuery] string password)
 		{
+			/*
 			if (email == string.Empty || password == string.Empty)
 			{
 				return BadRequest();
 			}
+			*/
+			//the above should not be neccesary anymore
 
 			Account user = new Account
 			{
@@ -34,45 +38,33 @@ namespace BPR_WebAPI.Controllers
 				Password = password
 			};
 
-			Account validatedAccount = await accountService.ValidateAccount(user);
+			var result = await accountService.ValidateAccount(user);
 
-			if (validatedAccount == null)
-			{
-				return Ok(null);
-			}
-			else
-			{
-				return Ok(validatedAccount);
-			}
+			return Ok(result);
 		}
 
 		[HttpGet("get")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<Account>> GetUserByID([FromQuery] int id)
+		public async Task<ActionResult<WebContent>> GetUserByID([FromQuery] int id)
 		{
-			if (id <= 0)
-			{
-				return BadRequest();
-			}
+			var result = await accountService.GetAccountAsync(id);
 
-			Account account = await accountService.GetAccountAsync(id);
-
-			return Ok(account);
+			return Ok(result);
 		}
 
 		[HttpPost("createAccount")]
-		public async Task<ActionResult> CreateAccount([FromBody] Account user)
+		public async Task<ActionResult<WebResponse>> CreateAccount([FromBody] Account user)
 		{
-			await accountService.CreateAccountAsync(user);
-			return Ok();
+			var result = await accountService.CreateAccountAsync(user);
+			return Ok(result);
 		}
 
 		[HttpPut("updateAccount")]
-		public async Task<ActionResult> UpdateAccount([FromBody] Account user)
+		public async Task<ActionResult<WebResponse>> UpdateAccount([FromBody] Account user)
 		{
-			await accountService.UpdateAccountAsync(user);
-			return Ok();
+			var result = await accountService.UpdateAccountAsync(user);
+			return Ok(result);
 		}
 	}
 }

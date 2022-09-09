@@ -1,4 +1,6 @@
-﻿using BPR_WebAPI.Models;
+﻿using BPR_RazorLib.Models;
+using BPR_WebAPI.Models;
+using BPR_WebAPI.Models.Encryption;
 using BPR_WebAPI.Persistence;
 using Microsoft.Extensions.Configuration;
 
@@ -12,43 +14,49 @@ namespace BPR_WebAPI.Data.Accounts
 			accountRepo = new AccountRepo(configuration);
 		}
 
-		public async Task<Account> ValidateAccount(Account account)
+		public async Task<WebContent> ValidateAccount(Account account)
 		{
-			//TODO encryption?
+			account.Password = Encrypt.EncryptString(account.Password);
 
-			Models.Account verifiedAccount = await GetAccountAsync(account.Email);
+			var result = await GetAccountAsync(account.Email);
 
-			if (verifiedAccount == null) return null; //TODO possible return enum instead. would allow more specific fail reasons
+			Account verifiedAccount = (Account)result.content;
 
-			if (verifiedAccount.Password == null) return null;
+			if (verifiedAccount == null) return result; //webresponse should already have its state described
 
-			if (verifiedAccount.Password == account.Password) return verifiedAccount;
+			if (verifiedAccount.Password == null) return new WebContent(WebResponse.ContentDataCorrupted, null);
+
+			if (verifiedAccount.Password == account.Password) return new WebContent(WebResponse.AuthenticationSuccess, verifiedAccount);
 			
-			return null;
+			return new WebContent(WebResponse.AuthenticationFailure, null);
 		}
 
-		public async Task<Account> GetAccountAsync(string email)
+		public async Task<WebContent> GetAccountAsync(string email)
 		{
-			Models.Account account = await accountRepo.GetAccountAsync(email);
+			var result = await accountRepo.GetAccountAsync(email);
 
-			if (account == null) return null;
+			if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 
-			return account;
+			return result;
 		}
 
-		public async Task<Account> GetAccountAsync(int id)
+		public async Task<WebContent> GetAccountAsync(int id)
 		{
-			return await accountRepo.GetAccountAsync(id);
+			var result = await accountRepo.GetAccountAsync(id);
+
+			return result;
 		}
 
-		public async Task CreateAccountAsync(Account account)
+		public async Task<WebResponse> CreateAccountAsync(Account account)
 		{
-			await accountRepo.CreateAccountAsync(account);
+			account.Password = Encrypt.EncryptString(account.Password);
+			return await accountRepo.CreateAccountAsync(account);
 		}		
 
-		public async Task UpdateAccountAsync(Account account)
+		public async Task<WebResponse> UpdateAccountAsync(Account account)
 		{
-			await accountRepo.UpdateAccountAsync(account);
+			account.Password = Encrypt.EncryptString(account.Password);
+			return await accountRepo.UpdateAccountAsync(account);
 		}		
 	}
 }

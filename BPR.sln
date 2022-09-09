@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BPR_RazorLib", "BPR_RazorLi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BPR_WebAPI", "BPR_WebAPI\BPR_WebAPI.csproj", "{85E3301E-D9BF-40EB-8950-FD7DBA296E7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPR_App", "BPR_App\BPR_App.csproj", "{C278E181-1408-41F7-ADF2-624967EEE8AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BPR_App", "BPR_App\BPR_App.csproj", "{C278E181-1408-41F7-ADF2-624967EEE8AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
