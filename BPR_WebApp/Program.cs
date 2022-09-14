@@ -1,5 +1,8 @@
+using BPR_RazorLibrary.Data.Users;
+using BPR_RazorLibrary.Models.Authentication;
 using BPR_WebApp.Data;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BPR_WebApp
@@ -14,8 +17,10 @@ namespace BPR_WebApp
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
 			builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddSingleton<IUserService, UserService>();
 
-			var app = builder.Build();
+            var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
 			if (!app.Environment.IsDevelopment())
@@ -30,6 +35,10 @@ namespace BPR_WebApp
 			app.UseStaticFiles();
 
 			app.UseRouting();
+
+			app.UseAuthorization();
+
+			app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 			app.MapBlazorHub();
 			app.MapFallbackToPage("/_Host");

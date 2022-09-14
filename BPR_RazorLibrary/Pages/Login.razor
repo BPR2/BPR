@@ -1,5 +1,102 @@
-﻿<h3>Login</h3>
+﻿@page "/login"
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using BPR_RazorLibrary.Data.Users;
+@using BPR_RazorLibrary.Models;
+@using System.Security.Claims
+@using BPR_RazorLibrary.Models.Authentication
+
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<style>
+    .Login {
+        max-width: 400px;
+        max-height: 500px;
+        margin: 20px;
+    }
+
+    .card{
+        padding:10px;
+        border-radius: 10px;
+    }
+    .form-label-group, .form-label-group label {
+        margin-top: 1rem;
+    }
+
+        .form-label-group button {
+            width: -webkit-fill-available;
+            margin-top: 1rem;
+        }
+        .form-label-group .oi{
+            margin-bottom: 1.1rem;
+        }
+
+</style>
+
+<div class="container d-flex justify-content-center">
+    <div class="card Login">
+        <div class="card-body">
+            <div class="row">
+                <img class="img-fluid" alt="Responsive image" src="https://www.fasterholt.dk/images/fasterholt-logo.jpg" />
+                <form class="form-login">
+                    <div class="form-label-group">
+                        <label class="oi oi-person">  Email</label>
+                        <input type="email" class="form-control" placeholder="Email" @bind-value="email" required>
+                    </div>
+                    <div class="form-label-group">
+                        <label class="oi oi-lock-locked"> Password</label>
+                        <input type="password" class="form-control" placeholder="Password" @bind-value="password" required>
+                    </div>
+                </form>
+                <div class="form-label-group">
+                    <button class="btn btn-outline-success btn-block text-uppercase" type="submit" @onclick="PerformLogin">Log in</button>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    <div class="alert alert-danger">
+                        @errorMessage
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
 @code {
+
+    private string email;
+    private string password;
+    private string errorMessage;
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    public async Task PerformLogin()
+    {
+        errorMessage = "";
+        try
+        {
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).ValidateLogin(email, password);
+
+            if ((await AuthStat).User == null)
+            {
+                return;
+            }
+
+            var userPrincipal = (await AuthStat).User;
+
+            //UserService.SetUserId(int.Parse(userPrincipal.FindFirst(c => c.Type == ClaimTypes.SerialNumber)?.Value));
+            email = "";
+            password = "";
+            await InvokeAsync(StateHasChanged);
+            NavigationManager.NavigateTo("/counter");
+        }
+        catch (Exception e)
+        {
+            errorMessage = "No user found with provided email and password";
+        }
+    }
 
 }
