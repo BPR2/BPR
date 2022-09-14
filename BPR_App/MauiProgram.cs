@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.WebView.Maui;
 using BPR_App.Data;
+using BPR_RazorLibrary.Models.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
+using BPR_RazorLibrary.Data.Users;
 
 namespace BPR_App;
 
@@ -19,9 +22,10 @@ public static class MauiProgram
 		#if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-		
-		builder.Services.AddSingleton<WeatherForecastService>();
-
-		return builder.Build();
+        builder.Services.AddSingleton<WeatherForecastService>();
+        builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+        builder.Services.AddSingleton<IUserService, UserService>();
+		builder.Services.AddAuthorizationCore();
+        return builder.Build();
 	}
 }
