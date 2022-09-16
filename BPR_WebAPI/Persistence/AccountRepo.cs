@@ -21,6 +21,10 @@ namespace BPR_WebAPI.Persistence
 
 			try
 			{
+				var isDuplicate = await IsAccountAlreadyExist(account.Email, account.Username);
+
+				if (isDuplicate) return WebResponse.ContentDuplicate;
+
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
@@ -45,7 +49,40 @@ namespace BPR_WebAPI.Persistence
 			}
 		}
 
-		public async Task<WebContent> GetAccountAsync(string email)
+		
+
+		public async Task<WebContent> GetAccountAsync(string username)
+		{
+			if (String.IsNullOrEmpty(username)) return new WebContent(WebResponse.ContentDataCorrupted, null);
+
+			try
+			{
+				using var con = new NpgsqlConnection(connectionString);
+				con.Open();
+
+				WebContent result = new WebContent(WebResponse.Empty, null);
+				string command = $"SELECT * FROM public.\"Account\" where \"Username\" = @Username ;";
+				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+				{
+					cmd.Parameters.AddWithValue("@Username", NpgsqlTypes.NpgsqlDbType.Varchar, username);
+
+					await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+						while (await reader.ReadAsync())
+						{
+							result = ReadAccount(reader);
+							con.Close();
+						}
+				}
+				con.Close();
+				return result;
+			}
+			catch (Exception e)
+			{
+				return new WebContent(WebResponse.ContentRetrievalFailure, null);
+			}
+		}
+
+		public async Task<WebContent> GetAccountAsyncEmail(string email)
 		{
 			if (String.IsNullOrEmpty(email)) return new WebContent(WebResponse.ContentDataCorrupted, null);
 
@@ -135,6 +172,19 @@ namespace BPR_WebAPI.Persistence
 			{
 				return WebResponse.ContentUpdateFailure;
 			}
+		}
+
+		private async Task<bool> IsAccountAlreadyExist(string desiredEmail, string desiredUsername)
+		{
+			var emailResult = await GetAccountAsyncEmail(desiredEmail);
+
+			if (emailResult.response == WebResponse.ContentRetrievalSuccess) return true;
+
+			var usernameResult = await GetAccountAsync(desiredUsername);
+
+			if (usernameResult.response == WebResponse.ContentRetrievalSuccess) return true;
+
+			return false;
 		}
 
 		private static WebContent ReadAccount(NpgsqlDataReader reader)

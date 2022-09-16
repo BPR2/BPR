@@ -22,19 +22,11 @@ namespace BPR_WebAPI.Controllers
 		[HttpGet("validate")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<WebContent>> ValidateUser([FromQuery] string email, [FromQuery] string password)
+		public async Task<ActionResult<WebContent>> ValidateAccount([FromQuery] string username, [FromQuery] string password)
 		{
-			/*
-			if (email == string.Empty || password == string.Empty)
-			{
-				return BadRequest();
-			}
-			*/
-			//the above should not be neccesary anymore
-
 			Account user = new Account
 			{
-				Email = email,
+				Username = username,
 				Password = password
 			};
 

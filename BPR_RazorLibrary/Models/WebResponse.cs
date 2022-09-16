@@ -24,5 +24,6 @@ namespace BPR_RazorLib.Models
 		ContentCreateFailure, //create content fail
 		ContentDeleteSuccess, //deletion of content success
 		ContentDeleteFailure, //deletion of content failure
+		ContentDuplicate //content already exists in database
 	}
 }
