@@ -18,7 +18,7 @@ namespace BPR_WebAPI.Data.Accounts
 		{
 			account.Password = Encrypt.EncryptString(account.Password);
 
-			var result = await GetAccountAsync(account.Email);
+			var result = await GetAccountAsync(account.Username);
 
 			Account verifiedAccount = (Account)result.content;
 
