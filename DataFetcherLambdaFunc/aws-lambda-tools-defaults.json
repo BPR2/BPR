@@ -1,15 +1,27 @@
+
 {
-  "Information": [
-    "This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.",
-    "To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.",
-    "dotnet lambda help",
-    "All the command line options for the Lambda command can be specified in this file."
-  ],
-  "profile": "KEvinSEP6",
-  "region": "us-east-1",
-  "configuration": "Release",
-  "function-runtime": "dotnet6",
-  "function-memory-size": 256,
-  "function-timeout": 30,
-  "function-handler": "DataFetcherLambdaFunc::DataFetcherLambdaFunc.Function::FunctionHandler"
+    "Information" : [
+        "This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.",
+        "To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.",
+        "dotnet lambda help",
+        "All the command line options for the Lambda command can be specified in this file."
+    ],
+    "profile"     : "KEvinSEP6",
+    "region"      : "us-east-1",
+    "configuration" : "Release",
+    "function-runtime" : "dotnet6",
+    "function-memory-size" : 256,
+    "function-timeout"     : 900,
+    "function-handler"     : "DataFetcherLambdaFunc::DataFetcherLambdaFunc.Function::FunctionHandler",
+    "framework"            : "net6.0",
+    "function-name"        : "DataFetcherFunction",
+    "function-description" : "",
+    "package-type"         : "Zip",
+    "function-role"        : "arn:aws:iam::264596038839:role/lambda_exec_DataFetcherFunction-2",
+    "function-architecture" : "x86_64",
+    "function-subnets"      : "subnet-0a75c1135914e77aa,subnet-0e679716dc1503cab,subnet-02d0a6c300c496dc2,subnet-02d98ec2a5f4a0d19,subnet-0005d84f4ffaa2643,subnet-0ee452bb8e9d3c0f7",
+    "function-security-groups" : "sg-008c168ce5498e9e0",
+    "tracing-mode"             : "PassThrough",
+    "environment-variables"    : "",
+    "image-tag"                : ""
 }
