@@ -1,4 +1,3 @@
-using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using DataFetcherLambdaFunc.Models;
 using Npgsql;
@@ -21,10 +20,11 @@ public class Function
     {
         _serialNumbers = new List<string>();
         _client = new HttpClient();
+        _client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
         _dateTime = DateTime.Now.AddHours(-1).ToString();
     }
 
-    public async Task FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
+    public async Task FunctionHandler()
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetBearerToken());
         await GetAllSerialNumbers();

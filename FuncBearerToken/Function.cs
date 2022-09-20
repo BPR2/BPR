@@ -19,6 +19,7 @@ public class Function
     public Function()
     {
         _client = new HttpClient();
+        _client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
         _url = "https://api.trusted.dk:443/Token";
         _content = new StringContent("grant_type=password&username=es@fasterholt.dk&password=sI1nkyEw");
     }
