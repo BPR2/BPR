@@ -13,64 +13,56 @@ namespace DataFetcherLambdaFunc;
 public class Function
 {
     private List<string> _serialNumbers;
-    private string _dbConnectionString = "Host=localhost;Username=bpr_group4;Password=dingdong420 ;Database=BPR";
+    private string _dbConnectionString = "Host=bpr-db.c7szkct1z4j9.us-east-1.rds.amazonaws.com;Username=bpr_group4;Password=dingdong420 ;Database=postgres";
     private HttpClient _client;
+    private string _dateTime;
 
     public Function()
     {
         _serialNumbers = new List<string>();
         _client = new HttpClient();
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "UHm7Hfnwkswp8RwZmZuNr6r3l-0-NgSe583VuUA9VVFvM3Xq2Zak8agJO_EL9zo1aDSb-iXiPl58H6TU-IadNJcdnn1ox13LBsLU_6Y2R8YMX-DmTrMXJFjXPpEvCC9y-nE6ZqWqlYycZL0WNxNL8VFTCKZcHiwXzR4_wRaSX5po6BWkXpsWIPVaDVlMrgB5T9xjr2XUMnJfiwqdtRV7xBcvFSZW82AalFXhqWkrRgaIh4izVMK2G5Ni2eJxtYEl2dXznHX16H1LBc_vHTIww_XAEU_zY-9axAwHkcuQk4jECjtF7cP5jHjDhEDG7IwmqxZ2IcbVe-jLiRnUs7QzVk7-gBKa3loEj3FBJPmER6fFSxKBHAuxe5ZU4aqALRs1VFOz6uqtcNFjYlp9x93_J4riQ7r84JlZFlpeoRqAX3jrFTpROACRiSwbSR4gr27i8BA4EUprjCyBjC5qaIdCs4o3xr-AtJ7bZIHhxE4Pqz_ajtXEPAfITbRsGs7MuFWL");
+        _dateTime = DateTime.Now.AddHours(-1).ToString();
     }
 
     public async Task FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
     {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetBearerToken());
         await GetAllSerialNumbers();
     }
 
     public async Task GetAllSerialNumbers()
     {
-        using var con = new NpgsqlConnection(_dbConnectionString);
-        con.Open();
+        List<ReceiverDataModel> resultReceiverDataList = new List<ReceiverDataModel>();
 
-        string command = $"SELECT \"serialnumber\" FROM public.\"receiver\"";
-        await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-        {
-            await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
-                while (await reader.ReadAsync())
-                {
-                    _serialNumbers.Add(reader["serialnumber"].ToString());
-                }
-        }
-        con.Close();
-
-        await GetDataFromAllReceivers();
-    }
-
-
-    public async Task GetDataFromAllReceivers()
-    {
-        string dateTime = DateTime.Now.AddHours(-1).ToString();
-        //string dateTime = "09/14/2022 01:41:25 AM";
-
-
-        //Receiver data (position)
-        string message = await _client.GetStringAsync($"https://api.trusted.dk/api/Positions/AllSince?AfterDate={dateTime}");
+        string message = await _client.GetStringAsync($"https://api.trusted.dk/api/SensorData/AllSince?AfterDate={_dateTime}");
         try
         {
-            List<ReceiverDataModel> resultReceiverDataList = JsonSerializer.Deserialize<List<ReceiverDataModel>>(message);
-            await InsertReceiverDataToDB(resultReceiverDataList);
+            resultReceiverDataList = JsonSerializer.Deserialize<List<ReceiverDataModel>>(message);
+            foreach (var item in resultReceiverDataList)
+            {
+                if (!_serialNumbers.Contains(item.SerialNumber))
+                {
+                    _serialNumbers.Add(item.SerialNumber);
+                }
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.StackTrace);
         }
 
+        await GetDataFromAllReceivers(resultReceiverDataList);
+    }
+
+    public async Task GetDataFromAllReceivers(List<ReceiverDataModel> resultReceiverDataList)
+    {
+        //Receiver data (position)
+        await InsertReceiverDataToDB(resultReceiverDataList);
 
         //Sensor Data
         foreach (var serialNumber in _serialNumbers)
         {
-            message = await _client.GetStringAsync($"https://api.trusted.dk/api/SensorData/GetSensorTagData?SerialNumber={serialNumber}&AfterDate={dateTime}");
+            string message = await _client.GetStringAsync($"https://api.trusted.dk/api/SensorData/GetSensorTagData?SerialNumber={serialNumber}&AfterDate={_dateTime}");
             try
             {
                 List<SensorDataModel> resultSensorDataList = JsonSerializer.Deserialize<List<SensorDataModel>>(message);
@@ -83,7 +75,6 @@ public class Function
             Thread.Sleep(61000);
         }
     }
-
 
     public async Task InsertReceiverDataToDB(List<ReceiverDataModel> receiverData)
     {
@@ -132,7 +123,6 @@ public class Function
         return receiverId;
     }
 
-
     public async Task InsertSensorDataToDB(List<SensorDataModel> sensorData)
     {
         using var con = new NpgsqlConnection(_dbConnectionString);
@@ -180,4 +170,24 @@ public class Function
         return sensorId;
     }
 
+    public async Task<string> GetBearerToken()
+    {
+        string bearerToken = "";
+
+        using var con = new NpgsqlConnection(_dbConnectionString);
+        con.Open();
+
+        string command = $"SELECT \"token\" FROM public.\"bearerToken\"; ";
+        await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+        {
+            await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    bearerToken = reader["token"].ToString();
+                }
+        }
+        con.Close();
+
+        return bearerToken;
+    }
 }
