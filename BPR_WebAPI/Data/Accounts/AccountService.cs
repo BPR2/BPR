@@ -18,7 +18,7 @@ namespace BPR_WebAPI.Data.Accounts
 		{
 			account.Password = Encrypt.EncryptString(account.Password);
 
-			var result = await GetAccountAsync(account.Email);
+			var result = await GetAccountAsync(account.Username);
 
 			Account verifiedAccount = (Account)result.content;
 
@@ -31,9 +31,9 @@ namespace BPR_WebAPI.Data.Accounts
 			return new WebContent(WebResponse.AuthenticationFailure, null);
 		}
 
-		public async Task<WebContent> GetAccountAsync(string email)
+		public async Task<WebContent> GetAccountAsync(string username)
 		{
-			var result = await accountRepo.GetAccountAsync(email);
+			var result = await accountRepo.GetAccountAsync(username);
 
 			if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 
