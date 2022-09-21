@@ -1,47 +1,78 @@
 ﻿using BPR_RazorLibrary.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace BPR_RazorLibrary.Data.Users
 {
     public class UserService : IUserService
     {
-        public Task CreateAccount(User user)
+#if DEBUG
+        string url = "https://localhost:7109/api/Account";
+#else
+       
+        string url = "";
+#endif
+
+        HttpClient client;
+
+        private int userId;
+
+        public UserService()
         {
-            throw new NotImplementedException();
+            client = new HttpClient();
         }
 
-        public Task<User> GetUserByID(int id)
+        public async Task<User> ValidateUser(string username, string password)
         {
-            throw new NotImplementedException();
+            string message = await client.GetStringAsync($"{url}/validate?username={username}&password={password}");
+            try
+            {
+                User result = JsonSerializer.Deserialize<User>(message);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                return null;
+            }
+
+        }
+
+        public async Task CreateAccount(User user)
+        {
+            string userSerialized = JsonSerializer.Serialize(user);
+
+            HttpContent content = new StringContent(
+                userSerialized,
+                Encoding.UTF8,
+                "application/json"
+                );
+
+            await client.PostAsync($"{url}/createAccount", content);
+        }
+
+        public async Task UpdateAccount(User user)
+        {
+            string userSerialized = JsonSerializer.Serialize(user);
+
+            HttpContent content = new StringContent(
+                userSerialized,
+                Encoding.UTF8,
+                "application/json"
+                );
+
+            await client.PutAsync($"{url}/updateAccount", content);
         }
 
         public int GetUserId()
         {
-            throw new NotImplementedException();
+            return userId;
         }
 
         public void SetUserId(int id)
         {
-            throw new NotImplementedException();
+            userId = id;
         }
 
-        public Task UpdateAccount(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<User> ValidateUser(string email, string password)
-        {
-            User user = new User();
-            user.Email = email;
-            user.Password = password;
-            user.UserID = 1;
-            return user;                 
-
-        }
     }
 }

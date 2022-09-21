@@ -33,6 +33,10 @@
             margin-bottom: 1.1rem;
         }
 
+    .alert{
+    margin-top:1rem;
+    }
+
 </style>
 
 <div class="container d-flex justify-content-center">
@@ -53,14 +57,13 @@
                 <div class="form-label-group">
                     <button class="btn btn-outline-success btn-block text-uppercase" type="submit" @onclick="PerformLogin">Log in</button>
                 </div>
-                @if (!string.IsNullOrWhiteSpace(errorMessage))
-                {
-                    <div class="alert alert-danger">
-                        @errorMessage
-                    </div>
-                }
             </div>
-
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+            <div class="alert alert-danger">
+                @errorMessage
+            </div>
+             }
         </div>
     </div>
 
