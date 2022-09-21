@@ -4,8 +4,7 @@ namespace BPR_RazorLibrary.Data.Users
 {
     public interface IUserService
     {
-        Task<User> ValidateUser(string email, string password);
-        Task<User> GetUserByID(int id);
+        Task<User> ValidateUser(string username, string password);
         void SetUserId(int id);
         int GetUserId();
         Task CreateAccount(User user);

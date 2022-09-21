@@ -42,15 +42,15 @@ namespace BPR_RazorLibrary.Models.Authentication
             return await Task.FromResult(new AuthenticationState(cachedClaimsPrincipal));
         }
 
-        public async Task ValidateLogin(string email, string password)
+        public async Task ValidateLogin(string username, string password)
         {
-            if (string.IsNullOrEmpty(email)) throw new Exception("Enter Email");
+            if (string.IsNullOrEmpty(username)) throw new Exception("Enter username");
             if (string.IsNullOrEmpty(password)) throw new Exception("Enter password");
 
             ClaimsIdentity identity = new ClaimsIdentity();
             try
             {
-                User user = await userService.ValidateUser(email, password);
+                User user = await userService.ValidateUser(username, password);
                 identity = SetupClaimsForUser(user);
                 string serialisedData = JsonSerializer.Serialize(user);
                 await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "currentUser", serialisedData);
@@ -77,7 +77,7 @@ namespace BPR_RazorLibrary.Models.Authentication
         {
             List<Claim> claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(ClaimTypes.SerialNumber, user.UserID.ToString()));
+            claims.Add(new Claim(ClaimTypes.SerialNumber, user.AccountId.ToString()));
 
             ClaimsIdentity identity = new ClaimsIdentity(claims, "apiauth_type");
             return identity;
