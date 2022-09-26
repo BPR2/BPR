@@ -1,0 +1,97 @@
+﻿@page "/CreateAccount"
+@using Data.Users
+@using Microsoft.AspNetCore.Components.Forms
+@using Models
+@inject IUserService UsersService
+@inject NavigationManager NavigationManager
+
+<EditForm Model="@newUser" OnValidSubmit="@AddNewUser">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-9 mx-auto">
+                <div class="card card-register">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Sign up</h5>
+                        <div class="form-register">
+
+                            <div class="form-label-group">
+                                <label><i class="oi oi-person"> </i> First Name:</label>
+                                <InputText class="form-control" @bind-Value="newUser.FullName" placeholder="Full Name" required />
+
+                                <label><i class="oi oi-person">  </i> Username:</label>
+                                <InputText class="form-control" @bind-Value="newUser.Username" placeholder="Username" required />
+
+                                <label><i class="oi oi-envelope-closed">  </i> Email: </label>
+                                <InputText class="form-control" @bind-Value="newUser.Email" placeholder="Email" required />
+
+                                <label><i class="oi oi-envelope-closed">  </i> Contact: </label>
+                                <InputText class="form-control" @bind-Value="newUser.Contact" placeholder="Contact" required />
+
+                                <label><i class="oi oi-envelope-closed">  </i> Address: </label>
+                                <InputText class="form-control" @bind-Value="newUser.Address" placeholder="Address" required />
+                            </div>
+
+                            <div class="row form-label-group">
+                                <div class="col-md-6">
+                                    <label><i class="oi oi-lock-locked">  </i> Password:</label>
+                                    <InputText class="form-control" type="password" @bind-Value="password" placeholder="Password" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label><i class="oi oi-lock-locked">  </i> Confirm Password:</label>
+                                    <InputText class="form-control" type="password" @bind-Value="confirmPassword" placeholder="Confirm Password" required />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
+                        </div>
+                        <p class="text-center">Already have an account? <a class="btn btn-primary" href="Login">Log in</a> </p>
+                        @if (!string.IsNullOrWhiteSpace(message))
+                        {
+                            <div class="alert alert-danger">
+                                @message
+                            </div>
+                        }
+                    </div>
+
+                </div>
+
+                <footer>
+                    <div class="footer-copyright text-center py-3">
+                        © 2022 Copyright BPR2-Group4
+                    </div>
+
+                </footer>
+
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private User newUser = new User();
+
+    private string password;
+    private string confirmPassword;
+    string message = String.Empty;
+
+    private void AddNewUser()
+    {
+        if (password.Equals(confirmPassword))
+        {
+            newUser.Password = password;
+
+            UsersService.CreateAccount(newUser);
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            message = "Password does not match!";
+        }
+    }
+}

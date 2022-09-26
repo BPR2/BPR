@@ -28,7 +28,7 @@ namespace BPR_WebAPI.Persistence
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
-				string command = $"INSERT INTO public.\"Account\"(\"Username\", \"Password\", \"Name\", \"Contact\", \"Email\", \"Location\") VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
+				string command = $"INSERT INTO public.Account(Username, Password, Name, Contact, Email, Location) VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 				{
 					cmd.Parameters.AddWithValue("@Username", account.Username);
@@ -61,7 +61,7 @@ namespace BPR_WebAPI.Persistence
 				con.Open();
 
 				WebContent result = new WebContent(WebResponse.Empty, null);
-				string command = $"SELECT * FROM public.\"Account\" where \"Username\" = @Username ;";
+				string command = $"SELECT * FROM public.Account where Username = @Username ;";
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 				{
 					cmd.Parameters.AddWithValue("@Username", NpgsqlTypes.NpgsqlDbType.Varchar, username);
@@ -70,7 +70,6 @@ namespace BPR_WebAPI.Persistence
 						while (await reader.ReadAsync())
 						{
 							result = ReadAccount(reader);
-							con.Close();
 						}
 				}
 				con.Close();
@@ -92,7 +91,7 @@ namespace BPR_WebAPI.Persistence
 				con.Open();
 
 				WebContent result = new WebContent(WebResponse.Empty, null);
-				string command = $"SELECT * FROM public.\"Account\" where \"Email\" = @Email ;";
+				string command = $"SELECT * FROM public.Account where Email = @Email ;";
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 				{
 					cmd.Parameters.AddWithValue("@Email", NpgsqlTypes.NpgsqlDbType.Varchar, email);
@@ -101,7 +100,6 @@ namespace BPR_WebAPI.Persistence
 						while (await reader.ReadAsync())
 						{
 							result = ReadAccount(reader);
-							con.Close();
 						}
 				}
 				con.Close();
@@ -122,7 +120,7 @@ namespace BPR_WebAPI.Persistence
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
-				string command = $"SELECT * FROM public.\"Account\" where \"UserID\" = @ID ;";
+				string command = $"SELECT * FROM public.Account where UserID = @ID ;";
 				WebContent result = new WebContent(WebResponse.Empty, null);
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 				{
@@ -132,7 +130,6 @@ namespace BPR_WebAPI.Persistence
 						while (await reader.ReadAsync())
 						{
 							result = ReadAccount(reader);
-							con.Close();
 						}
 				}
 				con.Close();
@@ -153,7 +150,7 @@ namespace BPR_WebAPI.Persistence
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
-				string command = $"INSERT INTO public.\"Account\"(\"Username\", \"Password\", \"Name\", \"Contact\", \"Email\", \"Location\") VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
+				string command = $"INSERT INTO public.Account(Username, Password, Name, Contact, Email, Location) VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 				{
 					cmd.Parameters.AddWithValue("@Username", account.Username);

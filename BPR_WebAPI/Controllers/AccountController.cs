@@ -24,6 +24,7 @@ namespace BPR_WebAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<WebContent>> ValidateAccount([FromQuery] string username, [FromQuery] string password)
 		{
+			Console.WriteLine("Received login request");
 			Account user = new Account
 			{
 				Username = username,
@@ -31,6 +32,8 @@ namespace BPR_WebAPI.Controllers
 			};
 
 			var result = await accountService.ValidateAccount(user);
+
+			Console.WriteLine(result.response);
 
 			return Ok(result);
 		}
