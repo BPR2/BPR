@@ -1,5 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using BPR_RazorLibrary.Models.Authentication
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 <AuthorizeView>
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
@@ -17,14 +19,17 @@
                     <li class="nav-item">
                         <a class="nav-link" href="counter">counter</a>
                     </li>
-                        <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="fetchdata">fetch data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" @onclick="PerformLogout" href="/">Logout</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    </AuthorizeView>
+</AuthorizeView>
 
 @code {
     private bool collapseNavMenu = true;
@@ -34,6 +39,16 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    public async Task PerformLogout()
+    {
+        try
+        {
+            ((CustomAuthenticationStateProvider)AuthenticationStateProvider).Logout();
+            await localStorage.ClearAsync();
+        }
+        catch (Exception e) { }
     }
 }
 

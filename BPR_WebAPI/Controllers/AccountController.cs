@@ -32,7 +32,7 @@ namespace BPR_WebAPI.Controllers
 
 			var result = await accountService.ValidateAccount(user);
 
-			return Ok(result);
+			return Ok(result.content);
 		}
 
 		[HttpGet("get")]
