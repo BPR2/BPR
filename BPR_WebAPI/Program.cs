@@ -1,6 +1,6 @@
-using BPR_WebAPI.Data.Accounts;
-using BPR_WebAPI.Data.Receiver;
-using BPR_WebAPI.Data.Sensor;
+using BPR_WebAPI.Services.Accounts;
+using BPR_WebAPI.Services.Receiver;
+using BPR_WebAPI.Services.Sensor;
 
 namespace BPR_WebAPI
 {

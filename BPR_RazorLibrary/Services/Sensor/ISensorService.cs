@@ -1,5 +1,4 @@
-﻿
-namespace BPR_RazorLibrary.Data.Sensor;
+﻿namespace BPR_RazorLibrary.Services.Sensor;
 
 public interface ISensorService
 {

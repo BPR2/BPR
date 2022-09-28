@@ -1,4 +1,4 @@
-﻿using BPR_RazorLib.Models;
+﻿using BPR_RazorLibrary.Models;
 
 namespace BPR_WebAPI.Persistence
 {

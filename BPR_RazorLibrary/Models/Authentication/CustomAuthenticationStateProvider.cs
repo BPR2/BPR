@@ -2,8 +2,7 @@
 using Microsoft.JSInterop;
 using System.Security.Claims;
 using System.Text.Json;
-using BPR_RazorLibrary.Data.Users;
-using BPR_RazorLib.Models;
+using BPR_RazorLibrary.Services.Users;
 
 namespace BPR_RazorLibrary.Models.Authentication
 {

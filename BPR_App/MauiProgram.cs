@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Components.WebView.Maui;
 using BPR_App.Data;
 using BPR_RazorLibrary.Models.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
-using BPR_RazorLibrary.Data.Users;
-using BPR_RazorLibrary.Data.Receiver;
-using BPR_RazorLibrary.Data.Sensor;
+using BPR_RazorLibrary.Services.Users;
+using BPR_RazorLibrary.Services.Receivers;
+using BPR_RazorLibrary.Services.Sensor;
 using Blazored.LocalStorage;
 
 namespace BPR_App;

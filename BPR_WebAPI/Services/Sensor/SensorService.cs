@@ -1,7 +1,7 @@
-﻿using BPR_RazorLib.Models;
-using BPR_WebAPI.Persistence.Sensor;
+﻿using BPR_RazorLibrary.Models;
+using BPR_WebAPI.Persistence.Sensors;
 
-namespace BPR_WebAPI.Data.Sensor;
+namespace BPR_WebAPI.Services.Sensor;
 
 public class SensorService : ISensorService
 {

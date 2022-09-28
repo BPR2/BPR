@@ -1,7 +1,7 @@
-﻿using BPR_RazorLib.Models;
+﻿using BPR_RazorLibrary.Models;
 using Npgsql;
 
-namespace BPR_WebAPI.Persistence.Sensor;
+namespace BPR_WebAPI.Persistence.Sensors;
 
 public class SensorRepo : ISensorRepo
 {

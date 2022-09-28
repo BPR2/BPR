@@ -1,6 +1,6 @@
-﻿using BPR_RazorLib.Models;
-using BPR_WebAPI.Data.Accounts;
-using BPR_WebAPI.Data.Receiver;
+﻿using BPR_RazorLibrary.Models;
+using BPR_WebAPI.Services.Accounts;
+using BPR_WebAPI.Services.Receiver;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BPR_WebAPI.Controllers

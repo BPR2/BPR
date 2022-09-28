@@ -1,10 +1,7 @@
-﻿
-
-using BPR_RazorLib.Models;
-using BPR_RazorLibrary.Models;
+﻿using BPR_RazorLibrary.Models;
 using System.Text.Json;
 
-namespace BPR_RazorLibrary.Data.Receiver;
+namespace BPR_RazorLibrary.Services.Receivers;
 
 public class ReceiverService : IReceiverService
 {
@@ -15,7 +12,7 @@ public class ReceiverService : IReceiverService
         string url = "";
 #endif
 
-    HttpClient client;
+    private HttpClient client;
 
     public ReceiverService()
     {
@@ -37,12 +34,12 @@ public class ReceiverService : IReceiverService
         }
     }
 
-    public async Task<List<Models.Receiver>> GetAllReceivers()
+    public async Task<List<Receiver>> GetAllReceivers()
     {
         string message = await client.GetStringAsync($"{url}/allReceivers");
         try
         {
-            List<Models.Receiver> result = JsonSerializer.Deserialize<List<Models.Receiver>>(message);
+            List<Receiver> result = JsonSerializer.Deserialize<List<Receiver>>(message);
             return result;
         }
         catch (Exception ex)

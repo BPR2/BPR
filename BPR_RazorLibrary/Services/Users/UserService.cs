@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace BPR_RazorLibrary.Data.Users
+namespace BPR_RazorLibrary.Services.Users
 {
     public class UserService : IUserService
     {

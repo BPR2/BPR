@@ -1,5 +1,5 @@
-﻿using BPR_RazorLib.Models;
-using BPR_WebAPI.Data.Sensor;
+﻿using BPR_RazorLibrary.Models;
+using BPR_WebAPI.Services.Sensor;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BPR_WebAPI.Controllers;

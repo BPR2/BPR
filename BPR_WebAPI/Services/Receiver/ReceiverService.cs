@@ -1,7 +1,7 @@
-﻿using BPR_RazorLib.Models;
-using BPR_WebAPI.Persistence.Receiver;
+﻿using BPR_RazorLibrary.Models;
+using BPR_WebAPI.Persistence.Receivers;
 
-namespace BPR_WebAPI.Data.Receiver;
+namespace BPR_WebAPI.Services.Receiver;
 
 public class ReceiverService : IReceiverService
 {

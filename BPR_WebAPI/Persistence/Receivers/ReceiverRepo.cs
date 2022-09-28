@@ -1,8 +1,7 @@
-﻿using BPR_RazorLib.Models;
-using BPR_RazorLibrary.Models;
+﻿using BPR_RazorLibrary.Models;
 using Npgsql;
 
-namespace BPR_WebAPI.Persistence.Receiver;
+namespace BPR_WebAPI.Persistence.Receivers;
 
 public class ReceiverRepo : IReceiverRepo
 {
@@ -81,9 +80,9 @@ public class ReceiverRepo : IReceiverRepo
         }
     }
 
-    public async Task<List<BPR_RazorLibrary.Models.Receiver>> GetAllReceivers()
+    public async Task<List<Receiver>> GetAllReceivers()
     {
-        List<BPR_RazorLibrary.Models.Receiver> receivers = new List<BPR_RazorLibrary.Models.Receiver>();
+        List<Receiver> receivers = new List<Receiver>();
 
         try
         {
@@ -97,7 +96,7 @@ public class ReceiverRepo : IReceiverRepo
                 await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
                     while (await reader.ReadAsync())
                     {
-                        receivers.Add(new BPR_RazorLibrary.Models.Receiver { SerialNumber = reader["serialnumber"].ToString(), ReceiverId = int.Parse(reader["receiverid"].ToString()) });
+                        receivers.Add(new Receiver { SerialNumber = reader["serialnumber"].ToString(), ReceiverId = int.Parse(reader["receiverid"].ToString()) });
                     }
             }
             con.Close();

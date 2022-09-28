@@ -1,6 +1,6 @@
 ﻿using BPR_RazorLibrary.Models;
 
-namespace BPR_RazorLibrary.Data.Users
+namespace BPR_RazorLibrary.Services.Users
 {
     public interface IUserService
     {
