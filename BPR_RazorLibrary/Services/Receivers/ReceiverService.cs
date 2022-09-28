@@ -9,7 +9,7 @@ public class ReceiverService : IReceiverService
     string url = "https://localhost:7109/api/Receiver";
 #else
        
-        string url = "";
+        string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Receiver";
 #endif
 
     private HttpClient client;

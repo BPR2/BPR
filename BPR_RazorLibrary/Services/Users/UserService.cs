@@ -10,7 +10,7 @@ namespace BPR_RazorLibrary.Services.Users
         string url = "https://localhost:7109/api/Account";
 #else
        
-        string url = "";
+        string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Account";
 #endif
 
         HttpClient client;
