@@ -1,5 +1,10 @@
 ﻿@page "/"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
 
-<PageTitle>Index</PageTitle>
-
-<Login/>
+@code{
+    protected override async Task OnInitializedAsync()
+    { 
+        NavigationManager.NavigateTo("/login");
+    }
+}

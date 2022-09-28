@@ -1,14 +1,16 @@
-﻿@page "/AdminUnitManage"
+﻿@page "/adminUnitManage"
 @using BPR_RazorLibrary.Services
 @using BPR_RazorLibrary.Services.Receivers
 @using BPR_RazorLibrary.Services.Sensor
 @using BPR_RazorLibrary.Services.Users
 @using BPR_RazorLibrary.Models
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 
 @inject IUserService UserService
 @inject IReceiverService _ReceiverService
 @inject ISensorService _SensorService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <style>
     .AssignReceiver {
@@ -59,7 +61,11 @@
 
 <div class="tab">
     <button style="@(tab1?"background-color: #808080;color:white;":"")" @onclick="(x=>DisplayTab(1))">Assign Receiver</button>
+
+    <AuthorizeView Policy="Admin">
     <button style="@(tab2?"background-color: #808080;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
+    </AuthorizeView>
+
 </div>
 
 @if (tab1)
