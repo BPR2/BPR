@@ -1,5 +1,4 @@
 ﻿using BPR_RazorLib.Models;
-using BPR_WebAPI.Models;
 using Npgsql;
 
 namespace BPR_WebAPI.Persistence
@@ -208,5 +207,33 @@ namespace BPR_WebAPI.Persistence
 				return new WebContent(WebResponse.ContentRetrievalFailure, null);
 			}
 		}
+
+		public async Task<List<Account>> GetAllAccounts()
+		{
+			List<Account> accounts = new List<Account>();
+
+            try
+            {
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+
+                string command = $"SELECT * FROM public.Account;";
+
+                await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+                {
+                    await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        while (await reader.ReadAsync())
+                        {
+							accounts.Add(new Account {Username = reader["username"].ToString(), AccountId = int.Parse(reader["accountid"].ToString())});
+                        }
+                }
+                con.Close();
+                return accounts;
+            }
+            catch (Exception e)
+            {
+				throw new NotImplementedException();
+            }
+        }
 	}
 }

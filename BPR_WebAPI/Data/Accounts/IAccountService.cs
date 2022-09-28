@@ -9,5 +9,6 @@ namespace BPR_WebAPI.Data.Accounts
 		Task<WebContent> GetAccountAsync(int id);
 		Task<WebResponse> CreateAccountAsync(Account account);
 		Task<WebResponse> UpdateAccountAsync(Account account);
+		Task<List<Account>> GetAllAccountsAsync();
 	}
 }

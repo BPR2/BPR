@@ -1,3 +1,5 @@
+using BPR_RazorLibrary.Data.Receiver;
+using BPR_RazorLibrary.Data.Sensor;
 using BPR_RazorLibrary.Data.Users;
 using BPR_RazorLibrary.Models.Authentication;
 using BPR_WebApp.Data;
@@ -19,6 +21,8 @@ namespace BPR_WebApp
 			builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddSingleton<IUserService, UserService>();
+			builder.Services.AddSingleton<IReceiverService, ReceiverService>();
+            builder.Services.AddSingleton<ISensorService, SensorService>();
 
             var app = builder.Build();
 
