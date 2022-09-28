@@ -22,6 +22,12 @@ namespace BPR_WebApp
             builder.Services.AddSingleton<ISensorService, SensorService>();
             builder.Services.AddBlazoredLocalStorage();
 
+			builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy =>
+                    policy.RequireAuthenticatedUser().RequireClaim("Username", "admin"));
+            });
+
             var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
