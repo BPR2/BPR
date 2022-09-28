@@ -3,6 +3,7 @@ using BPR_App.Data;
 using BPR_RazorLibrary.Models.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using BPR_RazorLibrary.Data.Users;
+using Blazored.LocalStorage;
 
 namespace BPR_App;
 
@@ -26,6 +27,7 @@ public static class MauiProgram
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
         builder.Services.AddSingleton<IUserService, UserService>();
 		builder.Services.AddAuthorizationCore();
+        builder.Services.AddBlazoredLocalStorage();
         return builder.Build();
 	}
 }
