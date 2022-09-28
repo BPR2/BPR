@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
+using Microsoft.AspNetCore.Components.WebView.Maui;
 using BPR_App.Data;
 using BPR_RazorLibrary.Models.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using BPR_RazorLibrary.Data.Users;
 using BPR_RazorLibrary.Data.Receiver;
 using BPR_RazorLibrary.Data.Sensor;
+using Blazored.LocalStorage;
 
 namespace BPR_App;
 
@@ -30,6 +31,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IReceiverService, ReceiverService>();
         builder.Services.AddSingleton<ISensorService, SensorService>();
         builder.Services.AddAuthorizationCore();
+        builder.Services.AddBlazoredLocalStorage();
         return builder.Build();
 	}
 }

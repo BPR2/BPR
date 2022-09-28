@@ -60,7 +60,7 @@ namespace BPR_WebAPI.Persistence
 				con.Open();
 
 				WebContent result = new WebContent(WebResponse.Empty, null);
-				string command = $"SELECT * FROM public.\"Account\" where \"Username\" = @Username ;";
+				string command = $"SELECT * FROM public.Account where Username = @Username ;";
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 				{
 					cmd.Parameters.AddWithValue("@Username", NpgsqlTypes.NpgsqlDbType.Varchar, username);
@@ -69,7 +69,6 @@ namespace BPR_WebAPI.Persistence
 						while (await reader.ReadAsync())
 						{
 							result = ReadAccount(reader);
-							con.Close();
 						}
 				}
 				con.Close();

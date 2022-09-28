@@ -9,11 +9,12 @@
 @inject IUserService UserService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <style>
     .Login {
         max-width: 400px;
-        max-height: 500px;
+        max-height: 550px;
         margin: 20px;
     }
 
@@ -22,7 +23,8 @@
         border-radius: 10px;
     }
 
-    .form-label-group, .form-label-group label {
+
+    .form-label-group, .form-label-group label, #checkBox {
         margin-top: 1rem;
     }
 
@@ -49,16 +51,24 @@
                 <form class="form-login">
                     <div class="form-label-group">
                         <label class="oi oi-person">  Email</label>
-                        <input type="email" class="form-control" placeholder="Email" @bind-value="email" required>
+                        <input type="text" class="form-control" placeholder="Username" @bind-value="username" required>
                     </div>
+
                     <div class="form-label-group">
                         <label class="oi oi-lock-locked"> Password</label>
                         <input type="password" class="form-control" placeholder="Password" @bind-value="password" required>
                     </div>
+
+                    <div class="form-check" id="checkBox">
+                        <input class="form-check-input" type="checkbox" @bind-value="rememberMe">
+                        <label class="form-check-label">
+                            Remember me
+                        </label>
+                    </div>
                 </form>
                 <div class="form-label-group">
                     <button class="btn btn-outline-success btn-block text-uppercase" type="submit" @onclick="PerformLogin">Log in</button>
-                </div>
+                </div>                
             </div>
             @if (!string.IsNullOrWhiteSpace(errorMessage))
             {
@@ -72,18 +82,28 @@
 </div>
 
 @code {
-
-    private string email;
-    private string password;
-    private string errorMessage;
+    private string username = string.Empty;
+    private string password = string.Empty;
+    private string errorMessage = string.Empty;
+    private bool rememberMe;
     [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        username = await localStorage.GetItemAsync<string>("username");
+        password = await localStorage.GetItemAsync<string>("password");
+        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password)) 
+        {
+            await PerformLogin();
+        }
+    }
 
     public async Task PerformLogin()
     {
-        errorMessage = "";
+        errorMessage = "";        
         try
         {
-            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).ValidateLogin(email, password);
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).ValidateLogin(username, password);
 
             if ((await AuthStat).User == null)
             {
@@ -92,8 +112,14 @@
 
             var userPrincipal = (await AuthStat).User;
 
+            if (rememberMe)
+            {
+                await localStorage.SetItemAsync("username", username);
+                await localStorage.SetItemAsync("password", password);
+            }
+
             //UserService.SetUserId(int.Parse(userPrincipal.FindFirst(c => c.Type == ClaimTypes.SerialNumber)?.Value));
-            email = "";
+            username = "";
             password = "";
             await InvokeAsync(StateHasChanged);
             NavigationManager.NavigateTo("/counter");
