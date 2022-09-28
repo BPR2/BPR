@@ -9,5 +9,6 @@ namespace BPR_RazorLibrary.Data.Users
         int GetUserId();
         Task CreateAccount(User user);
         Task UpdateAccount(User user);
+        Task<List<User>> GetAllAccounts();
     }
 }

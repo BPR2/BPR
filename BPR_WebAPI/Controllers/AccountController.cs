@@ -58,5 +58,12 @@ namespace BPR_WebAPI.Controllers
 			var result = await accountService.UpdateAccountAsync(user);
 			return Ok(result);
 		}
-	}
+
+        [HttpGet("allAccounts")]
+        public async Task<ActionResult<WebResponse>> GetAllAccounts()
+        {
+            var result = await accountService.GetAllAccountsAsync();
+            return Ok(result);
+        }
+    }
 }

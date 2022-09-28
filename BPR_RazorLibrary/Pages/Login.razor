@@ -18,10 +18,11 @@
         margin: 20px;
     }
 
-    .card{
-        padding:10px;
+    .card {
+        padding: 10px;
         border-radius: 10px;
     }
+
 
     .form-label-group, .form-label-group label, #checkBox {
         margin-top: 1rem;
@@ -31,12 +32,13 @@
             width: -webkit-fill-available;
             margin-top: 1rem;
         }
-        .form-label-group .oi{
+
+        .form-label-group .oi {
             margin-bottom: 1.1rem;
         }
 
-    .alert{
-    margin-top:1rem;
+    .alert {
+        margin-top: 1rem;
     }
 
 </style>
@@ -70,10 +72,10 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(errorMessage))
             {
-            <div class="alert alert-danger">
-                @errorMessage
-            </div>
-             }
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
         </div>
     </div>
 

@@ -57,6 +57,11 @@ namespace BPR_WebAPI.Data.Accounts
 		{
 			account.Password = Encrypt.EncryptString(account.Password);
 			return await accountRepo.UpdateAccountAsync(account);
-		}		
+		}
+
+		public async Task<List<Account>> GetAllAccountsAsync()
+		{
+			return await accountRepo.GetAllAccounts();
+		}
 	}
 }

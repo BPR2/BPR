@@ -74,5 +74,19 @@ namespace BPR_RazorLibrary.Data.Users
             userId = id;
         }
 
+        public async Task<List<User>> GetAllAccounts()
+        {
+            string message = await client.GetStringAsync($"{url}/allAccounts");
+            try
+            {
+                List<User> result = JsonSerializer.Deserialize<List<User>>(message);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                return null;
+            }
+        }
     }
 }
