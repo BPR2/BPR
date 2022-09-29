@@ -10,27 +10,40 @@ namespace BPR_App;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
-		builder
-			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-			});
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            });
 
-		builder.Services.AddMauiBlazorWebView();
-		#if DEBUG
-		builder.Services.AddBlazorWebViewDeveloperTools();
-#endif
+        builder.Services.AddMauiBlazorWebView();
+
+        //DONT DELETE
+        //Add back when we reales the app
+        /*#if DEBUG
+                builder.Services.AddBlazorWebViewDeveloperTools();
+        #endif*/
+        builder.Services.AddBlazorWebViewDeveloperTools();
+        //DONT DELETE
+
         builder.Services.AddSingleton<WeatherForecastService>();
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
         builder.Services.AddSingleton<IUserService, UserService>();
         builder.Services.AddSingleton<IReceiverService, ReceiverService>();
         builder.Services.AddSingleton<ISensorService, SensorService>();
-        builder.Services.AddAuthorizationCore();
+
         builder.Services.AddBlazoredLocalStorage();
+
+        builder.Services.AddAuthorizationCore(options =>
+        {
+            options.AddPolicy("Admin", policy =>
+                policy.RequireAuthenticatedUser().RequireClaim("Username", "admin"));
+        });
+
         return builder.Build();
-	}
+    }
 }
