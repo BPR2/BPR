@@ -1,4 +1,4 @@
-using BPR_WebAPI.Services.Accounts;
+using BPR_WebAPI.Services.Users;
 using BPR_WebAPI.Services.Receiver;
 using BPR_WebAPI.Services.Sensor;
 
@@ -16,7 +16,7 @@ namespace BPR_WebAPI
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
-			builder.Services.AddSingleton<IAccountService, AccountService>();
+			builder.Services.AddSingleton<IUserService, UserService>();
 			builder.Services.AddSingleton<IReceiverService, ReceiverService>();
             builder.Services.AddSingleton<ISensorService, SensorService>();
 
