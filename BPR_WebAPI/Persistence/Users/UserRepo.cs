@@ -14,13 +14,13 @@ public class UserRepo : IUserRepo
         connectionString = configuration["ConnectionStrings:DefaultConnection"];
     }
 
-    public async Task<WebResponse> CreateUserAsync(User account)
+    public async Task<WebResponse> CreateUserAsync(User user)
     {
-        if (string.IsNullOrEmpty(account.Email) || string.IsNullOrEmpty(account.Password)) return WebResponse.ContentDataCorrupted;
+        if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password)) return WebResponse.ContentDataCorrupted;
 
         try
         {
-            var isDuplicate = await IsUserAlreadyExist(account.Email, account.Username);
+            var isDuplicate = await IsUserAlreadyExist(user.Email, user.Username);
 
             if (isDuplicate) return WebResponse.ContentDuplicate;
 
@@ -30,12 +30,12 @@ public class UserRepo : IUserRepo
             string command = $"INSERT INTO public.Account(Username, Password, Name, Contact, Email, Location) VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
             {
-                cmd.Parameters.AddWithValue("@Username", account.Username);
-                cmd.Parameters.AddWithValue("@Password", account.Password);
-                cmd.Parameters.AddWithValue("@Name", account.FullName);
-                cmd.Parameters.AddWithValue("@Contact", account.Contact);
-                cmd.Parameters.AddWithValue("@Email", account.Email);
-                cmd.Parameters.AddWithValue("@Location", account.Address);
+                cmd.Parameters.AddWithValue("@Username", user.Username);
+                cmd.Parameters.AddWithValue("@Password", user.Password);
+                cmd.Parameters.AddWithValue("@Name", user.FullName);
+                cmd.Parameters.AddWithValue("@Contact", user.Contact);
+                cmd.Parameters.AddWithValue("@Email", user.Email);
+                cmd.Parameters.AddWithValue("@Location", user.Address);
 
                 cmd.ExecuteNonQuery();
             }
@@ -140,9 +140,9 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<WebResponse> UpdateUserAsync(User account)
+    public async Task<WebResponse> UpdateUserAsync(User user)
     {
-        if (string.IsNullOrEmpty(account.Email) || string.IsNullOrEmpty(account.Password)) return WebResponse.ContentDataCorrupted;
+        if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password)) return WebResponse.ContentDataCorrupted;
 
         try
         {
@@ -152,12 +152,12 @@ public class UserRepo : IUserRepo
             string command = $"INSERT INTO public.Account(Username, Password, Name, Contact, Email, Location) VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
             {
-                cmd.Parameters.AddWithValue("@Username", account.Username);
-                cmd.Parameters.AddWithValue("@Password", account.Password);
-                cmd.Parameters.AddWithValue("@Name", account.FullName);
-                cmd.Parameters.AddWithValue("@Contact", account.Contact);
-                cmd.Parameters.AddWithValue("@Email", account.Email);
-                cmd.Parameters.AddWithValue("@Location", account.Address);
+                cmd.Parameters.AddWithValue("@Username", user.Username);
+                cmd.Parameters.AddWithValue("@Password", user.Password);
+                cmd.Parameters.AddWithValue("@Name", user.FullName);
+                cmd.Parameters.AddWithValue("@Contact", user.Contact);
+                cmd.Parameters.AddWithValue("@Email", user.Email);
+                cmd.Parameters.AddWithValue("@Location", user.Address);
 
                 cmd.ExecuteNonQuery();
             }
@@ -187,7 +187,7 @@ public class UserRepo : IUserRepo
     {
         try
         {
-            User account = new User
+            User user = new User
             {
                 AccountId = reader["AccountId"] as int?,
                 Username = reader["Username"] as string,
@@ -197,7 +197,7 @@ public class UserRepo : IUserRepo
                 Email = reader["Email"] as string,
                 Address = reader["Location"] as string,
             };
-            return new WebContent(WebResponse.ContentRetrievalSuccess, account);
+            return new WebContent(WebResponse.ContentRetrievalSuccess, user);
         }
         catch (Exception ex)
         {
@@ -207,7 +207,7 @@ public class UserRepo : IUserRepo
 
     public async Task<List<User>> GetAllUsers()
     {
-        List<User> accounts = new List<User>();
+        List<User> users = new List<User>();
 
         try
         {
@@ -221,11 +221,11 @@ public class UserRepo : IUserRepo
                 await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
                     while (await reader.ReadAsync())
                     {
-                        accounts.Add(new User { Username = reader["username"].ToString(), AccountId = int.Parse(reader["accountid"].ToString()) });
+                        users.Add(new User { Username = reader["username"].ToString(), AccountId = int.Parse(reader["accountid"].ToString()) });
                     }
             }
             con.Close();
-            return accounts;
+            return users;
         }
         catch (Exception e)
         {

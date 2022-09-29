@@ -6,59 +6,59 @@ namespace BPR_WebAPI.Services.Users;
 
 public class UserService : IUserService
 {
-	IUserRepo accountRepo;
+	IUserRepo userRepo;
 	public UserService(IConfiguration configuration)
 	{
-		accountRepo = new UserRepo(configuration);
+		userRepo = new UserRepo(configuration);
 	}
 
-	public async Task<WebContent> ValidateAccount(User account)
+	public async Task<WebContent> ValidateUser(User user)
 	{
-		account.Password = Encrypt.EncryptString(account.Password);
+		user.Password = Encrypt.EncryptString(user.Password);
 
-		var result = await GetAccountAsync(account.Username);
+		var result = await GetUserAsync(user.Username);
 
-		User verifiedAccount = (User)result.content;
+		User verifiedUser = (User)result.content;
 
-		if (verifiedAccount == null) return result; //webresponse should already have its state described
+		if (verifiedUser == null) return result; //webresponse should already have its state described
 
-		if (verifiedAccount.Password == null) return new WebContent(WebResponse.ContentDataCorrupted, null);
+		if (verifiedUser.Password == null) return new WebContent(WebResponse.ContentDataCorrupted, null);
 
-		if (verifiedAccount.Password == account.Password) return new WebContent(WebResponse.AuthenticationSuccess, verifiedAccount);
+		if (verifiedUser.Password == user.Password) return new WebContent(WebResponse.AuthenticationSuccess, verifiedUser);
 		
 		return new WebContent(WebResponse.AuthenticationFailure, null);
 	}
 
-	public async Task<WebContent> GetAccountAsync(string username)
+	public async Task<WebContent> GetUserAsync(string username)
 	{
-		var result = await accountRepo.GetUserAsync(username);
+		var result = await userRepo.GetUserAsync(username);
 
 		if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 
 		return result;
 	}
 
-	public async Task<WebContent> GetAccountAsync(int id)
+	public async Task<WebContent> GetUserAsync(int id)
 	{
-		var result = await accountRepo.GetUserAsync(id);
+		var result = await userRepo.GetUserAsync(id);
 
 		return result;
 	}
 
-	public async Task<WebResponse> CreateAccountAsync(User account)
+	public async Task<WebResponse> CreateUserAsync(User user)
 	{
-		account.Password = Encrypt.EncryptString(account.Password);
-		return await accountRepo.CreateUserAsync(account);
+		user.Password = Encrypt.EncryptString(user.Password);
+		return await userRepo.CreateUserAsync(user);
 	}		
 
-	public async Task<WebResponse> UpdateAccountAsync(User account)
+	public async Task<WebResponse> UpdateUserAsync(User user)
 	{
-		account.Password = Encrypt.EncryptString(account.Password);
-		return await accountRepo.UpdateUserAsync(account);
+		user.Password = Encrypt.EncryptString(user.Password);
+		return await userRepo.UpdateUserAsync(user);
 	}
 
-	public async Task<List<User>> GetAllAccountsAsync()
+	public async Task<List<User>> GetAllUsersAsync()
 	{
-		return await accountRepo.GetAllUsers();
+		return await userRepo.GetAllUsers();
 	}
 }

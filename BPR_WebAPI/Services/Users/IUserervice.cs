@@ -4,10 +4,10 @@ namespace BPR_WebAPI.Services.Users;
 
 public interface IUserService
 {
-	Task<WebContent> ValidateAccount(User account);
-	Task<WebContent> GetAccountAsync(string username);
-	Task<WebContent> GetAccountAsync(int id);
-	Task<WebResponse> CreateAccountAsync(User account);
-	Task<WebResponse> UpdateAccountAsync(User account);
-	Task<List<User>> GetAllAccountsAsync();
+	Task<WebContent> ValidateUser(User user);
+	Task<WebContent> GetUserAsync(string username);
+	Task<WebContent> GetUserAsync(int id);
+	Task<WebResponse> CreateUserAsync(User user);
+	Task<WebResponse> UpdateUserAsync(User user);
+	Task<List<User>> GetAllUsersAsync();
 }

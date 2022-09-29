@@ -21,9 +21,9 @@ public class UserControllerTest
 	public async Task CreateAccount_ReturnsSuccess()
 	{
 		var user = new User { AccountId = 0, Username = "asdf", Password = "1234", FullName = "foo", Contact = "bar", Email = "arf@arf.arf", Address = "somewhere" };
-		_mockService.Setup(v => v.CreateAccountAsync(user).Result).Returns(WebResponse.ContentCreateSuccess);
+		_mockService.Setup(v => v.CreateUserAsync(user).Result).Returns(WebResponse.ContentCreateSuccess);
 
-		var result = await _controller.CreateAccount(user);
+		var result = await _controller.CreateUser(user);
 
 		var resultCast = (OkObjectResult)result.Result;
 

@@ -50,7 +50,7 @@
                         <div class="text-center">
                             <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
                         </div>
-                        <p class="text-center">Already have an account? <a class="btn btn-primary" href="Login">Log in</a> </p>
+                        <p class="text-center">Already have an user? <a class="btn btn-primary" href="Login">Log in</a> </p>
                         @if (!string.IsNullOrWhiteSpace(message))
                         {
                             <div class="alert alert-danger">
@@ -86,7 +86,7 @@
         {
             newUser.Password = password;
 
-            UsersService.CreateAccount(newUser);
+            UsersService.CreateUser(newUser);
             NavigationManager.NavigateTo("/login");
         }
         else

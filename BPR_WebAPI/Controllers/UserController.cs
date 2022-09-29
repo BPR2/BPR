@@ -29,9 +29,7 @@ public class UserController : ControllerBase
 			Password = password
 		};
 
-		var result = await userService.ValidateAccount(user);
-
-		Console.WriteLine(result.response);
+		var result = await userService.ValidateUser(user);
 
 		return Ok(result);
 	}
@@ -41,22 +39,29 @@ public class UserController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<WebContent>> GetUserByID([FromQuery] int id)
 	{
-		var result = await userService.GetAccountAsync(id);
+		var result = await userService.GetUserAsync(id);
 
 		return Ok(result);
 	}
 
-	[HttpPost("createAccount")]
-	public async Task<ActionResult<WebResponse>> CreateAccount([FromBody] User user)
+	[HttpPost("createUser")]
+	public async Task<ActionResult<WebResponse>> CreateUser([FromBody] User user)
 	{
-		var result = await userService.CreateAccountAsync(user);
+		var result = await userService.CreateUserAsync(user);
 		return Ok(result);
 	}
 
-	[HttpPut("updateAccount")]
-	public async Task<ActionResult<WebResponse>> UpdateAccount([FromBody] User user)
+	[HttpPut("updateUser")]
+	public async Task<ActionResult<WebResponse>> UpdateUser([FromBody] User user)
 	{
-		var result = await userService.UpdateAccountAsync(user);
+		var result = await userService.UpdateUserAsync(user);
+		return Ok(result);
+	}
+
+	[HttpGet("allUsers")]
+	public async Task<ActionResult<WebResponse>> GetAllUser()
+	{
+		var result = await userService.GetAllUsersAsync();
 		return Ok(result);
 	}
 }
