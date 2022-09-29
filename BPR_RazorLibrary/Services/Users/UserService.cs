@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace BPR_RazorLibrary.Data.Users
+namespace BPR_RazorLibrary.Services.Users
 {
     public class UserService : IUserService
     {
@@ -10,7 +10,7 @@ namespace BPR_RazorLibrary.Data.Users
         string url = "https://localhost:7109/api/Account";
 #else
        
-        string url = "";
+        string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Account";
 #endif
 
         HttpClient client;
@@ -74,5 +74,19 @@ namespace BPR_RazorLibrary.Data.Users
             userId = id;
         }
 
+        public async Task<List<User>> GetAllAccounts()
+        {
+            string message = await client.GetStringAsync($"{url}/allAccounts");
+            try
+            {
+                List<User> result = JsonSerializer.Deserialize<List<User>>(message);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                return null;
+            }
+        }
     }
 }

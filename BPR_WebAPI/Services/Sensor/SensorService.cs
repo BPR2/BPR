@@ -1,0 +1,18 @@
+﻿using BPR_RazorLibrary.Models;
+using BPR_WebAPI.Persistence.Sensors;
+
+namespace BPR_WebAPI.Services.Sensor;
+
+public class SensorService : ISensorService
+{
+    private ISensorRepo sensorRepo;
+    public SensorService(IConfiguration configuration)
+    {
+        sensorRepo = new SensorRepo(configuration);
+    }
+
+    public async Task<WebResponse> AddNewSensorAsync(string tagNumber, string serialNumber)
+    {
+       return await sensorRepo.AddNewSensorAsync(tagNumber, serialNumber);
+    }
+}

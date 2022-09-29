@@ -1,6 +1,6 @@
 ﻿using BPR_RazorLibrary.Models;
 
-namespace BPR_RazorLibrary.Data.Users
+namespace BPR_RazorLibrary.Services.Users
 {
     public interface IUserService
     {
@@ -9,5 +9,6 @@ namespace BPR_RazorLibrary.Data.Users
         int GetUserId();
         Task CreateAccount(User user);
         Task UpdateAccount(User user);
+        Task<List<User>> GetAllAccounts();
     }
 }

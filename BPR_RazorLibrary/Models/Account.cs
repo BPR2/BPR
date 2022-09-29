@@ -1,4 +1,4 @@
-﻿namespace BPR_RazorLib.Models
+﻿namespace BPR_RazorLibrary.Models
 {
 	public class Account
 	{

@@ -1,4 +1,6 @@
-using BPR_WebAPI.Data.Accounts;
+using BPR_WebAPI.Services.Accounts;
+using BPR_WebAPI.Services.Receiver;
+using BPR_WebAPI.Services.Sensor;
 
 namespace BPR_WebAPI
 {
@@ -15,8 +17,10 @@ namespace BPR_WebAPI
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 			builder.Services.AddSingleton<IAccountService, AccountService>();
+			builder.Services.AddSingleton<IReceiverService, ReceiverService>();
+            builder.Services.AddSingleton<ISensorService, SensorService>();
 
-			builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+            builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 			{
 				builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 			}));

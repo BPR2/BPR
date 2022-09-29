@@ -2,8 +2,7 @@
 using Microsoft.JSInterop;
 using System.Security.Claims;
 using System.Text.Json;
-using BPR_RazorLibrary.Data.Users;
-
+using BPR_RazorLibrary.Services.Users;
 
 namespace BPR_RazorLibrary.Models.Authentication
 {
@@ -76,6 +75,7 @@ namespace BPR_RazorLibrary.Models.Authentication
         private ClaimsIdentity SetupClaimsForUser(User user)
         {
             List<Claim> claims = new List<Claim>();
+            claims.Add(new Claim("Username", user.Username));
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
             claims.Add(new Claim(ClaimTypes.SerialNumber, user.AccountId.ToString()));
 

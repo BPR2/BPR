@@ -1,9 +1,9 @@
-using BPR_RazorLibrary.Data.Users;
+using BPR_RazorLibrary.Services.Receivers;
+using BPR_RazorLibrary.Services.Sensor;
+using Blazored.LocalStorage;
+using BPR_RazorLibrary.Services.Users;
 using BPR_RazorLibrary.Models.Authentication;
-using BPR_WebApp.Data;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
 
 namespace BPR_WebApp
 {
@@ -16,9 +16,17 @@ namespace BPR_WebApp
 			// Add services to the container.
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
-			builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddSingleton<IUserService, UserService>();
+			      builder.Services.AddSingleton<IReceiverService, ReceiverService>();
+            builder.Services.AddSingleton<ISensorService, SensorService>();
+            builder.Services.AddBlazoredLocalStorage();
+
+			builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy =>
+                    policy.RequireAuthenticatedUser().RequireClaim("Username", "admin"));
+            });
 
             var app = builder.Build();
 
