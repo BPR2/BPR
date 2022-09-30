@@ -34,7 +34,11 @@ namespace BPR_RazorLibrary.Services.Users
                     return null;
                 }
 
-                return (User)result.content;
+                var json = JsonSerializer.Serialize(result.content);
+
+                var user = JsonSerializer.Deserialize<User>(json);
+
+                return user;
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 ﻿using BPR_WebAPI.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 using BPR_RazorLibrary.Models;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,7 +23,6 @@ public class UserController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 	public async Task<ActionResult<WebContent>> ValidateUser([FromQuery] string username, [FromQuery] string password)
 	{
-		Console.WriteLine("Received login request");
 		User user = new User
 		{
 			Username = username,
@@ -41,7 +41,7 @@ public class UserController : ControllerBase
 	{
 		var result = await userService.GetUserAsync(id);
 
-		return Ok(result);
+		return Ok(result.content);
 	}
 
 	[HttpPost("createUser")]
