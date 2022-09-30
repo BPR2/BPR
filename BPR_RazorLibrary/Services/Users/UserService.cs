@@ -7,10 +7,10 @@ namespace BPR_RazorLibrary.Services.Users
     public class UserService : IUserService
     {
 #if DEBUG
-        string url = "https://localhost:7109/api/Account";
+        string url = "https://localhost:7109/api/User";
 #else
        
-        string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Account";
+        string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/User";
 #endif
 
         HttpClient client;
@@ -27,8 +27,18 @@ namespace BPR_RazorLibrary.Services.Users
             string message = await client.GetStringAsync($"{url}/validate?username={username}&password={password}");
             try
             {
-                User result = JsonSerializer.Deserialize<User>(message);
-                return result;
+                WebContent result = JsonSerializer.Deserialize<WebContent>(message);
+
+                if(result.response != WebResponse.AuthenticationSuccess)
+                {
+                    return null;
+                }
+
+                var json = JsonSerializer.Serialize(result.content);
+
+                var user = JsonSerializer.Deserialize<User>(json);
+
+                return user;
             }
             catch (Exception ex)
             {
@@ -38,7 +48,7 @@ namespace BPR_RazorLibrary.Services.Users
 
         }
 
-        public async Task CreateAccount(User user)
+        public async Task CreateUser(User user)
         {
             string userSerialized = JsonSerializer.Serialize(user);
 
@@ -48,10 +58,10 @@ namespace BPR_RazorLibrary.Services.Users
                 "application/json"
                 );
 
-            await client.PostAsync($"{url}/createAccount", content);
+            await client.PostAsync($"{url}/createUser", content);
         }
 
-        public async Task UpdateAccount(User user)
+        public async Task UpdateUser(User user)
         {
             string userSerialized = JsonSerializer.Serialize(user);
 
@@ -61,7 +71,7 @@ namespace BPR_RazorLibrary.Services.Users
                 "application/json"
                 );
 
-            await client.PutAsync($"{url}/updateAccount", content);
+            await client.PutAsync($"{url}/updateUser", content);
         }
 
         public int GetUserId()
@@ -74,9 +84,9 @@ namespace BPR_RazorLibrary.Services.Users
             userId = id;
         }
 
-        public async Task<List<User>> GetAllAccounts()
+        public async Task<List<User>> GetAllUsers()
         {
-            string message = await client.GetStringAsync($"{url}/allAccounts");
+            string message = await client.GetStringAsync($"{url}/allUsers");
             try
             {
                 List<User> result = JsonSerializer.Deserialize<List<User>>(message);
