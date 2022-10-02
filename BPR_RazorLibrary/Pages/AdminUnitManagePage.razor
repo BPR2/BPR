@@ -13,13 +13,12 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <style>
-    .AssignReceiver {
-        margin: 30px;
-    }
 
     .card {
-        padding: 10px;
+        margin-top: 10px;
+        padding: 10px !important;
         border-radius: 10px;
+        width: -webkit-fill-available;
     }
 
     .form-label-group, .form-label-group label {
@@ -34,7 +33,7 @@
         margin-top: 1.5rem;
         overflow: hidden;
         background-color: #f1f1f1;
-        border-radius: 10px;
+        border-radius: 30px;
     }
 
         .tab button {
@@ -51,148 +50,120 @@
                 background-color: #ddd;
             }
 
-    .tabcontent {
-        padding: 6px 12px;
-        border-top: none;
+    .container {
+        justify-content:center !important;
+        max-width: 700px !important;
+        max-height: 550px !important;
+        margin-top: 1.5rem !important;
     }
 
+    .input-group-text {
+        background: #1565a2 !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        justify-content: center;
+        padding: 20px !important;
+    }
+
+    input:focus {
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+    }
+
+    .oi, .fa-solid {
+        color: white;
+        position: absolute;
+        top: 13px;
+    }
 </style>
 
 
-<div class="tab">
-    <button style="@(tab1?"background-color: #808080;color:white;":"")" @onclick="(x=>DisplayTab(1))">Assign Receiver</button>
+<div class="tabcontent">
+    <div class="tab">
+        <button style="@(tab1?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(1))">Assign Receiver</button>
 
-    <AuthorizeView Policy="Admin">
-    <button style="@(tab2?"background-color: #808080;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
-    </AuthorizeView>
-
+        <AuthorizeView Policy="Admin">
+            <button style="@(tab2?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
+        </AuthorizeView>
 </div>
 
-@if (tab1)
-{
-    <div class="tabcontent">
-
-        <EditForm Model="@newReceiver" OnValidSubmit="@AssignNewReceiver">
+<EditForm Model="@newReceiver" OnValidSubmit="@Assign">
             <DataAnnotationsValidator />
             <ValidationSummary />
-
-            <div class="container">
-
-                <div class="row">
-                    <div class="col-md-9 mx-auto">
-                        <div class="card AssignReceiver">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">Assign Receiver</h5>
-                                <div class="form-register">
-
-                                    <div class="form-label-group">
-                                        <label><i class="oi oi-compass"> </i> Serial Number:</label>
-                                        <InputText class="form-control" @bind-Value="serialNumber" placeholder="Serial Number" required />
-
-                                        <label><i class="oi oi-person"> </i> Assign to User:</label>
-                                        <input class="form-control" type="text" list="userSearch" @bind-value="username" placeholder="Username" required />
-                                        <datalist id="userSearch">
-                                            @foreach (var item in users)
-                                            {
-                                                <option>@item.Username</option>
-                                            }
-                                        </datalist>
-                                    </div>
-
-                                </div>
-
-                                <div class="text-center">
-                                    <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Assign</button>
-                                </div>
-
-                                @if (!string.IsNullOrWhiteSpace(message) || !string.IsNullOrWhiteSpace(message1))
-                                {
-                                    @if (!string.IsNullOrWhiteSpace(message))
-                                    {
-                                        <div class="alert alert-danger">
-                                            @message
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="alert alert-success">
-                                            @message1
-                                        </div>
-                                    }
-                                }
-
+        <div class="card">
+            <div class="card-body">
+@if (tab1)
+{                 <div class="form-register">
+                       <div class="form-label-group">
+                            <div class="form-label-group input-group form-group">
+                                 <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
+                                 <input type="text" class="form-control" placeholder="Serial Number" @bind-value="serialNumber" required />
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-        </EditForm>
+                            <div class="form-label-group input-group form-group">
+                                <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                <input class="form-control" type="text" placeholder="Assign to User" list="userSearch" @bind-value="username" required />
+                            </div>
 
-    </div>
+                            <datalist id="userSearch">
+                                     @foreach (var item in users)
+                                     {
+                                        <option>@item.Username</option>
+                                     }
+                            </datalist>
+                       </div>
+                   </div>
 }
 
 @if (tab2)
 {
-    <div class="tabcontent">
-        <EditForm Model="@newSensor" OnValidSubmit="@AddNewSensor">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+                 <div class="form-register">
 
-            <div class="container">
+                    <div class="form-label-group">
 
-                <div class="row">
-                    <div class="col-md-9 mx-auto">
-                        <div class="card AssignReceiver">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">Assign Receiver</h5>
-                                <div class="form-register">
-
-                                    <div class="form-label-group">
-                                        <label><i class="oi oi-tag"> </i> Sensor Tag Number:</label>
-                                        <InputText class="form-control" @bind-Value="tagNumber" placeholder="Sensor Tag Number" required />
-
-                                        <label><i class="oi oi-compass"> </i> Add to Receiver:</label>
-                                        <input class="form-control" type="text" list="receiverSearch" @bind-value="sensorSerialNumber" placeholder="Receiver Serial Number" required />
-                                        <datalist id="receiverSearch">
-                                            @foreach (var item in receivers)
-                                            {
-                                                <option>@item.SerialNumber</option>
-                                            }
-                                        </datalist>
-                                    </div>
-
-                                </div>
-
-                                <div class="text-center">
-                                    <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Assign</button>
-                                </div>
-
-                                @if (!string.IsNullOrWhiteSpace(message) || !string.IsNullOrWhiteSpace(message1))
-                                {
-                                    @if (!string.IsNullOrWhiteSpace(message))
-                                    {
-                                        <div class="alert alert-danger">
-                                            @message
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="alert alert-success">
-                                            @message1
-                                        </div>
-                                    }
-                                }
-
-                            </div>
+                        <div class="form-label-group input-group form-group">
+                             <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
+                             <input type="text" class="form-control" placeholder="Sensor Tag Number" @bind-value="tagNumber" required/>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-        </EditForm>
-    </div>
+                        <div class="form-label-group input-group form-group">
+                             <span class="input-group-text"><i class="fa-solid fa-qrcode"></i></span>
+                             <input type="text" class="form-control" placeholder="Sensor Serial Number" list="receiverSearch" @bind-value="sensorSerialNumber" required />
+                        </div>
+
+                        <datalist id="receiverSearch">
+                                  @foreach (var item in receivers)
+                                  {
+                                    <option>@item.SerialNumber</option>
+                                  }
+                        </datalist>
+                     </div>
+
+                 </div>
 }
+                <div class="text-center">
+                     <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Assign</button>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(message) || !string.IsNullOrWhiteSpace(message1))
+                {
+                   @if (!string.IsNullOrWhiteSpace(message))
+                   {
+                      <div class="alert alert-danger">
+                         @message
+                      </div>
+                   }
+                   else
+                   {
+                      <div class="alert alert-success">
+                          @message1
+                      </div>
+                   }
+                }
+            </div>
+        </div>
+    </EditForm>
+</div>
 
 
 
@@ -220,6 +191,13 @@
     {
         users = await UserService.GetAllAccounts();
         receivers = await _ReceiverService.GetAllReceivers();
+    }
+
+    private async Task Assign() {
+        if (tab1)
+        { await AssignNewReceiver(); }
+        else if (tab2) 
+        { await AddNewSensor();}
     }
 
     private async Task AssignNewReceiver()
