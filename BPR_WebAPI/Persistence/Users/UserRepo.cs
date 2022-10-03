@@ -221,7 +221,14 @@ public class UserRepo : IUserRepo
                 await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
                     while (await reader.ReadAsync())
                     {
-                        users.Add(new User { Username = reader["username"].ToString(), AccountId = int.Parse(reader["accountid"].ToString()) });
+                        users.Add(new User { 
+                            Username = reader["username"].ToString(), 
+                            AccountId = int.Parse(reader["accountid"].ToString()), 
+                            FullName = reader["name"].ToString(),
+                            Contact = reader["contact"].ToString(),
+                            Email = reader["email"].ToString(),
+                            Address = reader["location"].ToString()
+                        });
                     }
             }
             con.Close();
