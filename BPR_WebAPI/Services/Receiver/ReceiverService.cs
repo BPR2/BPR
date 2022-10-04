@@ -20,4 +20,14 @@ public class ReceiverService : IReceiverService
     {
         return await receiverRepo.GetAllReceivers();
     }
+
+    public async Task<WebContent> GetReceiversByUserID(int userID)
+    {
+        return await receiverRepo.GetReceiversByUserID(userID);
+	}
+
+	public async Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID)
+	{
+		return await receiverRepo.AssignFieldToReceiver(receiverID, fieldID);
+	}
 }

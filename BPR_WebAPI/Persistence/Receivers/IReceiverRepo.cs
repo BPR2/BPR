@@ -6,4 +6,6 @@ public interface IReceiverRepo
 {
     Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName);
     Task<List<Receiver>> GetAllReceivers();
+    Task<WebContent> GetReceiversByUserID(int userID);
+    Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID);
 }
