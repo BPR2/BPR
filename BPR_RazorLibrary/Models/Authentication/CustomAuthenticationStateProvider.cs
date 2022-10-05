@@ -75,12 +75,9 @@ namespace BPR_RazorLibrary.Models.Authentication
         private ClaimsIdentity SetupClaimsForUser(User user)
         {
             List<Claim> claims = new List<Claim>();
-            if (user != null)
-            {
-                claims.Add(new Claim("Username", user.Username));
-            }
-            /*claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(ClaimTypes.SerialNumber, user.AccountId.ToString()));*/
+
+            claims.Add(new Claim("Username", user?.Username));
+            claims.Add(new Claim("Id", user?.AccountId.ToString()));
 
             ClaimsIdentity identity = new ClaimsIdentity(claims, "apiauth_type");
             return identity;
