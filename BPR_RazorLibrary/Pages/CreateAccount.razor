@@ -68,64 +68,62 @@
     }
 </style>
 
+
 <div class="container d-flex justify-content-center">
     <div class="card signup">
         <div class="card-body">
             <h5 class="card-title text-center">Sign up</h5>
-            <form class="form-login mt-3 p-2">
+            <EditForm Model="@newUser" OnValidSubmit="@AddNewUser">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
                     <div class="form-label-group input-group form-group width">
                         <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                        <input type="text" class="form-control" placeholder="Full name" @bind-value="newUser.FullName" required>
+                        <InputText class="form-control" @bind-Value="newUser.FullName" placeholder="Full Name" required />
                     </div>
 
                     <div class="form-label-group input-group form-group width">
                         <span class="input-group-text"><i class="fa-solid fa-user-tag"></i></span>
-                        <input type="text" class="form-control" placeholder="Username" @bind-value="newUser.Username" required>
+                        <InputText class="form-control" @bind-Value="newUser.Username" placeholder="Username" required />
                     </div>
 
                     <div class="form-label-group input-group form-group width">
                         <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-                        <input type="text" class="form-control" placeholder="Email" @bind-value="newUser.Email" required>
+                         <InputText class="form-control" @bind-Value="newUser.Email" placeholder="Email" required />
                     </div>
 
                     <div class="form-label-group input-group form-group width">
                         <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
-                        <input type="text" class="form-control" placeholder="Contact" @bind-value="newUser.Contact" required>
+                        <InputText class="form-control" @bind-Value="newUser.Contact" placeholder="Contact" required />
                     </div>
 
-                <div class="form-label-group input-group form-group">
-                    <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
-                    <input type="text" class="form-control" placeholder="Address" @bind-value="newUser.Address" required>
-                </div>
-
-                <div class="row">
-                    <div class=" form-label-group input-group" id="password">
-                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                        <input type="text" class="form-control" placeholder="Password" @bind-value="newUser.Password" required>
+                    <div class="form-label-group input-group form-group">
+                        <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
+                        <InputText class="form-control" @bind-Value="newUser.Address" placeholder="Address" required />
                     </div>
 
-                    <div class=" form-label-group  input-group" id="password">
-                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                        <input type="text" class="form-control" placeholder="Confirm Password" @bind-value="confirmPassword" required>
+                    <div class="row">
+                        <div class=" form-label-group input-group" id="password">
+                            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                            <InputText class="form-control" type="password" @bind-Value="password" placeholder="Password" required />
+                        </div>
+
+                        <div class=" form-label-group  input-group" id="password">
+                            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                            <InputText class="form-control" type="password" @bind-Value="confirmPassword" placeholder="Confirm Password" required />
+                        </div>
                     </div>
-                </div>
-            </form>
-            <div class="form-label-group">
-                <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
-            </div>
+                    <div class="form-label-group">
+                        <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
+                    </div>
+            </EditForm>
+
             @if (!string.IsNullOrWhiteSpace(message))
             {
                 <div class="alert alert-danger">
                     @message
                 </div>
             }
-
-            <footer>
-                <div class="footer-copyright text-center py-3">
-                    © 2022 Copyright BPR2-Group4
-                </div>
-
-            </footer>
         </div>
     </div>
 

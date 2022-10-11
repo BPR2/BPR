@@ -26,9 +26,11 @@
                         </li>                    
                     </AuthorizeView>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="fields">Fields</a>
-                    </li>
+                    <AuthorizeView Policy="User">
+                        <li class="nav-item">
+                            <a class="nav-link" href="fields">Fields</a>
+                        </li>
+                    </AuthorizeView>
             </ul>
             </div>
         </div>

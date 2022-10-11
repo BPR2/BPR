@@ -16,7 +16,6 @@
 .navbar-nav a:hover {
     background-color: rgba(255,255,255,0.25);
     color: white;
-    padding: 10px;
     border-radius: 8px;
     transition: 0.5s;
 }
@@ -28,6 +27,7 @@
 .navbar-nav a {
     border-radius: 5px;
     margin-top: 5px;
+    margin-left:5px;
 }
 
 .navbar-toggler {

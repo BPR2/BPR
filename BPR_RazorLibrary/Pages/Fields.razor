@@ -42,6 +42,10 @@
     {
         border-radius: 20px !important;
     }
+
+    .fa-solid {
+    margin-top:10px;
+    }
 </style>
 
 <div class="container justify-content-center">
@@ -59,7 +63,8 @@
                         <div class=" fields col-md-6">
                             <h5><i class="fa-solid fa-leaf"></i> PAW level limit: @field.PawLevelLimit %</h5>
                             <h5><i class="fa-solid fa-tower-cell"></i> Receiver SerialNumber: @field?.Receiver.SerialNumber</h5>
-                            <h6><i class="fa-solid fa-tower-broadcast"></i> Sensors:</h6>
+                            <h5><i class="fa-solid fa-clock"></i> Last updated: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()</h5>
+                            <h5><i class="fa-solid fa-tower-broadcast"></i> Sensors:</h5>
 
                             <ul>
                                 @foreach (var s in field?.Receiver?.Sensors)

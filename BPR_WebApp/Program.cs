@@ -33,7 +33,7 @@ namespace BPR_WebApp
                 options.AddPolicy("User", policy =>
 				policy.RequireAuthenticatedUser().RequireAssertion(context =>
 				{
-					Claim levelClaim = context.User.FindFirst(claim => claim.Type == "id");
+					Claim levelClaim = context.User.FindFirst(claim => claim.Type == "Id");
 					if (levelClaim == null) return false;
 					return int.Parse(levelClaim.Value) > 1;
 				}));

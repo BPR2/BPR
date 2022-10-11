@@ -41,7 +41,7 @@ namespace BPR_WebAPI.Persistence.Fields
                             receiverData = new ReceiverData
                             {
                                 ReceiverId = int.Parse(reader["receiverid"].ToString()),
-                                TimeStamp = DateTime.Parse(reader["timestamp"].ToString()),
+                                Timestamp = DateTime.Parse(reader["timestamp"].ToString()),
                                 Longitude = float.Parse(reader["longitude"].ToString()),
                                 Latitude = float.Parse(reader["latitude"].ToString())
                             };
