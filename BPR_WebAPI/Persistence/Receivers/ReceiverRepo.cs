@@ -107,4 +107,71 @@ public class ReceiverRepo : IReceiverRepo
             throw new NotImplementedException();
         }
     }
+
+    /// <summary>
+    /// Returns a list of the receivers assigned to specified user
+    /// </summary>
+    /// <param name="userID"></param>
+    /// <returns></returns>
+    public async Task<WebContent> GetReceiversByUserID(int userID)
+    {
+        List<Receiver> receivers = new List<Receiver>();
+
+        try
+        {
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            string command = $"SELECT * FROM public.Receiver WHERE accountid = @AccountID;";
+
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                cmd.Parameters.AddWithValue("@AccountID", userID);
+
+                await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
+                    {
+                        receivers.Add(new Receiver
+                        {
+                            SerialNumber = reader["serialnumber"].ToString(),
+                            ReceiverId = reader["receiverid"] as int?,
+                            FieldId = reader["fieldid"] as int?,
+                            Description = reader["Description"].ToString()
+                        });
+                    }
+            }
+            con.Close();
+            return new WebContent(WebResponse.ContentRetrievalSuccess, receivers);
+        }
+        catch (Exception e)
+        {
+            return new WebContent(WebResponse.ContentRetrievalFailure, null);
+        }
+    }
+
+    public async Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID)
+    {
+        try
+        {
+            //TODO check for receiver already assigned to a field
+
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            string command = $"UPDATE public.receiver SET fieldid = @FieldID WHERE receiverid = @ReceiverID";
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                cmd.Parameters.AddWithValue("@FieldID", fieldID);
+                cmd.Parameters.AddWithValue("@ReceiverID", receiverID);
+
+                cmd.ExecuteNonQuery();
+            }
+            con.Close();
+            return WebResponse.ContentUpdateSuccess;
+        }
+        catch (Exception e)
+        {
+            return WebResponse.ContentUpdateFailure;
+        }
+    }
 }
