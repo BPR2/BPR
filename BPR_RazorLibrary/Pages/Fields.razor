@@ -8,49 +8,47 @@
 @inject IJSRuntime JSRuntime;
 
 <style>
-    .container, .card{
-    margin-top:10px;
+    .container, .card {
+        margin-top: 10px;
     }
 
-    .map{
-    height:200px !important;
+    .map {
+        height: 200px !important;
     }
 
-    ul{
+    ul {
         list-style-type: none;
     }
 
-    .btn-outline-info{
-        border-radius:60px !important;
+    .btn-outline-info {
+        border-radius: 60px !important;
         outline: 0 0 0 0 !important;
         box-shadow: 0 0 0 0 !important;
-        margin-top:1rem;
+        margin-top: 1rem;
     }
 
-    .btn-light
-    {
+    .btn-light {
         background-color: #1565a2 !important;
-        color:white !important;
-        border-radius:20px !important;
+        color: white !important;
+        border-radius: 20px !important;
     }
 
-        .btn-light:hover
-        {
+        .btn-light:hover {
             background-color: #70a94c !important;
         }
-    .card
-    {
+
+    .card {
         border-radius: 20px !important;
     }
 
     .fa-solid {
-    margin-top:10px;
+        margin-top: 10px;
     }
 </style>
 
 <div class="container justify-content-center">
 
-    @if (fields.Any()) 
+    @if (fields.Any())
     {
         @foreach (var field in fields)
         {
@@ -71,7 +69,7 @@
                                 {
                                     string IsBatteryLow;
                                     @if (s.BatteryLow)
-                                    {IsBatteryLow = "Yes";}
+                                    { IsBatteryLow = "Yes"; }
                                     else { IsBatteryLow = "No"; }
                                     <li>
                                         <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#sensor_@s.SensorId" aria-expanded="false" aria-controls="collapseExample" onclick="expandCollapse(this)">
@@ -106,16 +104,16 @@
                                 <h6><i class="fa-solid fa-align-left"></i> Description:</h6>
 
                                 <div class="input-group">
-                                    <textarea class="form-control">@field.Description</textarea>
+                                    <textarea class="form-control" disabled>@field.Description</textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-primary">Edit</button>
                 </div>
             </div>
         }
-       
+
     }
     else
     {
