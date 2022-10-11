@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/createuser"
 
 <style>
     .middleOfThePageCircle {
@@ -20,11 +20,11 @@
     }
 </style>
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Create Account</PageTitle>
 
 @if (hasInternet)
 {
-    <LoginPage />
+    <CreateAccount />
 }
 else
 {
@@ -45,7 +45,7 @@ else
         {
             hasInternet = false;
         }
-        Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged; 
+        Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
     }
 
     private void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)

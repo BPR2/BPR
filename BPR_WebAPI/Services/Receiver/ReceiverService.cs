@@ -13,7 +13,7 @@ public class ReceiverService : IReceiverService
 
     public async Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName)
     {
-        return await receiverRepo.AssignReceiverAsync(serialNumber,userName);
+        return await receiverRepo.AssignReceiverAsync(serialNumber, userName);
     }
 
     public async Task<List<BPR_RazorLibrary.Models.Receiver>> GetAllReceiversAsync()
@@ -31,3 +31,4 @@ public class ReceiverService : IReceiverService
 		return await receiverRepo.AssignFieldToReceiver(receiverID, fieldID);
 	}
 }
+

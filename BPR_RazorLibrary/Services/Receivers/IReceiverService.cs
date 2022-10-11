@@ -7,4 +7,5 @@ public interface IReceiverService
     Task<List<Receiver>> GetAllReceivers();
 	Task<WebContent> GetReceiversByUserID(int userID);
 	Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID);
+    Task<List<Receiver>> GetReceiversByUserID(int userID);
 }

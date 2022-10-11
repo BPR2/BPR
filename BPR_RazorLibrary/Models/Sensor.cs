@@ -14,5 +14,6 @@ public class Sensor
     public bool BatteryLow { get; set; }
     [JsonPropertyName("Description")]
     public string? Description { get; set; }
-
+    [JsonPropertyName("latestSensorMeasurement")]
+    public SensorMeasurement? LatestSensorMeasurement { get; set; }
 }

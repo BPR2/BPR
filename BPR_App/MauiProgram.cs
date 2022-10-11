@@ -1,10 +1,10 @@
-using BPR_App.Data;
 using BPR_RazorLibrary.Models.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using BPR_RazorLibrary.Services.Users;
 using BPR_RazorLibrary.Services.Receivers;
 using BPR_RazorLibrary.Services.Sensor;
 using Blazored.LocalStorage;
+using System.Security.Claims;
 
 namespace BPR_App;
 
@@ -30,7 +30,6 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
         //DONT DELETE
 
-        builder.Services.AddSingleton<WeatherForecastService>();
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
         builder.Services.AddSingleton<IUserService, UserService>();
         builder.Services.AddSingleton<IReceiverService, ReceiverService>();
@@ -42,6 +41,12 @@ public static class MauiProgram
         {
             options.AddPolicy("Admin", policy =>
                 policy.RequireAuthenticatedUser().RequireClaim("Username", "admin"));
+            options.AddPolicy("User", policy =>
+                policy.RequireAuthenticatedUser().RequireAssertion(context => {
+                    Claim levelClaim = context.User.FindFirst(claim => claim.Type.Equals("Id"));
+                    if (levelClaim == null) return false;
+                    return int.Parse(levelClaim.Value) > 1;
+                }));
         });
 
         return builder.Build();

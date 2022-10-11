@@ -9,13 +9,13 @@ namespace BPR_RazorLibrary.Services.Users
 #if DEBUG
         string url = "https://localhost:7109/api/User";
 #else
-       
+
         string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/User";
 #endif
 
         HttpClient client;
 
-        private int userId;
+        private int? userId;
 
         public UserService()
         {
@@ -29,7 +29,7 @@ namespace BPR_RazorLibrary.Services.Users
             {
                 WebContent result = JsonSerializer.Deserialize<WebContent>(message);
 
-                if(result.response != WebResponse.AuthenticationSuccess)
+                if (result.response != WebResponse.AuthenticationSuccess)
                 {
                     return null;
                 }
@@ -37,6 +37,8 @@ namespace BPR_RazorLibrary.Services.Users
                 var json = JsonSerializer.Serialize(result.content);
 
                 var user = JsonSerializer.Deserialize<User>(json);
+
+                SetUserId(user.AccountId);
 
                 return user;
             }
@@ -74,12 +76,12 @@ namespace BPR_RazorLibrary.Services.Users
             await client.PutAsync($"{url}/updateUser", content);
         }
 
-        public int GetUserId()
+        public int? GetUserId()
         {
             return userId;
         }
 
-        public void SetUserId(int id)
+        public void SetUserId(int? id)
         {
             userId = id;
         }
@@ -98,5 +100,6 @@ namespace BPR_RazorLibrary.Services.Users
                 return null;
             }
         }
+
     }
 }

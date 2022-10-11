@@ -51,6 +51,7 @@
 
     <ItemGroup>
       <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
+      <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
     </ItemGroup>
 
     <ItemGroup>

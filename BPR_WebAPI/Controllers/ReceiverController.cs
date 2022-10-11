@@ -19,7 +19,7 @@ namespace BPR_WebAPI.Controllers
         [HttpPost("assignReceiver")]
         public async Task<ActionResult<WebResponse>> AssignReceiver([FromQuery] string serialNumber, [FromQuery] string username)
         {
-            var result = await receiverService.AssignReceiverAsync(serialNumber,username);
+            var result = await receiverService.AssignReceiverAsync(serialNumber, username);
             return Ok(result);
         }
 
@@ -29,7 +29,7 @@ namespace BPR_WebAPI.Controllers
             var result = await receiverService.GetAllReceiversAsync();
             return Ok(result);
         }
-
+		
 		[HttpGet("receiver")]
 		public async Task<ActionResult<WebResponse>> GetReceiverByUserID([FromQuery] int userID)
 		{

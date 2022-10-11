@@ -1,0 +1,139 @@
+﻿@page "/fields"
+@using BPR_RazorLibrary.Services.Fields;
+@using BPR_RazorLibrary.Services.Users;
+@using BPR_RazorLibrary.Models;
+@using Microsoft.JSInterop
+@inject IFieldService FieldService;
+@inject IUserService UserService;
+@inject IJSRuntime JSRuntime;
+
+<style>
+    .container, .card {
+        margin-top: 10px;
+    }
+
+    .map {
+        height: 200px !important;
+    }
+
+    ul {
+        list-style-type: none;
+    }
+
+    .btn-outline-info {
+        border-radius: 60px !important;
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+        margin-top: 1rem;
+    }
+
+    .btn-light {
+        background-color: #1565a2 !important;
+        color: white !important;
+        border-radius: 20px !important;
+    }
+
+        .btn-light:hover {
+            background-color: #70a94c !important;
+        }
+
+    .card {
+        border-radius: 20px !important;
+    }
+
+    .fa-solid {
+        margin-top: 10px;
+    }
+</style>
+
+<div class="container justify-content-center">
+
+    @if (fields.Any())
+    {
+        @foreach (var field in fields)
+        {
+            <div class="card">
+                <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#field_@field.Id" onclick="expandCollapse(this); getMap(@field.Receiver.ReceiverLatestData.Longitude, @field.Receiver.ReceiverLatestData.Latitude);">
+                    <i class="fa-solid fa-wheat-awn"></i> <span> @field.Name <i class="fa-solid fa-angle-down"></i></span>
+                </button>
+                <div class="card-body collapse" id="field_@field.Id">
+                    <div class="row">
+                        <div class=" fields col-md-6">
+                            <h5><i class="fa-solid fa-leaf"></i> PAW level limit: @field.PawLevelLimit %</h5>
+                            <h5><i class="fa-solid fa-tower-cell"></i> Receiver SerialNumber: @field?.Receiver.SerialNumber</h5>
+                            <h5><i class="fa-solid fa-clock"></i> Last updated: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()</h5>
+                            <h5><i class="fa-solid fa-tower-broadcast"></i> Sensors:</h5>
+
+                            <ul>
+                                @foreach (var s in field?.Receiver?.Sensors)
+                                {
+                                    string IsBatteryLow;
+                                    @if (s.BatteryLow)
+                                    { IsBatteryLow = "Yes"; }
+                                    else { IsBatteryLow = "No"; }
+                                    <li>
+                                        <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#sensor_@s.SensorId" aria-expanded="false" aria-controls="collapseExample" onclick="expandCollapse(this)">
+                                            <i class="fa-solid fa-tower-broadcast"></i> <span>@s.TagNumber<i class="fa-solid fa-angle-down"></i></span>
+                                        </button>
+                                        <ul class="collapse" id="sensor_@s.SensorId">
+                                            <li>
+                                                <i class="fa-solid fa-tag"></i> Tag number: @s.TagNumber
+                                            </li>
+                                            <li>
+                                                <i class="fa-solid fa-temperature-high"></i> latest Temperature: @s?.LatestSensorMeasurement?.Temperature
+                                            </li>
+                                            <li>
+                                                <i class="fa-solid fa-droplet"></i> latest Humidity: @s?.LatestSensorMeasurement?.Humidity %
+                                            </li>
+                                            <li>
+                                                <i class="fa-solid fa-battery-empty"></i> Battery low: @IsBatteryLow
+                                            </li>
+                                            <li>
+                                                <i class="fa-solid fa-align-left"></i> Description:
+                                                <p>@s.Description</p>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="map" class="card map">
+                            </div>
+                            <div>
+                                <h6><i class="fa-solid fa-align-left"></i> Description:</h6>
+
+                                <div class="input-group">
+                                    <textarea class="form-control" disabled>@field.Description</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary">Edit</button>
+                </div>
+            </div>
+        }
+
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="spinner-border col-md-12" style="width: 2rem; height: 2rem;" role="status"><i class="fa-solid fa-wheat-awn"></i></div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    private int? userId;
+    private List<Field> fields = new List<Field>();
+    protected override async Task OnInitializedAsync()
+    {
+        userId = UserService.GetUserId();
+        fields = await FieldService.GetAllFieldsByUserId(userId);
+    }
+}
