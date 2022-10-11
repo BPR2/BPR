@@ -1,6 +1,7 @@
 using BPR_WebAPI.Services.Users;
 using BPR_WebAPI.Services.Receiver;
 using BPR_WebAPI.Services.Sensor;
+using BPR_WebAPI.Services.Field;
 
 namespace BPR_WebAPI
 {
@@ -19,6 +20,7 @@ namespace BPR_WebAPI
 			builder.Services.AddSingleton<IUserService, UserService>();
 			builder.Services.AddSingleton<IReceiverService, ReceiverService>();
             builder.Services.AddSingleton<ISensorService, SensorService>();
+			builder.Services.AddSingleton<IFieldService, FieldService>();
 
             builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 			{

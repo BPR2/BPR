@@ -5,7 +5,7 @@ namespace BPR_RazorLibrary.Models;
 public class Receiver
 {
     [JsonPropertyName("ReceiverId")]
-    public int? ReceiverId { get; set; }
+    public int ReceiverId { get; set; }
 
     [JsonPropertyName("AccountId")]
     public int? AccountId { get; set; }
@@ -18,4 +18,8 @@ public class Receiver
 
     [JsonPropertyName("Description")]
     public string? Description { get; set; }
+    [JsonPropertyName("receiverLatestData")]
+    public ReceiverData? ReceiverLatestData { get; set; }
+    [JsonPropertyName("sensors")]
+    public List<Sensor>? Sensors { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using BPR_RazorLibrary.Models;
+using BPR_RazorLibrary.Pages;
 using Npgsql;
 
 namespace BPR_WebAPI.Persistence.Sensors;
@@ -77,6 +78,44 @@ public class SensorRepo : ISensorRepo
         catch (Exception e)
         {
             return e.ToString();
+        }
+    }
+
+    public async Task<List<Sensor>> getAllSensorsByReceiverId(int receiverId)
+    {
+        List<Sensor> sensors = new List<Sensor>();
+
+        try
+        {
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            string command = $"SELECT * FROM public.sensor where public.sensor.receiverid = @ReceiverId";
+
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                cmd.Parameters.AddWithValue("@ReceiverId", NpgsqlTypes.NpgsqlDbType.Integer, receiverId);
+                await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
+                    {
+                        sensors.Add(
+                            new Sensor
+                            {
+                                SensorId = int.Parse(reader["sensorid"].ToString()),
+                                ReceiverId = int.Parse(reader["receiverid"].ToString()),
+                                TagNumber = reader["tagnumber"].ToString(),
+                                BatteryLow = bool.Parse(reader["batterylow"].ToString()),
+                                Description = reader["description"].ToString()
+                            });
+                    }
+            }
+            con.Close();
+            return sensors;
+        }
+        catch (Exception e)
+        {
+
+            throw;
         }
     }
 }

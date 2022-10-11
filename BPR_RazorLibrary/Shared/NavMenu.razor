@@ -2,7 +2,7 @@
 @using BPR_RazorLibrary.Models.Authentication
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-<AuthorizeView>
+
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
             <a href="#">
@@ -18,15 +18,23 @@
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" @onclick="PerformLogout" href="/">Logout</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="createUser">create account</a>
-                    </li>
-                </ul>
+                    </li> 
+                    
+                    <AuthorizeView Policy="Admin">
+                        <li class="nav-item">
+                            <a class="nav-link" href="createUser">create account</a>
+                        </li>                    
+                    </AuthorizeView>
+
+                    <AuthorizeView Policy="User">
+                        <li class="nav-item">
+                            <a class="nav-link" href="fields">Fields</a>
+                        </li>
+                    </AuthorizeView>
+            </ul>
             </div>
         </div>
     </nav>
-</AuthorizeView>
 
 @code {
     private bool collapseNavMenu = true;
