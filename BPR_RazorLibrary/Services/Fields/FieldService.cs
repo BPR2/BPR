@@ -14,7 +14,7 @@ public class FieldService : IFieldService
     string url = "https://localhost:7109/api/Field";
 #else
    
-    string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/User";
+    string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Field";
 #endif
     HttpClient client;
 
