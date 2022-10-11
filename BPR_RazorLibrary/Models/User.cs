@@ -21,4 +21,5 @@ public class User
     [JsonPropertyName("location")]
     public string? Address { get; set; }
 
+    public bool IsRowExpanded { get; set; } = false;
 }

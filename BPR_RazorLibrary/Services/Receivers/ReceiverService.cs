@@ -48,4 +48,44 @@ public class ReceiverService : IReceiverService
             return null;
         }
     }
+
+    public async Task<List<Receiver>> GetReceiversByUserID(int userID)
+    {
+        string message = await client.GetStringAsync($"{url}/receiver?userID={userID}");
+        try
+        {
+            WebContent result = JsonSerializer.Deserialize<WebContent>(message);
+
+            if (result.response != WebResponse.ContentRetrievalSuccess)
+            {
+                return null;
+            }
+
+            var json = JsonSerializer.Serialize(result.content);
+
+            var contentResult = JsonSerializer.Deserialize<List<Receiver>>(json);
+
+            return contentResult;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+    }
+
+    public async Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID)
+    {
+        string message = await client.GetStringAsync($"{url}/assignfield?receiverID={receiverID}&fieldID={fieldID}");
+        try
+        {
+            WebResponse result = JsonSerializer.Deserialize<WebResponse>(message); //not sure it's possible to serialize&deserialize an enum alone, test it
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            return WebResponse.ContentDataCorrupted;
+        }
+    }
 }
