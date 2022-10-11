@@ -5,6 +5,7 @@ using BPR_RazorLibrary.Services.Receivers;
 using BPR_RazorLibrary.Services.Sensor;
 using Blazored.LocalStorage;
 using System.Security.Claims;
+using BPR_RazorLibrary.Services.Fields;
 
 namespace BPR_App;
 
@@ -34,6 +35,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IUserService, UserService>();
         builder.Services.AddSingleton<IReceiverService, ReceiverService>();
         builder.Services.AddSingleton<ISensorService, SensorService>();
+        builder.Services.AddSingleton<IFieldService, FieldService>();
 
         builder.Services.AddBlazoredLocalStorage();
 
