@@ -1,0 +1,37 @@
+﻿@using BPR_RazorLibrary.Models
+@using BPR_RazorLibrary.Services.Users
+
+@inject IUserService UserService
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in allUsers)
+        {
+            <tr>
+                <td>@user.Username</td>
+                <td>@user.FullName</td>
+                <td>@user.Contact</td>
+                <td>@user.Email</td>
+                <td>@user.Address</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IList<User> allUsers = new List<User>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        allUsers = await UserService.GetAllUsers();
+    }
+}

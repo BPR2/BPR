@@ -9,7 +9,7 @@ namespace BPR_RazorLibrary.Services.Users
 #if DEBUG
         string url = "https://localhost:7109/api/User";
 #else
-       
+
         string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/User";
 #endif
 
@@ -29,7 +29,7 @@ namespace BPR_RazorLibrary.Services.Users
             {
                 WebContent result = JsonSerializer.Deserialize<WebContent>(message);
 
-                if(result.response != WebResponse.AuthenticationSuccess)
+                if (result.response != WebResponse.AuthenticationSuccess)
                 {
                     return null;
                 }
@@ -100,5 +100,6 @@ namespace BPR_RazorLibrary.Services.Users
                 return null;
             }
         }
+
     }
 }
