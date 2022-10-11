@@ -2,6 +2,7 @@ using BPR_RazorLibrary.Services.Receivers;
 using BPR_RazorLibrary.Services.Sensor;
 using Blazored.LocalStorage;
 using BPR_RazorLibrary.Services.Users;
+using BPR_RazorLibrary.Services.Fields;
 using BPR_RazorLibrary.Models.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,7 @@ namespace BPR_WebApp
             builder.Services.AddSingleton<IUserService, UserService>();
 			      builder.Services.AddSingleton<IReceiverService, ReceiverService>();
             builder.Services.AddSingleton<ISensorService, SensorService>();
+			builder.Services.AddSingleton<IFieldService, FieldService>();
             builder.Services.AddBlazoredLocalStorage();
 
 			builder.Services.AddAuthorization(options =>
@@ -36,8 +38,6 @@ namespace BPR_WebApp
                     return int.Parse(levelClaim.Value) > 1;
                 }));
             });
-
-           
 
             var app = builder.Build();
 
