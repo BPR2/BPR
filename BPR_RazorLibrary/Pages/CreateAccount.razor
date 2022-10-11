@@ -5,73 +5,131 @@
 @inject IUserService UsersService
 @inject NavigationManager NavigationManager
 
-<EditForm Model="@newUser" OnValidSubmit="@AddNewUser">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<style>
+    .signup {
+        max-width: 600px;
+        max-height: 550px;
+        margin-top: 50px;
+    }
 
-    <div class="container">
+    .card {
+        padding: 10px;
+        border-radius: 10px;
+        width: 1000px;
+    }
 
-        <div class="row">
-            <div class="col-md-9 mx-auto">
-                <div class="card card-register">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Sign up</h5>
-                        <div class="form-register">
+    .card-img {
+        text-align: center;
+    }
 
-                            <div class="form-label-group">
-                                <label><i class="oi oi-person"> </i> First Name:</label>
-                                <InputText class="form-control" @bind-Value="newUser.FullName" placeholder="Full Name" required />
+    .form-label-group, .form-label-group label {
+        margin-top: 1rem !important;
+    }
 
-                                <label><i class="oi oi-person">  </i> Username:</label>
-                                <InputText class="form-control" @bind-Value="newUser.Username" placeholder="Username" required />
+        .form-label-group button {
+            width: -webkit-fill-available;
+            margin-top: 1rem;
+        }
 
-                                <label><i class="oi oi-envelope-closed">  </i> Email: </label>
-                                <InputText class="form-control" @bind-Value="newUser.Email" placeholder="Email" required />
+        .form-label-group .oi {
+            margin-bottom: 1.1rem;
+        }
 
-                                <label><i class="oi oi-envelope-closed">  </i> Contact: </label>
-                                <InputText class="form-control" @bind-Value="newUser.Contact" placeholder="Contact" required />
+    .alert {
+        margin-top: 1rem;
+    }
 
-                                <label><i class="oi oi-envelope-closed">  </i> Address: </label>
-                                <InputText class="form-control" @bind-Value="newUser.Address" placeholder="Address" required />
-                            </div>
+    .input-group-text {
+        background: #1565a2 !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        justify-content: center;
+        padding: 20px !important;
+    }
 
-                            <div class="row form-label-group">
-                                <div class="col-md-6">
-                                    <label><i class="oi oi-lock-locked">  </i> Password:</label>
-                                    <InputText class="form-control" type="password" @bind-Value="password" placeholder="Password" required />
-                                </div>
-                                <div class="col-md-6">
-                                    <label><i class="oi oi-lock-locked">  </i> Confirm Password:</label>
-                                    <InputText class="form-control" type="password" @bind-Value="confirmPassword" placeholder="Confirm Password" required />
-                                </div>
-                            </div>
+    input:focus {
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+    }
 
-                        </div>
-                        <div class="text-center">
-                            <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
-                        </div>
+    .fa-solid  {
+        color: white;
+        position: absolute;
+        top: 11px;
+    }
+    #password{
+         width:50% !important;
+        }
 
-                        @if (!string.IsNullOrWhiteSpace(message))
-                        {
-                            <div class="alert alert-danger">
-                                @message
-                            </div>
-                        }
+    @@media (max-width: 600px) {
+        #password {
+         width:100% !important;
+        }
+    }
+</style>
+
+<div class="container d-flex justify-content-center">
+    <div class="card signup">
+        <div class="card-body">
+            <h5 class="card-title text-center">Sign up</h5>
+            <form class="form-login mt-3 p-2">
+                    <div class="form-label-group input-group form-group width">
+                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" class="form-control" placeholder="Full name" @bind-value="newUser.FullName" required>
                     </div>
 
+                    <div class="form-label-group input-group form-group width">
+                        <span class="input-group-text"><i class="fa-solid fa-user-tag"></i></span>
+                        <input type="text" class="form-control" placeholder="Username" @bind-value="newUser.Username" required>
+                    </div>
+
+                    <div class="form-label-group input-group form-group width">
+                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="text" class="form-control" placeholder="Email" @bind-value="newUser.Email" required>
+                    </div>
+
+                    <div class="form-label-group input-group form-group width">
+                        <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                        <input type="text" class="form-control" placeholder="Contact" @bind-value="newUser.Contact" required>
+                    </div>
+
+                <div class="form-label-group input-group form-group">
+                    <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
+                    <input type="text" class="form-control" placeholder="Address" @bind-value="newUser.Address" required>
                 </div>
 
-                <footer>
-                    <div class="footer-copyright text-center py-3">
-                        © 2022 Copyright BPR2-Group4
+                <div class="row">
+                    <div class=" form-label-group input-group" id="password">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <input type="text" class="form-control" placeholder="Password" @bind-value="newUser.Password" required>
                     </div>
 
-                </footer>
-
+                    <div class=" form-label-group  input-group" id="password">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <input type="text" class="form-control" placeholder="Confirm Password" @bind-value="confirmPassword" required>
+                    </div>
+                </div>
+            </form>
+            <div class="form-label-group">
+                <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
             </div>
+            @if (!string.IsNullOrWhiteSpace(message))
+            {
+                <div class="alert alert-danger">
+                    @message
+                </div>
+            }
+
+            <footer>
+                <div class="footer-copyright text-center py-3">
+                    © 2022 Copyright BPR2-Group4
+                </div>
+
+            </footer>
         </div>
     </div>
-</EditForm>
+
+</div>
 
 @code {
     private User newUser = new User();

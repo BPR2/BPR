@@ -51,7 +51,7 @@
         @foreach (var field in fields)
         {
             <div class="card">
-                <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#field_@field.Id" onclick="expandCollapseField(this, @field.Receiver.ReceiverLatestData.Longitude, @field.Receiver.ReceiverLatestData.Latitude)">
+                <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#field_@field.Id" onclick="expandCollapse(this); getMap(@field.Receiver.ReceiverLatestData.Longitude, @field.Receiver.ReceiverLatestData.Latitude);">
                     <i class="fa-solid fa-wheat-awn"></i> <span> @field.Name <i class="fa-solid fa-angle-down"></i></span>
                 </button>
                 <div class="card-body collapse" id="field_@field.Id">
@@ -69,7 +69,7 @@
                                     {IsBatteryLow = "Yes";}
                                     else { IsBatteryLow = "No"; }
                                     <li>
-                                        <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#sensor_@s.SensorId" aria-expanded="false" aria-controls="collapseExample" onclick="changeIcon(this)">
+                                        <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#sensor_@s.SensorId" aria-expanded="false" aria-controls="collapseExample" onclick="expandCollapse(this)">
                                             <i class="fa-solid fa-tower-broadcast"></i> <span>@s.TagNumber<i class="fa-solid fa-angle-down"></i></span>
                                         </button>
                                         <ul class="collapse" id="sensor_@s.SensorId">
@@ -116,7 +116,6 @@
     {
         <div class="card">
             <div class="card-body">
-                @*<span>Loading...</span>*@
                 <div class="text-center">
                     <div class="spinner-border col-md-12" style="width: 2rem; height: 2rem;" role="status"><i class="fa-solid fa-wheat-awn"></i></div>
                 </div>
