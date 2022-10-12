@@ -42,7 +42,7 @@ namespace BPR_WebAPI.Persistence.Fields
 							receiverData = new ReceiverData
 							{
 								ReceiverId = int.Parse(reader["receiverid"].ToString()),
-								//Timestamp = DateTime.Parse(reader["timestamp"].ToString()),
+								Timestamp = DateTime.Parse(reader["timestamp"].ToString()),
 								Longitude = float.Parse(reader["longitude"].ToString()),
 								Latitude = float.Parse(reader["latitude"].ToString())
 							};
@@ -90,7 +90,7 @@ namespace BPR_WebAPI.Persistence.Fields
 									SensorId = int.Parse(reader["sensorid"].ToString()),
 									Temperature = float.Parse(reader["temperature"].ToString()),
 									Humidity = float.Parse(reader["humidity"].ToString()),
-									//Timestamp = DateTime.Parse(reader["timestamp"].ToString()),
+									Timestamp = DateTime.Parse(reader["timestamp"].ToString()),
 								};
 
 								sensors.Add(
