@@ -11,47 +11,109 @@
 @inject ISensorService _SensorService
 @inject IFieldService FieldService
 
-<h3>AddField</h3>
+<style>
+    .signup {
+        max-width: 600px;
+        max-height: 550px;
+        margin-top: 50px;
+    }
 
-<EditForm Model="@newField" OnValidSubmit="@CreateNewField">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="card">
+    .card {
+        padding: 10px;
+        border-radius: 10px;
+        width: 1000px;
+    }
+
+    .card-img {
+        text-align: center;
+    }
+
+    .form-label-group, .form-label-group label {
+        margin-top: 1rem !important;
+    }
+
+        .form-label-group button {
+            width: -webkit-fill-available;
+            margin-top: 1rem;
+        }
+
+        .form-label-group .oi {
+            margin-bottom: 1.1rem;
+        }
+
+    .alert {
+        margin-top: 1rem;
+    }
+
+    .input-group-text {
+        background: #1565a2 !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        justify-content: center;
+        padding: 20px !important;
+    }
+
+    input:focus {
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+    }
+
+    .fa-solid {
+        color: white;
+        position: absolute;
+        top: 11px;
+    }
+
+    #password {
+        width: 50% !important;
+    }
+
+    @@media (max-width: 600px) {
+        #password {
+            width: 100% !important;
+        }
+    }
+</style>
+
+
+<div class="container d-flex justify-content-center">
+    <div class="card signup">
         <div class="card-body">
-            <div class="form-register">
-                <div class="form-label-group">
-                    <div class="form-label-group input-group form-group">
-                        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
-                        <input type="text" class="form-control" placeholder="Name" @bind-value="name" required />
-                    </div>
-                    <div class="form-label-group input-group form-group">
-                        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
-                        <input type="text" class="form-control" placeholder="Location" @bind-value="location" required />
-                    </div>
-                    <div class="form-label-group input-group form-group">
-                        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
-                        <input type="text" class="form-control" placeholder="Description" @bind-value="description" required />
-                    </div>
-                    <div class="form-label-group input-group form-group">
-                        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
-                        <input type="number" class="form-control" placeholder="Paw Level Limit" @bind-value="pawLevelLimit" required />
-                    </div>
-                    <div class="form-label-group input-group form-group">
-                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                        <input class="form-control" type="text" placeholder="Assign to receiver" list="receiverSearch" @bind-value="selectedReceiverSerial" required />
-                    </div>
-                    <datalist id="receiverSearch">
-                        @foreach (var item in receivers)
-                        {
-                            <option>@item.SerialNumber</option>
-                        }
-                    </datalist>
+            <h5 class="card-title text-center">Create Field</h5>
+            <EditForm Model="@newField" OnValidSubmit="@CreateNewField">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-user"></i> </span>
+                    <input type="text" class="form-control" placeholder="Name" @bind-value="name" required />
                 </div>
-            </div>
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-location-pin"></i> </span>
+                    <input type="text" class="form-control" placeholder="Location" @bind-value="location" required />
+                </div>
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-comment"></i> </span>
+                    <input type="text" class="form-control" placeholder="Description" @bind-value="description" required />
+                </div>
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-water"></i> </span>
+                    <input type="number" class="form-control" placeholder="Paw Level Limit" @bind-value="pawLevelLimit" required />
+                </div>
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-satellite-dish"></i></span>
+                    <input class="form-control" type="text" placeholder="Receiver serial number" list="receiverSearch" @bind-value="selectedReceiverSerial" required />
+                </div>
+                <datalist id="receiverSearch">
+                    @foreach (var item in receivers)
+                    {
+                        <option>@item.SerialNumber</option>
+                    }
+                </datalist>
 
-            <div class="text-center">
-                <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
-            </div>
+                <div class="form-label-group">
+                    <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
+                </div>
+            </EditForm>
 
             @if (!string.IsNullOrWhiteSpace(message))
             {
@@ -61,7 +123,8 @@
             }
         </div>
     </div>
-</EditForm>
+
+</div>
 
 @code {
     int? userID;
@@ -97,45 +160,62 @@
             message = "Please select a receiver to assign to field";
         }
 
+        newField.Location = location;
+        newField.Description = description;
+        newField.Name = name;
+        newField.PawLevelLimit = pawLevelLimit;
 
-        Console.WriteLine("Creating field...");
         string responseMessage = await FieldService.CreateFieldAsync(newField);
 
-            /*
-            if (responseMessage.Equals("13"))
+
+        if (responseMessage.Equals("13"))
         {
-        message = "Field already exists!";
+            message = "Field already exists!";
+            return;
         }
-            else if (responseMessage.Equals("10"))
-            {
+        else if (responseMessage.Equals("10"))
+        {
             message = "An error happened when adding field!";
-            }
-            else
-            {
+            return;
+        }
+        else
+        {
             message = "Field successfully created!";
             name = String.Empty;
             location = String.Empty;
             description = String.Empty;
             pawLevelLimit = 0;
         }
-        */
 
-        //TODO check the responses to figure out if successful
-
-        Console.WriteLine("Creating field");
         Field addedField = await FieldService.GetLatestFieldFromUser((int)userID);
-        //cross-check if the added field's data is the same as what we added. if not then it did not add the new one correctly and the user should be notified
+
+        if (!addedField.Equals(newField))
+        {
+            message = "An error happened when adding field!";
+            return;
+        }
 
         int receiverIDToAssign = receivers.First(rec => rec.SerialNumber == selectedReceiverSerial).ReceiverId; //get the receiverID of the selected recceiver serial number (as a farmer does not know what a receiverID would be)
 
-        WebResponse response = await _ReceiverService.AssignFieldToReceiver(receiverIDToAssign, addedField.Id);
-        //TODO check response
+        Receiver tempReceiver = new Receiver { ReceiverId = receiverIDToAssign, FieldId = addedField.Id };
 
-        message = "Field successfully created!";
-        name = String.Empty;
-        location = String.Empty;
-        description = String.Empty;
-        pawLevelLimit = 0;
-
+        string response = await _ReceiverService.AssignFieldToReceiver(tempReceiver);
+        
+        if (responseMessage.Equals("13"))
+        {
+            message = "Field already exists!";
+        }
+        else if (responseMessage.Equals("10"))
+        {
+            message = "An error happened when adding field!";
+        }
+        else
+        {
+            message = "Field successfully created!";
+            name = String.Empty;
+            location = String.Empty;
+            description = String.Empty;
+            pawLevelLimit = 0;
+        }
     }
 }

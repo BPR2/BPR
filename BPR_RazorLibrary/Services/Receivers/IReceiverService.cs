@@ -6,5 +6,5 @@ public interface IReceiverService
     Task<string> AssignReceiver(string serialNumber, string username);
     Task<List<Receiver>> GetAllReceivers();
 	Task<List<Receiver>> GetReceiversByUserID(int userID);
-	Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID);
+	Task<string> AssignFieldToReceiver(Receiver receiver);
 }

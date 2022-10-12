@@ -1,4 +1,5 @@
 ﻿using BPR_RazorLibrary.Models;
+using System.Text;
 using System.Text.Json;
 
 namespace BPR_RazorLibrary.Services.Receivers;
@@ -74,18 +75,27 @@ public class ReceiverService : IReceiverService
 		}
 	}
 
-	public async Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID)
+	public async Task<string> AssignFieldToReceiver(Receiver receiver)
 	{
-		string message = await client.GetStringAsync($"{url}/assignfield?receiverID={receiverID}&fieldID={fieldID}");
+		string receiverSerialized = JsonSerializer.Serialize(receiver);
+
+		HttpContent content = new StringContent(
+				receiverSerialized,
+				Encoding.UTF8,
+				"application/json"
+				);
+
+		string fullurl = $"{url}/assignField";
+		var message = await client.PutAsync($"{url}/assignField", content);
 		try
 		{
-			WebResponse result = JsonSerializer.Deserialize<WebResponse>(message); //not sure it's possible to serialize&deserialize an enum alone, test it
+			string result = await message.Content.ReadAsStringAsync();
 			return result;
 		}
 		catch (Exception ex)
 		{
 			Console.WriteLine(ex.StackTrace);
-			return WebResponse.ContentDataCorrupted;
+			return null;
 		}
 	}
 }
