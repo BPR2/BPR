@@ -14,6 +14,7 @@ namespace BPR_WebAPI.Persistence.Fields
             connectionString = configuration["ConnectionStrings:DefaultConnection"];
         }
 
+
         public async Task<WebContent> GetAllFieldsByUserId(int userId)
         {
             List<Field> fields = new List<Field>();
@@ -113,9 +114,54 @@ namespace BPR_WebAPI.Persistence.Fields
             }
             catch (Exception e)
             {
-
-                throw new NotImplementedException();
+                Console.WriteLine(e.Message);
+                return new WebContent(WebResponse.ContentRetrievalFailure, null);
             }
+        }
+
+
+		public async Task<WebResponse> CreateFieldAsync(Field field)
+		{
+			try
+			{
+				using var con = new NpgsqlConnection(connectionString);
+				con.Open();
+
+				string command = $"INSERT INTO public.Field(Name, Location, Description, PawLevelLimit) VALUES (@Name, @Location, @Description, @PawLevelLimit);";
+				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+				{
+					cmd.Parameters.AddWithValue("@Name", field.Name);
+					cmd.Parameters.AddWithValue("@Location", field.Location);
+					cmd.Parameters.AddWithValue("@Description", field.Description);
+					cmd.Parameters.AddWithValue("@PawLevelLimit", field.PawLevelLimit);
+
+					cmd.ExecuteNonQuery();
+				}
+				con.Close();
+				return WebResponse.ContentCreateSuccess;
+			}
+			catch (Exception e)
+			{
+				return WebResponse.ContentCreateFailure;
+			}
+		}
+
+        public async Task<WebContent> GetLatestFieldByUserId(int userId)
+        {
+            var content = await GetAllFieldsByUserId(userId);
+            if(content.response != WebResponse.ContentRetrievalSuccess)
+            {
+                return new WebContent(WebResponse.ContentRetrievalFailure, null);
+            }
+
+            List<Field> fields = (List<Field>)content.content;
+
+            if(fields.Count == 0)
+            {
+                return new WebContent(WebResponse.ContentRetrievalFailure, null);
+            }
+
+            return new WebContent(WebResponse.ContentRetrievalSuccess, fields.Last()); //get the latest of the list
         }
     }
 }

@@ -23,4 +23,20 @@ public class FieldController : ControllerBase
         var result = await fieldService.GetAllFieldsByUserId(userId);
         return Ok(result);
     }
+
+	[HttpPost("createField")]
+	public async Task<ActionResult<WebResponse>> CreateField([FromBody] Field field)
+	{
+		var result = await fieldService.CreateFieldAsync(field);
+		return Ok(result);
+	}
+
+	[HttpGet("getLatestFieldByUserId")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	public async Task<ActionResult<WebContent>> GetLatestFieldByUserId([FromQuery] int userId)
+	{
+		var result = await fieldService.GetLatestFieldByUserId(userId);
+		return Ok(result);
+	}
 }

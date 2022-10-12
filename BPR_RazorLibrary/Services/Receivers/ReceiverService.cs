@@ -49,7 +49,7 @@ public class ReceiverService : IReceiverService
         }
 	}
 
-	public async Task<WebContent> GetReceiversByUserID(int userID)
+	public async Task<List<Receiver>> GetReceiversByUserID(int userID)
     {
 		string message = await client.GetStringAsync($"{url}/receiver?userID={userID}");
 		try
@@ -65,7 +65,7 @@ public class ReceiverService : IReceiverService
 
 			var contentResult = JsonSerializer.Deserialize<List<Receiver>>(json);
 
-			return result;
+			return contentResult;
 		}
 		catch (Exception ex)
 		{
@@ -88,29 +88,4 @@ public class ReceiverService : IReceiverService
 			return WebResponse.ContentDataCorrupted;
 		}
 	}
-
-    public async Task<List<Receiver>> GetReceiversByUserID(int userID)
-    {
-        string message = await client.GetStringAsync($"{url}/receiver?userID={userID}");
-        try
-        {
-            WebContent result = JsonSerializer.Deserialize<WebContent>(message);
-
-            if (result.response != WebResponse.ContentRetrievalSuccess)
-            {
-                return null;
-            }
-
-            var json = JsonSerializer.Serialize(result.content);
-
-            var contentResult = JsonSerializer.Deserialize<List<Receiver>>(json);
-
-            return contentResult;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.StackTrace);
-            return null;
-        }
-    }
 }

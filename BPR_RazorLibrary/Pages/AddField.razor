@@ -1,0 +1,141 @@
+﻿@page "/createfield"
+@using BPR_RazorLibrary.Models
+@using BPR_RazorLibrary.Services.Receivers
+@using BPR_RazorLibrary.Services.Sensor
+@using BPR_RazorLibrary.Services.Users
+@using BPR_RazorLibrary.Services.Fields
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@inject IUserService UserService
+@inject IReceiverService _ReceiverService
+@inject ISensorService _SensorService
+@inject IFieldService FieldService
+
+<h3>AddField</h3>
+
+<EditForm Model="@newField" OnValidSubmit="@CreateNewField">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="card">
+        <div class="card-body">
+            <div class="form-register">
+                <div class="form-label-group">
+                    <div class="form-label-group input-group form-group">
+                        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
+                        <input type="text" class="form-control" placeholder="Name" @bind-value="name" required />
+                    </div>
+                    <div class="form-label-group input-group form-group">
+                        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
+                        <input type="text" class="form-control" placeholder="Location" @bind-value="location" required />
+                    </div>
+                    <div class="form-label-group input-group form-group">
+                        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
+                        <input type="text" class="form-control" placeholder="Description" @bind-value="description" required />
+                    </div>
+                    <div class="form-label-group input-group form-group">
+                        <span class="input-group-text"><i class="fa-solid fa-qrcode"></i> </span>
+                        <input type="number" class="form-control" placeholder="Paw Level Limit" @bind-value="pawLevelLimit" required />
+                    </div>
+                    <div class="form-label-group input-group form-group">
+                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                        <input class="form-control" type="text" placeholder="Assign to receiver" list="receiverSearch" @bind-value="selectedReceiverSerial" required />
+                    </div>
+                    <datalist id="receiverSearch">
+                        @foreach (var item in receivers)
+                        {
+                            <option>@item.SerialNumber</option>
+                        }
+                    </datalist>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(message))
+            {
+                <div class="alert alert-danger">
+                    @message
+                </div>
+            }
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    int? userID;
+    List<Receiver> receivers = new();
+
+    //new field
+    Field newField = new();
+    string name = String.Empty;
+    string location = String.Empty;
+    string description = String.Empty;
+    int pawLevelLimit;
+
+    string selectedReceiverSerial = String.Empty;
+
+    string message = String.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userID = UserService.GetUserId();
+
+        if (userID == null)
+        {
+            message = "Unable to find user ID. Please log-in and reload the page";
+        }
+
+        receivers = await _ReceiverService.GetReceiversByUserID((int)userID);
+    }
+
+    private async Task CreateNewField()
+    {
+        if (String.IsNullOrEmpty(selectedReceiverSerial))
+        {
+            message = "Please select a receiver to assign to field";
+        }
+
+
+        Console.WriteLine("Creating field...");
+        string responseMessage = await FieldService.CreateFieldAsync(newField);
+
+            /*
+            if (responseMessage.Equals("13"))
+        {
+        message = "Field already exists!";
+        }
+            else if (responseMessage.Equals("10"))
+            {
+            message = "An error happened when adding field!";
+            }
+            else
+            {
+            message = "Field successfully created!";
+            name = String.Empty;
+            location = String.Empty;
+            description = String.Empty;
+            pawLevelLimit = 0;
+        }
+        */
+
+        //TODO check the responses to figure out if successful
+
+        Console.WriteLine("Creating field");
+        Field addedField = await FieldService.GetLatestFieldFromUser((int)userID);
+        //cross-check if the added field's data is the same as what we added. if not then it did not add the new one correctly and the user should be notified
+
+        int receiverIDToAssign = receivers.First(rec => rec.SerialNumber == selectedReceiverSerial).ReceiverId; //get the receiverID of the selected recceiver serial number (as a farmer does not know what a receiverID would be)
+
+        WebResponse response = await _ReceiverService.AssignFieldToReceiver(receiverIDToAssign, addedField.Id);
+        //TODO check response
+
+        message = "Field successfully created!";
+        name = String.Empty;
+        location = String.Empty;
+        description = String.Empty;
+        pawLevelLimit = 0;
+
+    }
+}

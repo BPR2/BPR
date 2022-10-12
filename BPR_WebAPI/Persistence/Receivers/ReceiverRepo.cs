@@ -134,7 +134,7 @@ public class ReceiverRepo : IReceiverRepo
 						receivers.Add(new Receiver
 						{
 							SerialNumber = reader["serialnumber"].ToString(),
-							ReceiverId = reader["receiverid"] as int?,
+							ReceiverId = int.Parse(reader["receiverid"].ToString()),
 							FieldId = reader["fieldid"] as int?,
 							Description = reader["Description"].ToString()
 						});
