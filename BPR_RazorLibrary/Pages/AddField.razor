@@ -1,9 +1,11 @@
 ﻿@page "/createfield"
+@attribute [Authorize(Policy = "User")]
 @using BPR_RazorLibrary.Models
 @using BPR_RazorLibrary.Services.Receivers
 @using BPR_RazorLibrary.Services.Sensor
 @using BPR_RazorLibrary.Services.Users
 @using BPR_RazorLibrary.Services.Fields
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @inject IUserService UserService
@@ -96,8 +98,8 @@
                     <input type="text" class="form-control" placeholder="Description" @bind-value="description" required />
                 </div>
                 <div class="form-label-group input-group form-group width">
-                    <span class="input-group-text"><i class="fa-solid fa-water"></i> </span>
-                    <input type="number" class="form-control" placeholder="Paw Level Limit" @bind-value="pawLevelLimit" required />
+                    <span title="Paw Level Limit" class="input-group-text"><i class="fa-solid fa-water"></i> </span>
+                    <input min="0" type="number" class="form-control" placeholder="Paw Level Limit" @bind-value="pawLevelLimit" required />
                 </div>
                 <div class="form-label-group input-group form-group width">
                     <span class="input-group-text"><i class="fa-solid fa-satellite-dish"></i></span>
@@ -135,7 +137,7 @@
     string name = String.Empty;
     string location = String.Empty;
     string description = String.Empty;
-    int pawLevelLimit;
+    int? pawLevelLimit = null;
 
     string selectedReceiverSerial = String.Empty;
 
@@ -151,6 +153,15 @@
         }
 
         receivers = await _ReceiverService.GetReceiversByUserID((int)userID);
+
+        //if the receiver already has an assigned field, don't display it to the user
+        for (int i = 0; i < receivers.Count; i++)
+        {
+            if (receivers[i].FieldId != null)
+            {
+                receivers.Remove(receivers[i]);
+            }
+        }
     }
 
     private async Task CreateNewField()
@@ -158,6 +169,18 @@
         if (String.IsNullOrEmpty(selectedReceiverSerial))
         {
             message = "Please select a receiver to assign to field";
+            return;
+        }
+        if (pawLevelLimit < 0)
+        {
+            message = "Paw Level Limit cannot be less than zero";
+            return;
+        }
+
+        if (IsDigitsOnly(selectedReceiverSerial) == false)
+        {
+            message = "Invalid receiver serial number";
+            return;
         }
 
         newField.Location = location;
@@ -200,7 +223,7 @@
         Receiver tempReceiver = new Receiver { ReceiverId = receiverIDToAssign, FieldId = addedField.Id };
 
         string response = await _ReceiverService.AssignFieldToReceiver(tempReceiver);
-        
+
         if (responseMessage.Equals("13"))
         {
             message = "Field already exists!";
@@ -217,5 +240,16 @@
             description = String.Empty;
             pawLevelLimit = 0;
         }
+    }
+
+    bool IsDigitsOnly(string str)
+    {
+        foreach (char c in str)
+        {
+            if (c < '0' || c > '9')
+                return false;
+        }
+
+        return true;
     }
 }
