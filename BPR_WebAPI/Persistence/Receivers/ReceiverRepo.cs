@@ -5,173 +5,173 @@ namespace BPR_WebAPI.Persistence.Receivers;
 
 public class ReceiverRepo : IReceiverRepo
 {
-    private readonly IConfiguration configuration;
-    string connectionString;
+	private readonly IConfiguration configuration;
+	string connectionString;
 
-    public ReceiverRepo(IConfiguration iConfig)
-    {
-        configuration = iConfig;
-        connectionString = configuration["ConnectionStrings:DefaultConnection"];
-    }
+	public ReceiverRepo(IConfiguration iConfig)
+	{
+		configuration = iConfig;
+		connectionString = configuration["ConnectionStrings:DefaultConnection"];
+	}
 
-    public async Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName)
-    {
-        try
-        {
-            var isDuplicate = await IsReceiverAlreadyExist(serialNumber);
+	public async Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName)
+	{
+		try
+		{
+			var isDuplicate = await IsReceiverAlreadyExist(serialNumber);
 
-            if (isDuplicate) return WebResponse.ContentDuplicate;
+			if (isDuplicate) return WebResponse.ContentDuplicate;
 
-            using var con = new NpgsqlConnection(connectionString);
-            con.Open();
+			using var con = new NpgsqlConnection(connectionString);
+			con.Open();
 
-            string command = $"INSERT INTO public.receiver(accountid, serialnumber) VALUES ((SELECT accountid FROM account where username = @username), @serialNumber);";
-            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-            {
-                cmd.Parameters.AddWithValue("@username", userName);
-                cmd.Parameters.AddWithValue("@serialNumber", serialNumber);
+			string command = $"INSERT INTO public.receiver(accountid, serialnumber) VALUES ((SELECT accountid FROM account where username = @username), @serialNumber);";
+			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			{
+				cmd.Parameters.AddWithValue("@username", userName);
+				cmd.Parameters.AddWithValue("@serialNumber", serialNumber);
 
-                cmd.ExecuteNonQuery();
-            }
-            con.Close();
-            return WebResponse.ContentCreateSuccess;
-        }
-        catch (Exception e)
-        {
-            return WebResponse.ContentCreateFailure;
-        }
-    }
+				cmd.ExecuteNonQuery();
+			}
+			con.Close();
+			return WebResponse.ContentCreateSuccess;
+		}
+		catch (Exception e)
+		{
+			return WebResponse.ContentCreateFailure;
+		}
+	}
 
-    private async Task<bool> IsReceiverAlreadyExist(string desiredSerialNumber)
-    {
-        var result = await GetReceiverAsyncSerialNumber(desiredSerialNumber);
+	private async Task<bool> IsReceiverAlreadyExist(string desiredSerialNumber)
+	{
+		var result = await GetReceiverAsyncSerialNumber(desiredSerialNumber);
 
-        if (result.Equals(string.Empty)) return false;
+		if (result.Equals(string.Empty)) return false;
 
-        return true;
-    }
+		return true;
+	}
 
-    private async Task<string> GetReceiverAsyncSerialNumber(string serialNumber)
-    {
-        try
-        {
-            using var con = new NpgsqlConnection(connectionString);
-            con.Open();
+	private async Task<string> GetReceiverAsyncSerialNumber(string serialNumber)
+	{
+		try
+		{
+			using var con = new NpgsqlConnection(connectionString);
+			con.Open();
 
-            string result = "";
+			string result = "";
 
-            string command = $"SELECT serialnumber FROM public.Receiver where serialnumber = @SerialNumber;";
-            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-            {
-                cmd.Parameters.AddWithValue("@SerialNumber", NpgsqlTypes.NpgsqlDbType.Varchar, serialNumber);
+			string command = $"SELECT serialnumber FROM public.Receiver where serialnumber = @SerialNumber;";
+			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			{
+				cmd.Parameters.AddWithValue("@SerialNumber", NpgsqlTypes.NpgsqlDbType.Varchar, serialNumber);
 
-                await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    while (await reader.ReadAsync())
-                    {
-                        result = reader["serialnumber"].ToString();
-                    }
-            }
-            con.Close();
-            return result;
-        }
-        catch (Exception e)
-        {
-            return e.ToString();
-        }
-    }
+				await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+					while (await reader.ReadAsync())
+					{
+						result = reader["serialnumber"].ToString();
+					}
+			}
+			con.Close();
+			return result;
+		}
+		catch (Exception e)
+		{
+			return e.ToString();
+		}
+	}
 
-    public async Task<List<Receiver>> GetAllReceivers()
-    {
-        List<Receiver> receivers = new List<Receiver>();
+	public async Task<List<Receiver>> GetAllReceivers()
+	{
+		List<Receiver> receivers = new List<Receiver>();
 
-        try
-        {
-            using var con = new NpgsqlConnection(connectionString);
-            con.Open();
+		try
+		{
+			using var con = new NpgsqlConnection(connectionString);
+			con.Open();
 
-            string command = $"SELECT * FROM public.Receiver;";
+			string command = $"SELECT * FROM public.Receiver;";
 
-            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-            {
-                await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    while (await reader.ReadAsync())
-                    {
-                        receivers.Add(new Receiver { SerialNumber = reader["serialnumber"].ToString(), ReceiverId = int.Parse(reader["receiverid"].ToString()) });
-                    }
-            }
-            con.Close();
-            return receivers;
-        }
-        catch (Exception e)
-        {
-            throw new NotImplementedException();
-        }
-    }
+			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			{
+				await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+					while (await reader.ReadAsync())
+					{
+						receivers.Add(new Receiver { SerialNumber = reader["serialnumber"].ToString(), ReceiverId = int.Parse(reader["receiverid"].ToString()) });
+					}
+			}
+			con.Close();
+			return receivers;
+		}
+		catch (Exception e)
+		{
+			throw new NotImplementedException();
+		}
+	}
 
-    /// <summary>
-    /// Returns a list of the receivers assigned to specified user
-    /// </summary>
-    /// <param name="userID"></param>
-    /// <returns></returns>
-    public async Task<WebContent> GetReceiversByUserID(int userID)
-    {
-        List<Receiver> receivers = new List<Receiver>();
+	/// <summary>
+	/// Returns a list of the receivers assigned to specified user
+	/// </summary>
+	/// <param name="userID"></param>
+	/// <returns></returns>
+	public async Task<WebContent> GetReceiversByUserID(int userID)
+	{
+		List<Receiver> receivers = new List<Receiver>();
 
-        try
-        {
-            using var con = new NpgsqlConnection(connectionString);
-            con.Open();
+		try
+		{
+			using var con = new NpgsqlConnection(connectionString);
+			con.Open();
 
-            string command = $"SELECT * FROM public.Receiver WHERE accountid = @AccountID;";
+			string command = $"SELECT * FROM public.Receiver WHERE accountid = @AccountID;";
 
-            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-            {
-                cmd.Parameters.AddWithValue("@AccountID", userID);
+			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			{
+				cmd.Parameters.AddWithValue("@AccountID", userID);
 
-                await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    while (await reader.ReadAsync())
-                    {
-                        receivers.Add(new Receiver
-                        {
-                            SerialNumber = reader["serialnumber"].ToString(),
-                            ReceiverId =  int.Parse(reader["receiverid"].ToString()) ,
-                            FieldId = reader["fieldid"] as int?,
-                            Description = reader["Description"].ToString()
-                        });
-                    }
-            }
-            con.Close();
-            return new WebContent(WebResponse.ContentRetrievalSuccess, receivers);
-        }
-        catch (Exception e)
-        {
-            return new WebContent(WebResponse.ContentRetrievalFailure, null);
-        }
-    }
+				await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+					while (await reader.ReadAsync())
+					{
+						receivers.Add(new Receiver
+						{
+							SerialNumber = reader["serialnumber"].ToString(),
+							ReceiverId = int.Parse(reader["receiverid"].ToString()),
+							FieldId = reader["fieldid"] as int?,
+							Description = reader["Description"].ToString()
+						});
+					}
+			}
+			con.Close();
+			return new WebContent(WebResponse.ContentRetrievalSuccess, receivers);
+		}
+		catch (Exception e)
+		{
+			return new WebContent(WebResponse.ContentRetrievalFailure, null);
+		}
+	}
 
-    public async Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID)
-    {
-        try
-        {
-            //TODO check for receiver already assigned to a field
+	public async Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID)
+	{
+		try
+		{
+			//TODO check for receiver already assigned to a field
 
-            using var con = new NpgsqlConnection(connectionString);
-            con.Open();
+			using var con = new NpgsqlConnection(connectionString);
+			con.Open();
 
-            string command = $"UPDATE public.receiver SET fieldid = @FieldID WHERE receiverid = @ReceiverID";
-            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-            {
-                cmd.Parameters.AddWithValue("@FieldID", fieldID);
-                cmd.Parameters.AddWithValue("@ReceiverID", receiverID);
+			string command = $"UPDATE public.receiver SET fieldid = @FieldID WHERE receiverid = @ReceiverID";
+			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			{
+				cmd.Parameters.AddWithValue("@FieldID", fieldID);
+				cmd.Parameters.AddWithValue("@ReceiverID", receiverID);
 
-                cmd.ExecuteNonQuery();
-            }
-            con.Close();
-            return WebResponse.ContentUpdateSuccess;
-        }
-        catch (Exception e)
-        {
-            return WebResponse.ContentUpdateFailure;
-        }
-    }
+				cmd.ExecuteNonQuery();
+			}
+			con.Close();
+			return WebResponse.ContentUpdateSuccess;
+		}
+		catch (Exception e)
+		{
+			return WebResponse.ContentUpdateFailure;
+		}
+	}
 }

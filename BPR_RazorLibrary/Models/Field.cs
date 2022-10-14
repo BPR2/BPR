@@ -22,5 +22,13 @@ namespace BPR_RazorLibrary.Models
         [JsonPropertyName("receiver")]
         public Receiver? Receiver { get; set; }
 
+        public override bool Equals(object? obj)
+        {
+            return obj is Field field &&
+                   Name == field.Name &&
+                   PawLevelLimit == field.PawLevelLimit &&
+                   Location == field.Location &&
+                   Description == field.Description;
+        }
     }
 }

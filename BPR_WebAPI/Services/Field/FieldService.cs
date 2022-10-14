@@ -19,5 +19,15 @@ public class FieldService : IFieldService
         if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 
         return result;
+	}
+
+	public async Task<WebResponse> CreateFieldAsync(BPR_RazorLibrary.Models.Field field)
+	{
+		return await fieldRepo.CreateFieldAsync(field);
+	}
+
+	public async Task<WebContent> GetLatestFieldByUserId(int userId)
+    {
+        return await fieldRepo.GetLatestFieldByUserId(userId);
     }
 }
