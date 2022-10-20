@@ -12,10 +12,17 @@
 }
 
 function getMap(long, lat) {
-    var latlng = new google.maps.LatLng(long, lat);
+    latlng = new google.maps.LatLng(lat, long);
     var options = {
-        zoom: 2, center: latlng,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        zoom: 18, center: latlng,
+        mapTypeId: 'satellite'
     };
-    var map = new google.maps.Map(document.getElementById("map"), options);
+    map = new google.maps.Map(document.getElementById("map"), options);
+
+    new google.maps.Marker({
+        position: latlng,
+        map: map,
+        title: 'Receiver',
+        icon: 'pin.png'
+    });
 }

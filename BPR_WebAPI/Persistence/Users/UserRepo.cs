@@ -119,7 +119,7 @@ public class UserRepo : IUserRepo
             using var con = new NpgsqlConnection(connectionString);
             con.Open();
 
-            string command = $"SELECT * FROM public.Account where UserID = @ID ;";
+            string command = $"SELECT * FROM public.Account where accountid = @ID ;";
             WebContent result = new WebContent(WebResponse.Empty, null);
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
             {
