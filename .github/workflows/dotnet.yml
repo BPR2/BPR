@@ -3,9 +3,9 @@ name: .NET
 
 on:
   push:
-    branches: [ dateFix ]
+    branches: [ main ]
   pull_request:
-    branches: [ dateFix ]
+    branches: [ main ]
 
 jobs:
   build:
