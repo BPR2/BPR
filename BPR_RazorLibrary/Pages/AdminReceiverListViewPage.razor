@@ -1,0 +1,225 @@
+﻿@using BPR_RazorLibrary.Models
+@using BPR_RazorLibrary.Services.Fields
+@using BPR_RazorLibrary.Services.Receivers
+@using BPR_RazorLibrary.Services.Users
+@using System.Text.Json
+
+@inject IReceiverService ReceiverService
+
+<style>
+    tbody tr:nth-child(odd) {
+        background-color: #eee;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #fff;
+    }
+
+    table {
+        margin: 0;
+        margin-top: 15px;
+        padding: 0;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+        table th,
+        table td {
+            padding: .625em;
+            text-align: center;
+            border: none;
+        }
+
+        table th {
+            font-size: .9em;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+    @@media screen and (min-width: 601px) {
+        .smallTable {
+            display: none;
+        }
+    }
+
+    @@media screen and (max-width: 600px) {
+        table {
+            border: 0;
+        }
+
+            table caption {
+                font-size: 1.3em;
+            }
+
+            table thead {
+                border: none;
+                clip: rect(0 0 0 0);
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+                padding: 0;
+                position: absolute;
+                width: 1px;
+            }
+
+            table tr {
+                border-bottom: 3px solid #ddd;
+                display: block;
+                margin-bottom: .625em;
+            }
+
+            table td {
+                border-bottom: 1px solid #ddd;
+                display: block;
+                font-size: .8em;
+                text-align: right;
+            }
+
+                table td::before {
+                    content: attr(data-label);
+                    float: left;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    letter-spacing: .03em;
+                }
+
+                table td:last-child {
+                    border-bottom: 0;
+                }
+
+        .bigTable {
+            display: none;
+        }
+    }
+
+    .expandedRow {
+        border-top: 0;
+        border-bottom: 1px solid;
+    }
+
+     .card {
+        margin-top: 10px;
+    }
+
+    .card {
+        border-radius: 20px !important;
+    }
+
+    .fa-solid {
+        margin-top: 10px;
+    }
+
+</style>
+
+
+@if (receivers.Any())
+{
+    <div class="smallTable">
+        <table class="table">
+            <tbody>
+                @foreach (var receiver in receivers.OrderBy(r => r.SerialNumber))
+                {
+                    <tr @onclick="() => TrClickedAtIndex(receiver, receivers)">
+                        <td data-label="Serial Number">@receiver.SerialNumber</td>
+                        <td data-label="Assigned User">@receiver.Description</td>
+                        @if (@receiver.ReceiverLatestData != null)
+                        {
+                            <td data-label="Last Update">@receiver.ReceiverLatestData.Timestamp</td>
+                        }
+                        else
+                        {
+                            <td data-label="Last Update">No update</td>
+                        }
+
+
+                        @if (receiver.IsRowExpanded)
+                        {
+                            @for (int i = 1; i <= receiver.Sensors.Count; i++)
+                            {
+                                <td data-label="Sensor @i">@receiver.Sensors[i-1].TagNumber</td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="bigTable">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Serial Number</th>
+                    <th>Assigned User</th>
+                    <th>Last Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var receiver in receivers.OrderBy(r => r.SerialNumber))
+                {
+                    <tr @onclick="() => TrClickedAtIndex(receiver, receivers)">
+                        <td data-label="Serial Number">@receiver.SerialNumber</td>
+                        <td data-label="Assigned User">@receiver.Description</td>
+                        @if (@receiver.ReceiverLatestData != null)
+                        {
+                            <td data-label="Last Update">@receiver.ReceiverLatestData.Timestamp</td>
+                        }
+                        else
+                        {
+                            <td data-label="Last Update">No update</td>
+                        }
+                    </tr>
+                    @if (receiver.IsRowExpanded)
+                    {
+                        @for (int i = 1; i <= receiver.Sensors.Count; i++)
+                        {
+                            <tr style="display: none"></tr>
+                            <tr class="expandedRow">
+                                <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">
+                                    Sensor @i:
+                                </td>
+                                <td>@receiver.Sensors[i-1].TagNumber</td>
+                                <td></td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="text-center">
+                <div class="spinner-border col-md-12" style="width: 2rem; height: 2rem;" role="status"><i class="fa-solid fa-wheat-awn"></i></div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+
+    private List<Receiver> receivers = new List<Receiver>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        receivers = await ReceiverService.GetAllReceiversList();
+    }
+
+    public async Task TrClickedAtIndex(Receiver receiver, List<Receiver> receivers)
+    {
+        foreach (var item in receivers)
+        {
+            if (item != receiver)
+            {
+                item.IsRowExpanded = false;
+            }
+        }
+
+        receiver.IsRowExpanded = !receiver.IsRowExpanded;
+        StateHasChanged();
+    }
+}
+
