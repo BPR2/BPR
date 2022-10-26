@@ -1,0 +1,273 @@
+﻿@using BPR_RazorLibrary.Models
+@using BPR_RazorLibrary.Services.Fields
+@using BPR_RazorLibrary.Services.Receivers
+@using BPR_RazorLibrary.Services.Users
+@using System.Text.Json
+
+@inject IUserService UserService
+@inject IReceiverService ReceiverService
+@inject IFieldService FieldService
+
+<style>
+    tbody tr:nth-child(odd) {
+        background-color: #eee;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #fff;
+    }
+
+    table {
+        margin: 0;
+        margin-top: 15px;
+        padding: 0;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+        table th,
+        table td {
+            padding: .625em;
+            text-align: center;
+            border: none;
+        }
+
+        table th {
+            font-size: .9em;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+    @@media screen and (min-width: 681px) {
+        .smallTable {
+            display: none;
+        }
+    }
+
+    @@media screen and (max-width: 680px) {
+        table {
+            border: 0;
+        }
+
+            table caption {
+                font-size: 1.3em;
+            }
+
+            table thead {
+                border: none;
+                clip: rect(0 0 0 0);
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+                padding: 0;
+                position: absolute;
+                width: 1px;
+            }
+
+            table tr {
+                border-bottom: 3px solid #ddd;
+                display: block;
+                margin-bottom: .625em;
+            }
+
+            table td {
+                border-bottom: 1px solid #ddd;
+                display: block;
+                font-size: .8em;
+                text-align: right;
+            }
+
+                table td::before {
+                    content: attr(data-label);
+                    float: left;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    letter-spacing: .03em;
+                }
+
+                table td:last-child {
+                    border-bottom: 0;
+                }
+
+        .bigTable {
+            display: none;
+        }
+    }
+
+    .expandedRow {
+        border-top: 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .card {
+        margin-top: 10px;
+    }
+
+    .card {
+        border-radius: 20px !important;
+    }
+
+    .fa-solid {
+        margin-top: 10px;
+    }
+
+</style>
+
+@if (allUsers.Any())
+{
+    <div class="smallTable">
+        <table class="table">
+            <tbody>
+                @foreach (var user in allUsers.OrderBy(a => a.Username))
+                {
+                    <tr @onclick="() => TrClickedAtIndex((int) user.AccountId, user, allUsers)">
+                        <td data-label="Username">@user.Username</td>
+                        <td data-label="Full Name">@user.FullName</td>
+                        <td data-label="Email">@user.Email</td>
+
+                        @if (user.IsRowExpanded)
+                        {
+                            <td data-label="Contact">@user.Contact</td>
+                            <td data-label="Address">@user.Address</td>
+                            @for (int i = 1; i <= fields.Count; i++)
+                            {
+                                <td data-label="Field @i">@fields[i-1].Name</td>
+                                <td data-label="Last Update">@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToLocalTime()</td>
+                                <td data-label="Receiver @i on Field @i">@fields[i-1].Receiver.SerialNumber</td>
+                                @for (int j = 1; j <= fields[i - 1].Receiver.Sensors.Count; j++)
+                                {
+                                    <td data-label="Receiver @i's sensor @j">@fields[i-1].Receiver.Sensors[j-1].TagNumber</td>
+                                }
+                                @for (int k = i + 1; k <= receivers.Count; k++)
+                                {
+                                    <td data-label="Receiver @k">@receivers[k-i].SerialNumber</td>
+                                }
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="bigTable">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in allUsers.OrderBy(a => a.Username))
+                {
+                    <tr @onclick="() => TrClickedAtIndex((int) user.AccountId, user, allUsers)">
+                        <td data-label="Username">@user.Username</td>
+                        <td data-label="Full Name">@user.FullName</td>
+                        <td data-label="Email">@user.Email</td>
+                        <td data-label="Contact">@user.Contact</td>
+                        <td data-label="Address">@user.Address</td>
+                    </tr>
+                    @if (user.IsRowExpanded)
+                    {
+                        @for (int i = 1; i <= fields.Count; i++)
+                        {
+                            <tr style="display: none"></tr>
+                            <tr class="expandedRow">
+                                <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Field @i:</td>
+                                <td>@fields[i-1].Name</td>
+                                <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Last Update:</td>
+                                <td>@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToString(@"dd\/MM\/yyyy")</td>
+                                <td>@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToLocalTime().ToString(@"hh\:mm\:ss\ tt")</td>
+                            </tr>
+                            <tr style="display: none"></tr>
+                            <tr class="expandedRow">
+                                <td></td>
+                                <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @i on Field @i:</td>
+                                <td>@fields[i-1].Receiver.SerialNumber</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            @for (int j = 1; j <= fields[i - 1].Receiver.Sensors.Count; j++)
+                            {
+                                <tr style="display: none"></tr>
+                                <tr class="expandedRow">
+                                    <td></td>
+                                    <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @i's sensor @j:</td>
+                                    <td>@fields[i-1].Receiver.Sensors[j-1].TagNumber</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            }
+                            @for (int k = i + 1; k <= receivers.Count; k++)
+                            {
+                                <tr style="display: none"></tr>
+                                <tr class="expandedRow">
+                                    <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @k:</td>
+                                    <td>@receivers[k-i].SerialNumber</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            }
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="text-center">
+                <div class="spinner-border col-md-12" style="width: 2rem; height: 2rem;" role="status"><i class="fa-solid fa-wheat-awn"></i></div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    private List<User> allUsers = new List<User>();
+    private List<Receiver> receivers = new List<Receiver>();
+    private List<Field> fields = new List<Field>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        allUsers = await UserService.GetAllUsers();
+    }
+
+    public async Task TrClickedAtIndex(int id, User user, List<User> users)
+    {
+        List<Receiver> receivers1 = await ReceiverService.GetReceiversByUserID(id);
+        fields = await FieldService.GetAllFieldsByUserId(id);
+
+        foreach (var receiver in receivers1)
+        {
+            foreach (var field in fields)
+            {
+                if (receiver.SerialNumber.Equals(field.Receiver.SerialNumber) && receivers.Contains(receiver))
+                {
+                    receivers.Add(receiver);
+                }
+            }
+        }
+
+        receivers = receivers1;
+
+        foreach (var item in users)
+        {
+            if (item != user)
+            {
+                item.IsRowExpanded = false;
+            }
+        }
+
+        user.IsRowExpanded = !user.IsRowExpanded;
+        StateHasChanged();
+    }
+}

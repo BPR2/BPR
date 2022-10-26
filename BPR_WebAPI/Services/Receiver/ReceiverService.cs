@@ -30,5 +30,10 @@ public class ReceiverService : IReceiverService
 	{
 		return await receiverRepo.AssignFieldToReceiver(receiverID, fieldID);
 	}
+
+    public async Task<WebContent> GetAllReceiversList()
+    {
+        return await receiverRepo.GetAllReceiversList();
+    }
 }
 

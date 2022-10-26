@@ -98,4 +98,30 @@ public class ReceiverService : IReceiverService
 			return null;
 		}
 	}
+
+	public async Task<List<Receiver>> GetAllReceiversList()
+	{
+         string message = await client.GetStringAsync($"{url}/allReceiversList");
+         try
+         {
+             WebContent result = JsonSerializer.Deserialize<WebContent>(message);
+
+             if (result.response != WebResponse.ContentRetrievalSuccess)
+             {
+                 return null;
+             }
+
+             var json = JsonSerializer.Serialize(result.content);
+
+             var contentResult = JsonSerializer.Deserialize<List<Receiver>>(json);
+
+             return contentResult;
+         }
+         catch (Exception ex)
+         {
+             Console.WriteLine(ex.StackTrace);
+             return null;
+         }
+        return null;
+    }
 }

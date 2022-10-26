@@ -29,8 +29,15 @@ namespace BPR_WebAPI.Controllers
             var result = await receiverService.GetAllReceiversAsync();
             return Ok(result);
         }
-		
-		[HttpGet("receiver")]
+
+        [HttpGet("allReceiversList")]
+        public async Task<ActionResult<WebResponse>> GetAllReceiversList()
+        {
+            var result = await receiverService.GetAllReceiversList();
+            return Ok(result);
+        }
+
+        [HttpGet("receiver")]
 		public async Task<ActionResult<WebResponse>> GetReceiverByUserID([FromQuery] int userID)
 		{
 			var result = await receiverService.GetReceiversByUserID(userID);
