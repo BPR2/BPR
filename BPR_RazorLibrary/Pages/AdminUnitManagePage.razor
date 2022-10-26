@@ -43,6 +43,8 @@
             padding: 14px 16px;
             transition: 0.3s;
             font-size: 17px;
+            width: 24.5%;
+            font-weight: 600;
         }
 
             .tab button:hover {
@@ -74,6 +76,17 @@
         position: absolute;
         top: 13px;
     }
+
+    @@media screen and (max-width: 680px) {
+        .rightButtons {
+            float: right;
+        }
+
+        .tab button {
+            width: 50%;
+        }
+    }
+
 </style>
 
 
@@ -82,12 +95,12 @@
         <button style="@(tab1?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(1))">Assign Receiver</button>
 
         <AuthorizeView Policy="Admin">
-            <button style="@(tab2?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
+            <button class="rightButtons" style="@(tab2?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
         </AuthorizeView>
 
         <button style="@(tab3?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(3))">Users</button>
 
-        <button style="@(tab4?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(4))">Receivers</button>
+        <button class="rightButtons" style="@(tab4?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(4))">Receivers</button>
 
     </div>
 
