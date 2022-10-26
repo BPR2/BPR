@@ -15,7 +15,7 @@ namespace BPR_RazorLibrary.Services.Users
 
         HttpClient client;
 
-        private int? userId;
+        private int userId;
 
         public UserService()
         {
@@ -76,12 +76,12 @@ namespace BPR_RazorLibrary.Services.Users
             await client.PutAsync($"{url}/updateUser", content);
         }
 
-        public int? GetUserId()
+        public int GetUserId()
         {
             return userId;
         }
 
-        public void SetUserId(int? id)
+        public void SetUserId(int id)
         {
             userId = id;
         }

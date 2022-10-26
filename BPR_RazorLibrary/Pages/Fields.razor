@@ -6,6 +6,7 @@
 @inject IFieldService FieldService;
 @inject IUserService UserService;
 @inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager
 
 <style>
     .container, .card {
@@ -109,7 +110,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-primary">Edit</button>
+                    <button type="button" class="btn btn-primary" @onclick=" () => navigateToEditField(field)">Edit</button>
                 </div>
             </div>
         }
@@ -129,11 +130,17 @@
 </div>
 
 @code {
-    private int? userId;
+    private int userId;
     private List<Field> fields = new List<Field>();
     protected override async Task OnInitializedAsync()
     {
         userId = UserService.GetUserId();
         fields = await FieldService.GetAllFieldsByUserId(userId);
+    }
+
+    private void navigateToEditField(Field field) {
+        FieldService.SetField(field);
+        NavigationManager.NavigateTo("/editField");
+
     }
 }

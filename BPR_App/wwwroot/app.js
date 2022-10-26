@@ -19,3 +19,13 @@ function getMap(long, lat) {
     };
     var map = new google.maps.Map(document.getElementById("map"), options);
 }
+
+function disableReadonly() {
+    const element = document.getElementById('SensorSerialNumber');
+    if (element.readOnly) {
+        document.getElementById('SensorSerialNumber').removeAttribute('readonly')
+    }
+    else {
+        document.getElementById('SensorSerialNumber').readOnly = true
+    }
+}

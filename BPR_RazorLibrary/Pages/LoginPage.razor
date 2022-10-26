@@ -151,10 +151,16 @@
             }
 
             //UserService.SetUserId(int.Parse(userPrincipal.FindFirst(c => c.Type == ClaimTypes.SerialNumber)?.Value));
-            username = "";
-            password = "";
             await InvokeAsync(StateHasChanged);
-            NavigationManager.NavigateTo("/adminUnitManage");
+            if (username.Equals("admin"))
+            {
+                NavigationManager.NavigateTo("/adminUnitManage");
+            }
+            else 
+            {
+                NavigationManager.NavigateTo("/fields");
+            }
+
         }
         catch (Exception e)
         {

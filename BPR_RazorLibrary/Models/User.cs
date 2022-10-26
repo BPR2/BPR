@@ -6,7 +6,7 @@ namespace BPR_RazorLibrary.Models;
 public class User
 {
     [JsonPropertyName("accountId")]
-    public int? AccountId { get; set; }
+    public int AccountId { get; set; }
     [JsonPropertyName("username")]
     public string? Username { get; set; }
     [JsonPropertyName("password")]

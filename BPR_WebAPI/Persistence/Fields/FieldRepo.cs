@@ -1,4 +1,5 @@
 ﻿using BPR_RazorLibrary.Models;
+using BPR_RazorLibrary.Pages;
 using Npgsql;
 
 namespace BPR_WebAPI.Persistence.Fields
@@ -115,6 +116,71 @@ namespace BPR_WebAPI.Persistence.Fields
             {
 
                 throw new NotImplementedException();
+            }
+        }
+
+        public async Task<WebResponse> UnassignReceiver(int fieldId, int receiverId)
+        {
+            try
+            {
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+
+                string command = $"UPDATE public.receiver SET fieldid = null where receiverId = @receiverId AND fieldid = @fieldid;";
+                await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+                {
+                    cmd.Parameters.AddWithValue("@fieldId", fieldId);
+                    cmd.Parameters.AddWithValue("@receiverId", receiverId);
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
+                return WebResponse.ContentUpdateSuccess;
+            }
+            catch (Exception e)
+            {
+                return WebResponse.ContentUpdateFailure;
+            }
+        }
+
+        public async Task<WebContent> UpdateField(Field field)
+        {
+            if (string.IsNullOrEmpty(field.Name)) return new WebContent(WebResponse.ContentDataCorrupted, field);
+
+            try
+            {
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+
+                string command = $"Update public.Field SET name = @name, description = @description, pawLevelLimit = @pawLevelLimit  WHERE fieldid = @fieldId;" +
+                    $"UPDATE public.receiver SET fieldid = @fieldId where serialnumber = @serialnumber;";
+                await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+                {
+                    cmd.Parameters.AddWithValue("@fieldId", field.Id);
+                    cmd.Parameters.AddWithValue("@name", field.Name);
+                    cmd.Parameters.AddWithValue("@name", field.PawLevelLimit);
+                    cmd.Parameters.AddWithValue("@description", field.Description);
+                    cmd.Parameters.AddWithValue("@pawLevelLimit", field.PawLevelLimit);
+                    cmd.Parameters.AddWithValue("@serialnumber", field.Receiver.SerialNumber);
+                    cmd.ExecuteNonQuery();
+                }
+
+                foreach (var s in field.Receiver.Sensors)
+                {
+                    string command2 = $"UPDATE public.sensor SET description = @description where tagnumber = @tagnumber;";
+                    await using (NpgsqlCommand cmd = new NpgsqlCommand(command2, con))
+                    {
+                        cmd.Parameters.AddWithValue("@tagnumber", s.TagNumber);
+                        cmd.Parameters.AddWithValue("@description", s.Description);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                }
+                con.Close();
+                return new WebContent(WebResponse.ContentUpdateSuccess, field);
+            }
+            catch (Exception e)
+            {
+                return new WebContent(WebResponse.ContentUpdateFailure, field);
             }
         }
     }
