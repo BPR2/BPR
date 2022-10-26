@@ -26,3 +26,13 @@ function getMap(long, lat) {
         icon: 'pin.png'
     });
 }
+
+function disableReadonly() {
+    const element = document.getElementById('SensorSerialNumber');
+    if (element.readOnly) {
+        document.getElementById('SensorSerialNumber').removeAttribute('readonly')
+    }
+    else {
+        document.getElementById('SensorSerialNumber').readOnly = true
+    }
+}

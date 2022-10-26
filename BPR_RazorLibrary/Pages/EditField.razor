@@ -1,0 +1,153 @@
+﻿@page "/editField"
+
+@using BPR_RazorLibrary.Services.Fields;
+@using BPR_RazorLibrary.Models;
+@using BPR_RazorLibrary.Services.Receivers
+@using BPR_RazorLibrary.Services.Users;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@inject IFieldService FieldService;
+@inject IReceiverService ReceiverService
+@inject IUserService UserService;
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<style>
+
+    .card {
+        padding: 10px;
+        border-radius: 10px;
+        width: 1000px;
+        max-width: 600px;
+        max-height: 550px;
+        margin-top: 50px;
+    }
+
+    .form-label-group, .form-label-group label {
+        margin-top: 1rem !important;
+    }
+
+        .form-label-group button {
+            width: -webkit-fill-available;
+            margin-top: 1rem;
+        }
+
+        .form-label-group .oi {
+            margin-bottom: 1.1rem;
+        }
+
+    .alert {
+        margin-top: 1rem;
+    }
+
+    .input-group-text {
+        background: #1565a2 !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        justify-content: center;
+        padding: 20px !important;
+    }
+
+    input:focus {
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+    }
+
+    .fa-solid {
+        color: white;
+        position: absolute;
+        top: 11px;
+    }
+</style>
+
+<div class="container d-flex justify-content-center">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title text-center">Update field information</h5>
+            <EditForm Model="@field" OnValidSubmit="@UpdateField">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"> <i class="fa-solid fa-wheat-awn"></i> </span>
+                    <InputText class="form-control" @bind-Value="@field.Name" required />
+                </div>
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-leaf"></i> </span>
+                    <InputNumber type="number" min="0" max="100" class="form-control" @bind-Value="@field.PawLevelLimit" />
+                </div>
+
+                <div class="form-label-group input-group form-group">
+                    <span class="input-group-text"><i class="fa-solid fa-tower-cell"></i> </span>
+                    <input id="SensorSerialNumber" readonly type="text" class="form-control" placeholder="Sensor Serial Number" list="receiverSearch" @bind-value="field.Receiver.SerialNumber" required />
+                    <span class="input-group-text" style="background:red!important" @onclick="UnassignReceiver"><i class="fa-solid fa-trash-can"></i> </span>
+                </div>
+
+                <datalist id="receiverSearch">
+                    @foreach (var item in receivers)
+                    {
+                        <option>@item.SerialNumber</option>
+                    }
+                </datalist>
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-align-left"></i></span>
+                    <InputTextArea class="form-control" @bind-Value="@field.Description" />
+                </div>
+
+                @if (field.Receiver != null && field.Receiver.Sensors.Any())
+                {
+                    @foreach (var s in field.Receiver.Sensors)
+                    {
+                        <div class="form-label-group input-group form-group width">
+
+                            <span class="input-group-text" title="@s.TagNumber"><i class="fa-solid fa-tower-broadcast" title="@s.TagNumber"></i> </span>
+                            <InputTextArea class="form-control" @bind-Value="@s.Description" />
+                        </div>
+
+                    }
+                }             
+
+                <div class="form-label-group">
+                    <button class="btn btn-outline-primary btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Update</button>
+                </div>
+            </EditForm>
+
+            @if (!string.IsNullOrWhiteSpace(message))
+            {
+                <div class="alert alert-danger">
+                    @message
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private Field? field = new Field();
+    private string? message = string.Empty;
+    List<Receiver> receivers = new List<Receiver>();
+    private string currentReceiverNO = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        field = FieldService.GetField();
+        currentReceiverNO = field.Receiver.SerialNumber;
+        receivers = await ReceiverService.GetReceiversByUserID(UserService.GetUserId());
+    }
+
+    private async Task UpdateField()
+    {
+        await FieldService.UpdateField(field);
+        await JS.InvokeAsync<string>("disableReadonly");
+    }
+
+    private async Task UnassignReceiver() 
+    {
+        await FieldService.UnassignReceiver(field.Id, field.Receiver.ReceiverId);
+        field.Receiver.SerialNumber = string.Empty;
+        field.Receiver.Sensors.Clear();
+        await JS.InvokeAsync<string>("disableReadonly");
+    }
+}

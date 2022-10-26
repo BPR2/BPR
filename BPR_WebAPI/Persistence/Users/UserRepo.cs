@@ -189,7 +189,7 @@ public class UserRepo : IUserRepo
         {
             User user = new User
             {
-                AccountId = reader["AccountId"] as int?,
+                AccountId = (int)(reader["AccountId"] as int?),
                 Username = reader["Username"] as string,
                 Password = reader["Password"] as string,
                 FullName = reader["Name"] as string,

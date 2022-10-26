@@ -30,4 +30,22 @@ public class FieldService : IFieldService
     {
         return await fieldRepo.GetLatestFieldByUserId(userId);
     }
+
+    public async Task<WebResponse> UnassignReceiver(int fieldId, int receiverId)
+    {
+        var result = await fieldRepo.UnassignReceiver(fieldId, receiverId);
+
+        if (result != WebResponse.ContentRetrievalSuccess) return result;
+
+        return result;
+    }
+
+    public async Task<WebContent> UpdateFieldAsync(BPR_RazorLibrary.Models.Field field)
+    {
+        var result = await fieldRepo.UpdateField(field);
+
+        if (result.response != WebResponse.ContentRetrievalSuccess) return result;
+
+        return result;
+    }
 }

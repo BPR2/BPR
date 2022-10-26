@@ -4,6 +4,11 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+body {
+    background-image: url('../img/bg.png');
+    background-repeat: repeat;
+}
+
 h1:focus {
     outline: none;
 }

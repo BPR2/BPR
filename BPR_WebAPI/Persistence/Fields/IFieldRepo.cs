@@ -5,7 +5,9 @@ namespace BPR_WebAPI.Persistence.Fields
     public interface IFieldRepo
     {
         Task<WebContent> GetAllFieldsByUserId(int userId);
-		Task<WebResponse> CreateFieldAsync(Field field);
+        Task<WebResponse> UnassignReceiver(int fieldId, int receiverId);
+        Task<WebContent> UpdateField(Field field);
+        Task<WebResponse> CreateFieldAsync(Field field);
         Task<WebContent> GetLatestFieldByUserId(int userId);
-	}
+    }
 }
