@@ -1,4 +1,5 @@
 ﻿using BPR_RazorLibrary.Models;
+using System.Text;
 using System.Text.Json;
 
 namespace BPR_RazorLibrary.Services.Receivers;
@@ -47,45 +48,80 @@ public class ReceiverService : IReceiverService
             Console.WriteLine(ex.StackTrace);
             return null;
         }
-    }
+	}
 
-    public async Task<List<Receiver>> GetReceiversByUserID(int userID)
+	public async Task<List<Receiver>> GetReceiversByUserID(int userID)
     {
-        string message = await client.GetStringAsync($"{url}/receiver?userID={userID}");
-        try
-        {
-            WebContent result = JsonSerializer.Deserialize<WebContent>(message);
+		string message = await client.GetStringAsync($"{url}/receiver?userID={userID}");
+		try
+		{
+			WebContent result = JsonSerializer.Deserialize<WebContent>(message);
 
-            if (result.response != WebResponse.ContentRetrievalSuccess)
-            {
-                return null;
-            }
+			if (result.response != WebResponse.ContentRetrievalSuccess)
+			{
+				return null;
+			}
 
-            var json = JsonSerializer.Serialize(result.content);
+			var json = JsonSerializer.Serialize(result.content);
 
-            var contentResult = JsonSerializer.Deserialize<List<Receiver>>(json);
+			var contentResult = JsonSerializer.Deserialize<List<Receiver>>(json);
 
-            return contentResult;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.StackTrace);
-            return null;
-        }
-    }
+			return contentResult;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.StackTrace);
+			return null;
+		}
+	}
 
-    public async Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID)
-    {
-        string message = await client.GetStringAsync($"{url}/assignfield?receiverID={receiverID}&fieldID={fieldID}");
-        try
-        {
-            WebResponse result = JsonSerializer.Deserialize<WebResponse>(message); //not sure it's possible to serialize&deserialize an enum alone, test it
-            return result;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.StackTrace);
-            return WebResponse.ContentDataCorrupted;
-        }
+	public async Task<string> AssignFieldToReceiver(Receiver receiver)
+	{
+		string receiverSerialized = JsonSerializer.Serialize(receiver);
+
+		HttpContent content = new StringContent(
+				receiverSerialized,
+				Encoding.UTF8,
+				"application/json"
+				);
+
+		string fullurl = $"{url}/assignField";
+		var message = await client.PutAsync($"{url}/assignField", content);
+		try
+		{
+			string result = await message.Content.ReadAsStringAsync();
+			return result;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.StackTrace);
+			return null;
+		}
+	}
+
+	public async Task<List<Receiver>> GetAllReceiversList()
+	{
+         string message = await client.GetStringAsync($"{url}/allReceiversList");
+         try
+         {
+             WebContent result = JsonSerializer.Deserialize<WebContent>(message);
+
+             if (result.response != WebResponse.ContentRetrievalSuccess)
+             {
+                 return null;
+             }
+
+             var json = JsonSerializer.Serialize(result.content);
+
+             var contentResult = JsonSerializer.Deserialize<List<Receiver>>(json);
+
+             return contentResult;
+         }
+         catch (Exception ex)
+         {
+             Console.WriteLine(ex.StackTrace);
+             return null;
+         }
+        return null;
     }
 }

@@ -30,19 +30,25 @@ namespace BPR_WebAPI.Controllers
             return Ok(result);
         }
 
-        [HttpGet("receiver")]
-        public async Task<ActionResult<WebResponse>> GetReceiverByUserID([FromQuery] int userID)
+        [HttpGet("allReceiversList")]
+        public async Task<ActionResult<WebResponse>> GetAllReceiversList()
         {
-            var result = await receiverService.GetReceiversByUserID(userID);
+            var result = await receiverService.GetAllReceiversList();
             return Ok(result);
         }
 
-        [HttpPut("assignfield")]
-        public async Task<ActionResult<WebResponse>> GetAllReceivers([FromQuery] int receiverID, [FromQuery] int fieldID)
-        {
-            //TODO should we not use fromqueries here? maybe some other option
-            var result = await receiverService.AssignFieldToReceiver(receiverID, fieldID);
-            return Ok(result);
-        }
-    }
+        [HttpGet("receiver")]
+		public async Task<ActionResult<WebResponse>> GetReceiverByUserID([FromQuery] int userID)
+		{
+			var result = await receiverService.GetReceiversByUserID(userID);
+			return Ok(result);
+		}
+
+		[HttpPut("assignField")]
+		public async Task<ActionResult<WebResponse>> AssignFieldToReceiver([FromBody] Receiver receiver)
+		{
+			var result = await receiverService.AssignFieldToReceiver(receiver.ReceiverId, (int)receiver.FieldId);
+			return Ok(result);
+		}
+	}
 }

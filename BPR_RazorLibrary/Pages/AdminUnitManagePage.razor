@@ -43,6 +43,8 @@
             padding: 14px 16px;
             transition: 0.3s;
             font-size: 17px;
+            width: 24.5%;
+            font-weight: 600;
         }
 
             .tab button:hover {
@@ -74,6 +76,17 @@
         position: absolute;
         top: 13px;
     }
+
+    @@media screen and (max-width: 680px) {
+        .rightButtons {
+            float: right;
+        }
+
+        .tab button {
+            width: 50%;
+        }
+    }
+
 </style>
 
 
@@ -82,10 +95,12 @@
         <button style="@(tab1?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(1))">Assign Receiver</button>
 
         <AuthorizeView Policy="Admin">
-            <button style="@(tab2?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
+            <button class="rightButtons" style="@(tab2?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
         </AuthorizeView>
 
         <button style="@(tab3?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(3))">Users</button>
+
+        <button class="rightButtons" style="@(tab4?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(4))">Receivers</button>
 
     </div>
 
@@ -174,7 +189,11 @@
 
 @if (tab3)
 {
-    <AdminListViewPage />
+    <AdminUserListViewPage />
+}
+@if (tab4)
+{
+    <AdminReceiverListViewPage />
 }
 
 
@@ -199,6 +218,7 @@
     private bool tab1 = true;
     private bool tab2 = false;
     private bool tab3 = false;
+    private bool tab4 = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -266,6 +286,7 @@
                 this.tab1 = true;
                 this.tab2 = false;
                 this.tab3 = false;
+                this.tab4 = false;
                 message = String.Empty;
                 message1 = String.Empty;
                 break;
@@ -273,6 +294,7 @@
                 this.tab1 = false;
                 this.tab2 = true;
                 this.tab3 = false;
+                this.tab4 = false;
                 message = String.Empty;
                 message1 = String.Empty;
                 break;
@@ -280,6 +302,15 @@
                 this.tab1 = false;
                 this.tab2 = false;
                 this.tab3 = true;
+                this.tab4 = false;
+                message = String.Empty;
+                message1 = String.Empty;
+                break;
+            case 4:
+                this.tab1 = false;
+                this.tab2 = false;
+                this.tab3 = false;
+                this.tab4 = true;
                 message = String.Empty;
                 message1 = String.Empty;
                 break;

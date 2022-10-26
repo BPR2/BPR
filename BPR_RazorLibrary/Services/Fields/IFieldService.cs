@@ -9,5 +9,7 @@ namespace BPR_RazorLibrary.Services.Fields
         Field? GetField();
         Task UpdateField(Field field);
         Task<string> UnassignReceiver(int fieldId, int receiverId);
+        Task<string> CreateFieldAsync(Field field);
+        Task<Field> GetLatestFieldFromUser(int userId);
     }
 }

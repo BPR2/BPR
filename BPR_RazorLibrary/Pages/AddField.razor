@@ -1,0 +1,255 @@
+﻿@page "/createfield"
+@attribute [Authorize(Policy = "User")]
+@using BPR_RazorLibrary.Models
+@using BPR_RazorLibrary.Services.Receivers
+@using BPR_RazorLibrary.Services.Sensor
+@using BPR_RazorLibrary.Services.Users
+@using BPR_RazorLibrary.Services.Fields
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@inject IUserService UserService
+@inject IReceiverService _ReceiverService
+@inject ISensorService _SensorService
+@inject IFieldService FieldService
+
+<style>
+    .signup {
+        max-width: 600px;
+        max-height: 550px;
+        margin-top: 50px;
+    }
+
+    .card {
+        padding: 10px;
+        border-radius: 10px;
+        width: 1000px;
+    }
+
+    .card-img {
+        text-align: center;
+    }
+
+    .form-label-group, .form-label-group label {
+        margin-top: 1rem !important;
+    }
+
+        .form-label-group button {
+            width: -webkit-fill-available;
+            margin-top: 1rem;
+        }
+
+        .form-label-group .oi {
+            margin-bottom: 1.1rem;
+        }
+
+    .alert {
+        margin-top: 1rem;
+    }
+
+    .input-group-text {
+        background: #1565a2 !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        justify-content: center;
+        padding: 20px !important;
+    }
+
+    input:focus {
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+    }
+
+    .fa-solid {
+        color: white;
+        position: absolute;
+        top: 11px;
+    }
+
+    #password {
+        width: 50% !important;
+    }
+
+    @@media (max-width: 600px) {
+        #password {
+            width: 100% !important;
+        }
+    }
+</style>
+
+
+<div class="container d-flex justify-content-center">
+    <div class="card signup">
+        <div class="card-body">
+            <h5 class="card-title text-center">Create Field</h5>
+            <EditForm Model="@newField" OnValidSubmit="@CreateNewField">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-user"></i> </span>
+                    <input type="text" class="form-control" placeholder="Name" @bind-value="name" required />
+                </div>
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-location-pin"></i> </span>
+                    <input type="text" class="form-control" placeholder="Location" @bind-value="location" required />
+                </div>
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-comment"></i> </span>
+                    <input type="text" class="form-control" placeholder="Description" @bind-value="description" required />
+                </div>
+                <div class="form-label-group input-group form-group width">
+                    <span title="Paw Level Limit" class="input-group-text"><i class="fa-solid fa-water"></i> </span>
+                    <input min="0" type="number" class="form-control" placeholder="Paw Level Limit" @bind-value="pawLevelLimit" required />
+                </div>
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-satellite-dish"></i></span>
+                    <input class="form-control" type="text" placeholder="Receiver serial number" list="receiverSearch" @bind-value="selectedReceiverSerial" required />
+                </div>
+                <datalist id="receiverSearch">
+                    @foreach (var item in receivers)
+                    {
+                        <option>@item.SerialNumber</option>
+                    }
+                </datalist>
+
+                <div class="form-label-group">
+                    <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
+                </div>
+            </EditForm>
+
+            @if (!string.IsNullOrWhiteSpace(message))
+            {
+                <div class="alert alert-danger">
+                    @message
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@code {
+    int? userID;
+    List<Receiver> receivers = new();
+
+    //new field
+    Field newField = new();
+    string name = String.Empty;
+    string location = String.Empty;
+    string description = String.Empty;
+    int? pawLevelLimit = null;
+
+    string selectedReceiverSerial = String.Empty;
+
+    string message = String.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userID = UserService.GetUserId();
+
+        if (userID == null)
+        {
+            message = "Unable to find user ID. Please log-in and reload the page";
+        }
+
+        receivers = await _ReceiverService.GetReceiversByUserID((int)userID);
+
+        //if the receiver already has an assigned field, don't display it to the user
+        for (int i = 0; i < receivers.Count; i++)
+        {
+            if (receivers[i].FieldId != null)
+            {
+                receivers.Remove(receivers[i]);
+            }
+        }
+    }
+
+    private async Task CreateNewField()
+    {
+        if (String.IsNullOrEmpty(selectedReceiverSerial))
+        {
+            message = "Please select a receiver to assign to field";
+            return;
+        }
+        if (pawLevelLimit < 0)
+        {
+            message = "Paw Level Limit cannot be less than zero";
+            return;
+        }
+
+        if (IsDigitsOnly(selectedReceiverSerial) == false)
+        {
+            message = "Invalid receiver serial number";
+            return;
+        }
+
+        newField.Location = location;
+        newField.Description = description;
+        newField.Name = name;
+        newField.PawLevelLimit = pawLevelLimit;
+
+        string responseMessage = await FieldService.CreateFieldAsync(newField);
+
+
+        if (responseMessage.Equals("13"))
+        {
+            message = "Field already exists!";
+            return;
+        }
+        else if (responseMessage.Equals("10"))
+        {
+            message = "An error happened when adding field!";
+            return;
+        }
+        else
+        {
+            message = "Field successfully created!";
+            name = String.Empty;
+            location = String.Empty;
+            description = String.Empty;
+            pawLevelLimit = 0;
+        }
+
+        Field addedField = await FieldService.GetLatestFieldFromUser((int)userID);
+
+        if (!addedField.Equals(newField))
+        {
+            message = "An error happened when adding field!";
+            return;
+        }
+
+        int receiverIDToAssign = receivers.First(rec => rec.SerialNumber == selectedReceiverSerial).ReceiverId; //get the receiverID of the selected recceiver serial number (as a farmer does not know what a receiverID would be)
+
+        Receiver tempReceiver = new Receiver { ReceiverId = receiverIDToAssign, FieldId = addedField.Id };
+
+        string response = await _ReceiverService.AssignFieldToReceiver(tempReceiver);
+
+        if (responseMessage.Equals("13"))
+        {
+            message = "Field already exists!";
+        }
+        else if (responseMessage.Equals("10"))
+        {
+            message = "An error happened when adding field!";
+        }
+        else
+        {
+            message = "Field successfully created!";
+            name = String.Empty;
+            location = String.Empty;
+            description = String.Empty;
+            pawLevelLimit = 0;
+        }
+    }
+
+    bool IsDigitsOnly(string str)
+    {
+        foreach (char c in str)
+        {
+            if (c < '0' || c > '9')
+                return false;
+        }
+
+        return true;
+    }
+}

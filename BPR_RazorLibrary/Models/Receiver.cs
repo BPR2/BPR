@@ -22,4 +22,6 @@ public class Receiver
     public ReceiverData? ReceiverLatestData { get; set; }
     [JsonPropertyName("sensors")]
     public List<Sensor>? Sensors { get; set; }
+
+    public bool IsRowExpanded { get; set; } = false;
 }
