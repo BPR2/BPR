@@ -26,7 +26,7 @@ public class Receiver
     public bool IsRowExpanded { get; set; } = false;
 
     [JsonPropertyName("TimeInterval")]
-    public int? TimeInterval { get; set; }
+    public int TimeInterval { get; set; }
 }
 
 public class IntervalSecond

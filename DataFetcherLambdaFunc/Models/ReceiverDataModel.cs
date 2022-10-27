@@ -8,6 +8,8 @@ public class ReceiverDataModel
 {
     [JsonPropertyName("SerialNumber")]
     public string? SerialNumber { get; set; }
+    [JsonPropertyName("IntervalSeconds")]
+    public int? IntervalSeconds { get; set; }
 
     [JsonPropertyName("Position")]
     public Position? position { get; set; }
@@ -23,4 +25,10 @@ public class Position
     [JsonPropertyName("Longitude")]
     public double Longitude { get; set; }
 }
+}
+
+public class IntervalSecond
+{
+    [JsonPropertyName("IntervalSeconds")]
+    public int? IntervalSeconds { get; set; }
 }

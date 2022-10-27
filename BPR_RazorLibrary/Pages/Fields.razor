@@ -62,7 +62,21 @@
                         <div class=" fields col-md-6">
                             <h5><i class="fa-solid fa-leaf"></i> PAW level limit: @field.PawLevelLimit %</h5>
                             <h5><i class="fa-solid fa-tower-cell"></i> Receiver Serial Number: @field?.Receiver.SerialNumber</h5>
-                            <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()</h5>
+                            @switch (@field?.Receiver.TimeInterval)
+                            {
+                                case 7200:
+                                    <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 2 hours)</h5>
+                                    break;
+                                case 21600:
+                                    <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 6 hours)</h5>
+                                    break;
+                                case 43200:
+                                    <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 12 hours)</h5>
+                                    break;
+                                case 86400:
+                                    <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 24 hours)</h5>
+                                    break;
+                            }
                             <h5><i class="fa-solid fa-tower-broadcast"></i> Sensors:</h5>
 
                             <ul>
@@ -138,7 +152,8 @@
         fields = await FieldService.GetAllFieldsByUserId(userId);
     }
 
-    private void navigateToEditField(Field field) {
+    private void navigateToEditField(Field field)
+    {
         FieldService.SetField(field);
         NavigationManager.NavigateTo("/editField");
 

@@ -92,6 +92,16 @@
                 </datalist>
 
                 <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"> <i class="fa-sharp fa-solid fa-clock"></i> </span>
+                    <select name="school" id="schoolContainer" @bind="@selectedTimeInterval">
+                        <option value=7200>Every 2 hours</option>
+                        <option value=21600>Every 6 hours</option>
+                        <option value=43200>Every 12 hours</option>
+                        <option value=86400>Every 24 hours</option>
+                    </select>
+                </div>
+
+                <div class="form-label-group input-group form-group width">
                     <span class="input-group-text"><i class="fa-solid fa-align-left"></i></span>
                     <InputTextArea class="form-control" @bind-Value="@field.Description" />
                 </div>
@@ -107,7 +117,7 @@
                         </div>
 
                     }
-                }             
+                }
 
                 <div class="form-label-group">
                     <button class="btn btn-outline-primary btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Update</button>
@@ -130,20 +140,24 @@
     private string? message = string.Empty;
     List<Receiver> receivers = new List<Receiver>();
     private string currentReceiverNO = string.Empty;
+    private int selectedTimeInterval;
+
     protected override async Task OnInitializedAsync()
     {
         field = FieldService.GetField();
         currentReceiverNO = field.Receiver.SerialNumber;
         receivers = await ReceiverService.GetReceiversByUserID(UserService.GetUserId());
+        selectedTimeInterval = field.Receiver.TimeInterval;
     }
 
     private async Task UpdateField()
     {
         await FieldService.UpdateField(field);
+        await ReceiverService.UpdateReceiverTimeInterval(selectedTimeInterval, field.Receiver.SerialNumber);
         await JS.InvokeAsync<string>("disableReadonly");
     }
 
-    private async Task UnassignReceiver() 
+    private async Task UnassignReceiver()
     {
         await FieldService.UnassignReceiver(field.Id, field.Receiver.ReceiverId);
         field.Receiver.SerialNumber = string.Empty;

@@ -16,7 +16,6 @@ public class ReceiverService : IReceiverService
 #endif
 
     private HttpClient client;
-    private string _dbConnectionString = "Host=bpr-db.c7szkct1z4j9.us-east-1.rds.amazonaws.com;Username=bpr_group4;Password=dingdong420 ;Database=postgres";
 
     public ReceiverService()
     {
@@ -139,20 +138,6 @@ public class ReceiverService : IReceiverService
 
         var message = await client.PutAsync($"{url}/updateTimeInterval?serialNumber={serialNumber}", content);
 
-        //Trusted API
-        HttpClient trustedApiClient = new HttpClient();
-        trustedApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetBearerToken());
-        trustedApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-        string timeIntervalSerialized = JsonSerializer.Serialize(new IntervalSecond() { IntervalSeconds = timeInterval });
-        HttpContent _content = new StringContent(
-                timeIntervalSerialized,
-                Encoding.UTF8,
-                "application/json"
-                );
-
-        await trustedApiClient.PutAsync($"https://api.trusted.dk/api/Units/Put?serialNumber={serialNumber}", _content);
-
         try
         {
             string result = await message.Content.ReadAsStringAsync();
@@ -163,26 +148,5 @@ public class ReceiverService : IReceiverService
             Console.WriteLine(ex.StackTrace);
             return null;
         }
-    }
-
-    public async Task<string> GetBearerToken()
-    {
-        string bearerToken = "";
-
-        using var con = new NpgsqlConnection(_dbConnectionString);
-        con.Open();
-
-        string command = $"SELECT \"token\" FROM public.\"bearerToken\"; ";
-        await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-        {
-            await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
-                while (await reader.ReadAsync())
-                {
-                    bearerToken = reader["token"].ToString();
-                }
-        }
-        con.Close();
-
-        return bearerToken;
     }
 }

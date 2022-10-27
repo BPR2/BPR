@@ -2,6 +2,7 @@ using Amazon.Lambda.Core;
 using DataFetcherLambdaFunc.Models;
 using Npgsql;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -21,12 +22,14 @@ public class Function
         _serialNumbers = new List<string>();
         _client = new HttpClient();
         _client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
-        _dateTime = DateTime.Now.AddHours(-1).ToString();
+        _dateTime = DateTime.Now.AddMinutes(-30).ToString();
     }
 
     public async Task FunctionHandler()
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetBearerToken());
+
+        await GetReceiversFromTrustedAPI();
         await GetAllSerialNumbers();
     }
 
@@ -189,5 +192,69 @@ public class Function
         con.Close();
 
         return bearerToken;
+    }
+
+    //Update Time interval for receivers
+
+    public async Task<List<ReceiverDataModel>> GetReceiversFromDB()
+    {
+        List<ReceiverDataModel> receivers = new List<ReceiverDataModel>();
+
+        try
+        {
+            using var con = new NpgsqlConnection(_dbConnectionString);
+            con.Open();
+
+            string command = $"SELECT * FROM public.Receiver;";
+
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
+                    {
+                        receivers.Add(new ReceiverDataModel { SerialNumber = reader["serialnumber"].ToString(), IntervalSeconds = int.Parse(reader["time_interval"].ToString()) });
+                    }
+            }
+            con.Close();
+            return receivers;
+        }
+        catch (Exception e)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public async Task GetReceiversFromTrustedAPI()
+    {
+        try
+        {
+            List<ReceiverDataModel> dbReceivers = await GetReceiversFromDB();
+
+            string message = await _client.GetStringAsync($"https://api.trusted.dk/api/Units/GetAll");
+
+            List<ReceiverDataModel> apiReceivers = JsonSerializer.Deserialize<List<ReceiverDataModel>>(message);
+
+            foreach (var apiReceiver in apiReceivers)
+            {
+                foreach (var dbReceiver in dbReceivers)
+                {
+                    if (apiReceiver.SerialNumber.Equals(dbReceiver.SerialNumber) && dbReceiver.IntervalSeconds != apiReceiver.IntervalSeconds)
+                    {
+                        string timeIntervalSerialized = JsonSerializer.Serialize(new IntervalSecond() { IntervalSeconds = dbReceiver.IntervalSeconds });
+                        HttpContent _content = new StringContent(
+                                timeIntervalSerialized,
+                                Encoding.UTF8,
+                                "application/json"
+                                );
+
+                        await _client.PutAsync($"https://api.trusted.dk/api/Units/Put?serialNumber={dbReceiver.SerialNumber}", _content);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+        }
     }
 }
