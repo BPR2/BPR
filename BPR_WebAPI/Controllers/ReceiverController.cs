@@ -50,5 +50,12 @@ namespace BPR_WebAPI.Controllers
 			var result = await receiverService.AssignFieldToReceiver(receiver.ReceiverId, (int)receiver.FieldId);
 			return Ok(result);
 		}
-	}
+
+        [HttpPut("updateTimeInterval")]
+        public async Task<ActionResult<WebResponse>> UpdateTimeInterval([FromBody] int timeInterval, [FromQuery] string serialNumber)
+        {
+            var result = await receiverService.UpdateReceiverTimeInterval(timeInterval, serialNumber);
+            return Ok(result);
+        }
+    }
 }

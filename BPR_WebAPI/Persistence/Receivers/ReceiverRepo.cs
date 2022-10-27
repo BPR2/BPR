@@ -2,6 +2,7 @@
 using BPR_RazorLibrary.Pages;
 using Npgsql;
 using System.Collections.Generic;
+using static Npgsql.PostgresTypes.PostgresCompositeType;
 
 namespace BPR_WebAPI.Persistence.Receivers;
 
@@ -98,7 +99,7 @@ public class ReceiverRepo : IReceiverRepo
 				await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
 					while (await reader.ReadAsync())
 					{
-						receivers.Add(new Receiver { SerialNumber = reader["serialnumber"].ToString(), ReceiverId = int.Parse(reader["receiverid"].ToString()) });
+						receivers.Add(new Receiver { SerialNumber = reader["serialnumber"].ToString(), ReceiverId = int.Parse(reader["receiverid"].ToString()), TimeInterval = int.Parse(reader["time_interval"].ToString()) });
 					}
 			}
 			con.Close();
@@ -138,8 +139,9 @@ public class ReceiverRepo : IReceiverRepo
 							SerialNumber = reader["serialnumber"].ToString(),
 							ReceiverId = int.Parse(reader["receiverid"].ToString()),
 							FieldId = reader["fieldid"] as int?,
-							Description = reader["Description"].ToString()
-						});
+							Description = reader["Description"].ToString(),
+							TimeInterval = int.Parse(reader["time_interval"].ToString())
+                        });
 					}
 			}
 			con.Close();
@@ -186,7 +188,7 @@ public class ReceiverRepo : IReceiverRepo
             using var con = new NpgsqlConnection(connectionString);
             con.Open();
 
-            string command = $"SELECT distinct on (r.serialnumber) r.receiverid, r.serialnumber, rd.timestamp, a.username\r\nFROM public.receiver r \r\nLeft JOIN public.receiverdata rd \r\nON rd.receiverid = r.receiverid\r\nLeft JOIN public.account a \r\nON r.accountid = a.accountid\r\norder by r.serialnumber, rd.timestamp desc";
+            string command = $"SELECT distinct on (r.serialnumber) r.receiverid, r.serialnumber, rd.timestamp, r.time_interval, a.username\r\nFROM public.receiver r \r\nLeft JOIN public.receiverdata rd \r\nON rd.receiverid = r.receiverid\r\nLeft JOIN public.account a \r\nON r.accountid = a.accountid\r\norder by r.serialnumber, rd.timestamp desc";
 
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
             {
@@ -198,7 +200,8 @@ public class ReceiverRepo : IReceiverRepo
                             SerialNumber = reader["serialnumber"].ToString(),
                             ReceiverId = int.Parse(reader["receiverid"].ToString()),
                             ReceiverLatestData = string.IsNullOrEmpty(reader["timestamp"].ToString()) ? null : new ReceiverData() {Timestamp = DateTime.Parse(reader["timestamp"].ToString()).ToLocalTime() },
-                            Description = reader["username"].ToString()
+                            Description = reader["username"].ToString(),
+							TimeInterval = int.Parse(reader["time_interval"].ToString())
                         });
 					}
 			}
@@ -233,6 +236,30 @@ public class ReceiverRepo : IReceiverRepo
         catch (Exception e)
         {
             return new WebContent(WebResponse.ContentRetrievalFailure, null);
+        }
+    }
+
+	public async Task<WebResponse> UpdateReceiverTimeInterval(int timeInterval, string serialNumber)
+	{
+        try
+        {
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            string command = $"UPDATE public.receiver SET  time_interval= @TimeInterval WHERE serialnumber = @SerialNumber;";
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+			{
+                cmd.Parameters.AddWithValue("@TimeInterval", timeInterval);
+                cmd.Parameters.AddWithValue("@SerialNumber", serialNumber);
+
+                cmd.ExecuteNonQuery();
+            }
+            con.Close();
+            return WebResponse.ContentUpdateSuccess;
+        }
+        catch (Exception e)
+        {
+            return WebResponse.ContentUpdateFailure;
         }
     }
 }
