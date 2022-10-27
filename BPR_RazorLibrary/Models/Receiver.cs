@@ -24,4 +24,13 @@ public class Receiver
     public List<Sensor>? Sensors { get; set; }
 
     public bool IsRowExpanded { get; set; } = false;
+
+    [JsonPropertyName("TimeInterval")]
+    public int? TimeInterval { get; set; }
+}
+
+public class IntervalSecond
+{
+    [JsonPropertyName("IntervalSeconds")]
+    public int IntervalSeconds { get; set; }
 }
