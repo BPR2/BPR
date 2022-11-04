@@ -1,6 +1,64 @@
 ﻿@page "/fields"
-@attribute [Authorize(Policy = "User")]
+ @attribute [Authorize(Policy = "User")]
+
+<style>
+    .middleOfThePageCircle {
+        margin: 0;
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        margin-right: -50%;
+        transform: translate(-50%, -50%)
+    }
+
+    .middleOfThePage {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-right: -50%;
+        transform: translate(-50%, -50%)
+    }
+</style>
 
 <PageTitle>Fields</PageTitle>
 
-<Fields />
+@if (hasInternet)
+{
+    <Fields />
+}
+else
+{
+    <Circle class="middleOfThePageCircle" />
+    <h5 class="middleOfThePage">No internet connection...</h5>
+}
+
+@code {
+    private bool hasInternet;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+        {
+            hasInternet = true;
+        }
+        else
+        {
+            hasInternet = false;
+        }
+        Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
+    }
+
+    private void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)
+    {
+        if (e.NetworkAccess == NetworkAccess.Internet)
+        {
+            hasInternet = true;
+        }
+        else
+        {
+            hasInternet = false;
+        }
+        StateHasChanged();
+    }
+}
