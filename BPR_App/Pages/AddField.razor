@@ -1,6 +1,5 @@
-﻿@page "/editField"
-
-
+﻿@page "/createfield"
+@attribute [Authorize(Policy = "User")]
 <style>
     .middleOfThePageCircle {
         margin: 0;
@@ -21,11 +20,11 @@
     }
 </style>
 
-<PageTitle>Edit field</PageTitle>
+<PageTitle>Add field</PageTitle>
 
 @if (hasInternet)
 {
-    <EditField />
+    <AddFieldPage />
 }
 else
 {
