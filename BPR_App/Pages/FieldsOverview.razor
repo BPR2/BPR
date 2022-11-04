@@ -1,4 +1,6 @@
 ﻿@page "/fields"
+@attribute [Authorize(Policy = "User")]
+
 <PageTitle>Fields</PageTitle>
 
 <Fields />

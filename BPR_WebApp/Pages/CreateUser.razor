@@ -1,5 +1,5 @@
 ﻿@page "/createuser"
-
+@attribute [Authorize(Policy = "Admin")]
 <PageTitle>Create Account</PageTitle>
 
 <CreateAccount />
