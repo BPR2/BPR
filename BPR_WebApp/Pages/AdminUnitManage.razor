@@ -1,5 +1,5 @@
 ﻿@page "/adminUnitManage"
-
+@attribute [Authorize(Policy = "Admin")]
 <PageTitle>Index</PageTitle>
 
 <AdminUnitManagePage/>

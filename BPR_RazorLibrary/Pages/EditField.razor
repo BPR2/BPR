@@ -19,7 +19,6 @@
         border-radius: 10px;
         width: 1000px;
         max-width: 600px;
-        max-height: 550px;
         margin-top: 50px;
     }
 
@@ -68,12 +67,12 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
-                <div class="form-label-group input-group form-group width">
+                <div class="form-label-group input-group form-group">
                     <span class="input-group-text"> <i class="fa-solid fa-wheat-awn"></i> </span>
                     <InputText class="form-control" @bind-Value="@field.Name" required />
                 </div>
 
-                <div class="form-label-group input-group form-group width">
+                <div class="form-label-group input-group form-group">
                     <span class="input-group-text"><i class="fa-solid fa-leaf"></i> </span>
                     <InputNumber type="number" min="0" max="100" class="form-control" @bind-Value="@field.PawLevelLimit" />
                 </div>
@@ -91,7 +90,7 @@
                     }
                 </datalist>
 
-                <div class="form-label-group input-group form-group width">
+                <div class="form-label-group input-group form-group">
                     <span class="input-group-text"> <i class="fa-sharp fa-solid fa-clock"></i> </span>
                     <select name="school" id="schoolContainer" @bind="@selectedTimeInterval">
                         <option value=7200>Every 2 hours</option>
