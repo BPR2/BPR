@@ -6,6 +6,7 @@
 @using BPR_RazorLibrary.Models
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
+@using Smart.Blazor
 
 @inject IUserService UserService
 @inject IReceiverService _ReceiverService
@@ -92,16 +93,14 @@
 
 <div class="tabcontent">
     <div class="tab">
-        <button style="@(tab1?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(1))">Assign Receiver</button>
-
-        <AuthorizeView Policy="Admin">
-            <button class="rightButtons" style="@(tab2?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
-        </AuthorizeView>
-
+        
         <button style="@(tab3?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(3))">Users</button>
 
         <button class="rightButtons" style="@(tab4?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(4))">Receivers</button>
 
+        <button style="@(tab1?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(1))">Assign Receiver</button>
+
+        <button class="rightButtons" style="@(tab2?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(2))">Add Sensor</button>
     </div>
 
     @if (tab1 || tab2)
@@ -122,15 +121,8 @@
 
                                 <div class="form-label-group input-group form-group">
                                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                                    <input class="form-control" type="text" placeholder="Assign to User" list="userSearch" @bind-value="username" required />
+                                    <DropDownList DataSource="@userNames" Filterable="true" OnItemClick="OnUserSelected" />
                                 </div>
-
-                                <datalist id="userSearch">
-                                    @foreach (var item in users)
-                                    {
-                                        <option>@item.Username</option>
-                                    }
-                                </datalist>
                             </div>
                         </div>
                     }
@@ -148,15 +140,8 @@
 
                                 <div class="form-label-group input-group form-group">
                                     <span class="input-group-text"><i class="fa-solid fa-qrcode"></i></span>
-                                    <input type="text" class="form-control" placeholder="Sensor Serial Number" list="receiverSearch" @bind-value="sensorSerialNumber" required />
+                                    <DropDownList DataSource="@serialNumbers" Filterable="true" OnItemClick="OnReceiverSelected" />
                                 </div>
-
-                                <datalist id="receiverSearch">
-                                    @foreach (var item in receivers)
-                                    {
-                                        <option>@item.SerialNumber</option>
-                                    }
-                                </datalist>
                             </div>
 
                         </div>
@@ -205,25 +190,37 @@
     private string serialNumber = String.Empty;
     private string username = String.Empty;
     List<User> users = new List<User>();
+    List<string> userNames = new List<string>();
 
     //Add new sensor tab
     private Sensor newSensor = new Sensor();
     private string tagNumber = String.Empty;
     private string sensorSerialNumber = String.Empty;
     List<Receiver> receivers = new List<Receiver>();
+    List<string> serialNumbers = new List<string>();
 
     private string message = String.Empty;
     private string message1 = String.Empty;
 
-    private bool tab1 = true;
+    private bool tab1 = false;
     private bool tab2 = false;
-    private bool tab3 = false;
+    private bool tab3 = true;
     private bool tab4 = false;
 
     protected override async Task OnInitializedAsync()
     {
         users = await UserService.GetAllUsers();
         receivers = await _ReceiverService.GetAllReceivers();
+
+        foreach (var user in users)
+        {
+            userNames.Add(user.Username);
+        }
+
+        foreach (var receiver in receivers)
+        {
+            serialNumbers.Add(receiver.SerialNumber);
+        }
     }
 
     private async Task Assign()
@@ -254,6 +251,8 @@
             serialNumber = String.Empty;
             username = String.Empty;
         }
+        receivers.Clear();
+        receivers = await _ReceiverService.GetAllReceivers();
     }
 
     private async Task AddNewSensor()
@@ -316,4 +315,17 @@
                 break;
         }
     }
+
+    private void OnUserSelected(Event ev)
+    {
+        DropDownListItemClickEventDetail detail = ev["Detail"];
+        username = detail.Label;
+    }
+
+    private void OnReceiverSelected(Event ev)
+    {
+        DropDownListItemClickEventDetail detail = ev["Detail"];
+        sensorSerialNumber = detail.Label;
+    }
+
 }

@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.8" />
     <PackageReference Include="Npgsql" Version="6.0.6" />
+    <PackageReference Include="Smart.Blazor" Version="14.4.39" />
   </ItemGroup>
 
 </Project>
