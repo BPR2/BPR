@@ -171,6 +171,7 @@
             message = "Please select a receiver to assign to field";
             return;
         }
+
         if (pawLevelLimit < 0)
         {
             message = "Paw Level Limit cannot be less than zero";
@@ -180,6 +181,12 @@
         if (IsDigitsOnly(selectedReceiverSerial) == false)
         {
             message = "Invalid receiver serial number";
+            return;
+        }
+
+        if(!receivers.Any(r => r.SerialNumber == selectedReceiverSerial))
+        {
+            message = "Please select a receiver serial number from the dropdown list, if any exist";
             return;
         }
 
