@@ -38,3 +38,14 @@ function disableReadonly() {
     }
 }
 
+function showPassword() {
+    const passElement = document.getElementById('txtPass');
+
+    if (passElement.getAttribute("Type") == "password") {
+        passElement.setAttribute("Type", "text");
+    }
+    else {
+        passElement.setAttribute("Type", "password");
+    }
+}
+

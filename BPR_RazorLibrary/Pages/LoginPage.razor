@@ -55,6 +55,19 @@
         padding: 20px !important;
     }
 
+    .interact-container {
+        padding: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .interact-child {
+        cursor: pointer;
+    }
+
     input:focus {
         outline: 0 0 0 0 !important;
         box-shadow: 0 0 0 0 !important;
@@ -87,10 +100,11 @@
 
                 <div class="form-label-group input-group form-group">
                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                    <InputText class="form-control" type="@passwordType" @bind-Value="password" placeholder="Password" required />
-                    <InputCheckbox title="Show password" @bind-Value=showPassword onclick="@OnShowPasswordChanged()"></InputCheckbox>
+                    <InputText id="txtPass" class="form-control" type="password" @bind-Value="password" placeholder="Password" required />
+                    <a class="interact-container" onclick="showPassword()">
+                        <i class="interact-child far fa-eye"></i>
+                    </a>
                 </div>
-
 
 
                 <div class="form-check" id="checkBox">
