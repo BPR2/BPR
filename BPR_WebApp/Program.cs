@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Smart.Blazor;
+using BPR_RazorLibrary.Services.Charts;
 
 namespace BPR_WebApp
 {
@@ -25,6 +26,7 @@ namespace BPR_WebApp
 			      builder.Services.AddSingleton<IReceiverService, ReceiverService>();
             builder.Services.AddSingleton<ISensorService, SensorService>();
 			builder.Services.AddSingleton<IFieldService, FieldService>();
+            builder.Services.AddSingleton<IChartService, ChartService>();
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddSmart();
 
