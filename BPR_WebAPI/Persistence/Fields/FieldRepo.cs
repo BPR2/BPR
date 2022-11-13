@@ -28,7 +28,7 @@ namespace BPR_WebAPI.Persistence.Fields
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
-				string command1 = "SELECT f.fieldid,f.name, f.pawLevelLimit, f.location, f.description as field_description, r.receiverid, " +
+				string command1 = "SELECT f.fieldid,f.name, f.pawLevelLimit, f.description as field_description, r.receiverid, " +
 							"r.serialnumber, r.description as receiver_description, rd.timestamp, rd.longitude, rd.latitude, r.time_interval " +
 							"FROM public.field f LEFT JOIN public.receiver r on f.fieldid = r.fieldid " +
 							"LEFT JOIN receiverdata rd ON rd.receiverid = r.receiverid where r.accountId = @UserId " +
@@ -66,7 +66,6 @@ namespace BPR_WebAPI.Persistence.Fields
 									Id = int.Parse(reader["fieldid"].ToString()),
 									Name = reader["name"].ToString(),
 									PawLevelLimit = int.Parse(reader["pawLevelLimit"].ToString()),
-									Location = reader["location"].ToString(),
 									Description = reader["field_description"].ToString(),
 									Receiver = receiver
 								});
@@ -130,11 +129,10 @@ namespace BPR_WebAPI.Persistence.Fields
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
-				string command = $"INSERT INTO public.Field(Name, Location, Description, PawLevelLimit) VALUES (@Name, @Location, @Description, @PawLevelLimit);";
+				string command = $"INSERT INTO public.Field(Name, Description, PawLevelLimit) VALUES (@Name, @Description, @PawLevelLimit);";
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 				{
 					cmd.Parameters.AddWithValue("@Name", field.Name);
-					cmd.Parameters.AddWithValue("@Location", field.Location);
 					cmd.Parameters.AddWithValue("@Description", field.Description);
 					cmd.Parameters.AddWithValue("@PawLevelLimit", field.PawLevelLimit);
 
@@ -158,7 +156,7 @@ namespace BPR_WebAPI.Persistence.Fields
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
-				string command = $"select f.fieldid, f.name, f.location, f.description, f.pawlevellimit from field f join receiver r on r.fieldid = r.fieldid where r.accountid = @UserId order by fieldid desc limit 1;";
+				string command = $"select f.fieldid, f.name, f.description, f.pawlevellimit from field f join receiver r on r.fieldid = r.fieldid where r.accountid = @UserId order by fieldid desc limit 1;";
 
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 				{
@@ -172,7 +170,6 @@ namespace BPR_WebAPI.Persistence.Fields
 								Id = int.Parse(reader["fieldid"].ToString()),
 								Name = reader["name"].ToString(),
 								PawLevelLimit = int.Parse(reader["pawLevelLimit"].ToString()),
-								Location = reader["location"].ToString(),
 								Description = reader["description"].ToString()
 							};
 						}					

@@ -15,8 +15,6 @@ namespace BPR_RazorLibrary.Models
         public string? Name { get; set; }
         [JsonPropertyName("pawLevelLimit")]
         public int? PawLevelLimit { get; set; }
-        [JsonPropertyName("location")]
-        public string? Location { get; set; }
         [JsonPropertyName("description")]
         public string? Description { get; set; }
         [JsonPropertyName("receiver")]
@@ -27,7 +25,6 @@ namespace BPR_RazorLibrary.Models
             return obj is Field field &&
                    Name == field.Name &&
                    PawLevelLimit == field.PawLevelLimit &&
-                   Location == field.Location &&
                    Description == field.Description;
         }
     }

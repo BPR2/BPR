@@ -90,10 +90,6 @@
                     <input type="text" class="form-control" placeholder="Name" @bind-value="name" required />
                 </div>
                 <div class="form-label-group input-group form-group width">
-                    <span class="input-group-text"><i class="fa-solid fa-location-pin"></i> </span>
-                    <input type="text" class="form-control" placeholder="Location" @bind-value="location" required />
-                </div>
-                <div class="form-label-group input-group form-group width">
                     <span class="input-group-text"><i class="fa-solid fa-comment"></i> </span>
                     <input type="text" class="form-control" placeholder="Description" @bind-value="description" required />
                 </div>
@@ -135,7 +131,6 @@
     //new field
     Field newField = new();
     string name = String.Empty;
-    string location = String.Empty;
     string description = String.Empty;
     int? pawLevelLimit = null;
 
@@ -186,11 +181,10 @@
 
         if(!receivers.Any(r => r.SerialNumber == selectedReceiverSerial))
         {
-            message = "Please select a receiver serial number from the dropdown list, if any exist";
+            message = "Please select an existing receiver!";
             return;
         }
 
-        newField.Location = location;
         newField.Description = description;
         newField.Name = name;
         newField.PawLevelLimit = pawLevelLimit;
@@ -212,7 +206,6 @@
         {
             message = "Field successfully created!";
             name = String.Empty;
-            location = String.Empty;
             description = String.Empty;
             pawLevelLimit = 0;
         }
@@ -243,7 +236,6 @@
         {
             message = "Field successfully created!";
             name = String.Empty;
-            location = String.Empty;
             description = String.Empty;
             pawLevelLimit = 0;
         }

@@ -5,9 +5,17 @@
 
 <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
-        <a href="#">
-            <img class=" navbar-logo" src="https://www.fasterholt.dk/images/fasterholt-logo.jpg" />
-        </a>
+        
+        <AuthorizeView Policy="Admin">
+            <a href="adminUnitManage">
+                <img class=" navbar-logo" src="https://www.fasterholt.dk/images/fasterholt-logo.jpg" />
+            </a>
+        </AuthorizeView>
+        <AuthorizeView Policy="User">
+            <a href="fields">
+                <img class=" navbar-logo" src="https://www.fasterholt.dk/images/fasterholt-logo.jpg" />
+            </a>
+        </AuthorizeView>
 
         <button class="navbar-toggler collapsed d-flex d-lg-none flex-column justify-content-around" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="toggler-icon top-bar"></span>
@@ -22,7 +30,10 @@
 
                 <AuthorizeView Policy="Admin">
                     <li class="nav-item">
-                        <a class="nav-link" href="createUser">create account</a>
+                        <a class="nav-link" href="adminUnitManage">Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="createUser">Create Account</a>
                     </li>
                 </AuthorizeView>
 
