@@ -7,6 +7,7 @@ using BPR_RazorLibrary.Models.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Smart.Blazor;
 
 namespace BPR_WebApp
 {
@@ -25,8 +26,9 @@ namespace BPR_WebApp
             builder.Services.AddSingleton<ISensorService, SensorService>();
 			builder.Services.AddSingleton<IFieldService, FieldService>();
             builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddSmart();
 
-			builder.Services.AddAuthorization(options =>
+            builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", policy =>
                     policy.RequireAuthenticatedUser().RequireClaim("Username", "admin"));

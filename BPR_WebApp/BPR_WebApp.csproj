@@ -14,4 +14,8 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Smart.Blazor" Version="14.4.39" />
+  </ItemGroup>
+
 </Project>
