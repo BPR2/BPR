@@ -149,15 +149,14 @@ public class UserRepo : IUserRepo
             using var con = new NpgsqlConnection(connectionString);
             con.Open();
 
-            string command = $"INSERT INTO public.Account(Username, Password, Name, Contact, Email, Location) VALUES (@Username, @Password, @Name, @Contact, @Email, @Location);";
+            string command = $"UPDATE public.account\r\n\tSET password=@newPassword, contact=@newContact, email=@newEmail, location=@newLocation\r\n\tWHERE accountid = @accountId;";
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-            {
-                cmd.Parameters.AddWithValue("@Username", user.Username);
-                cmd.Parameters.AddWithValue("@Password", user.Password);
-                cmd.Parameters.AddWithValue("@Name", user.FullName);
-                cmd.Parameters.AddWithValue("@Contact", user.Contact);
-                cmd.Parameters.AddWithValue("@Email", user.Email);
-                cmd.Parameters.AddWithValue("@Location", user.Address);
+            {   
+                cmd.Parameters.AddWithValue("@newPassword", user.Password);
+                cmd.Parameters.AddWithValue("@newContact", user.Contact);
+                cmd.Parameters.AddWithValue("@newEmail", user.Email);
+                cmd.Parameters.AddWithValue("@newLocation", user.Address);
+                cmd.Parameters.AddWithValue("@accountId", user.AccountId);
 
                 cmd.ExecuteNonQuery();
             }
@@ -214,7 +213,7 @@ public class UserRepo : IUserRepo
             using var con = new NpgsqlConnection(connectionString);
             con.Open();
 
-            string command = $"SELECT * FROM public.Account;";
+            string command = $"SELECT * FROM public.Account where accountid > 1;";
 
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
             {
@@ -222,7 +221,8 @@ public class UserRepo : IUserRepo
                     while (await reader.ReadAsync())
                     {
                         users.Add(new User { 
-                            Username = reader["username"].ToString(), 
+                            Username = reader["username"].ToString(),
+                            Password = reader["password"].ToString(),
                             AccountId = int.Parse(reader["accountid"].ToString()), 
                             FullName = reader["name"].ToString(),
                             Contact = reader["contact"].ToString(),

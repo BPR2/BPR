@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BPR_RazorLibrary\BPR_RazorLibrary.csproj" />
+    <Compile Remove="Services\**" />
+    <Content Remove="Services\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Services\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\BPR_RazorLibrary\BPR_RazorLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

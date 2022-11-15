@@ -16,6 +16,7 @@ namespace BPR_RazorLibrary.Services.Users
         HttpClient client;
 
         private int userId;
+        private User? user;
 
         public UserService()
         {
@@ -101,5 +102,14 @@ namespace BPR_RazorLibrary.Services.Users
             }
         }
 
+        public void SetUser(User? user)
+        {
+            this.user = user;
+        }
+
+        public User? GetUser()
+        {
+            return user;
+        }
     }
 }
