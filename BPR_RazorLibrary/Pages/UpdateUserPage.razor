@@ -1,0 +1,201 @@
+﻿@page "/updateUser"
+
+@using Services.Users
+@using Microsoft.AspNetCore.Components.Forms
+@using Models
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<style>
+    .signup {
+        max-width: 600px;
+        max-height: 575px;
+        margin-top: 50px;
+    }
+
+    .card {
+        padding: 10px;
+        border-radius: 10px;
+        width: 1000px;
+    }
+
+    .card-img {
+        text-align: center;
+    }
+
+    .form-label-group, .form-label-group label {
+        margin-top: 1rem !important;
+    }
+
+        .form-label-group button {
+            width: -webkit-fill-available;
+            margin-top: 1rem;
+        }
+
+        .form-label-group .oi {
+            margin-bottom: 1.1rem;
+        }
+
+    .alert {
+        margin-top: 1rem;
+    }
+
+    .input-group-text {
+        background: #1565a2 !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        justify-content: center;
+        padding: 20px !important;
+    }
+
+    input:focus {
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+    }
+
+    .fa-solid {
+        color: white;
+        position: absolute;
+        top: 11px;
+    }
+
+    #password {
+        width: 50% !important;
+    }
+
+    @@media (max-width: 680px) {
+        #password {
+            width: 100% !important;
+        }
+
+        .signup {
+            max-height: 630px;   
+        }
+    }
+</style>
+
+
+<div class="container d-flex justify-content-center">
+    <div class="card signup">
+        <div class="card-body">
+            <h5 class="card-title text-center">Update User</h5>
+            <EditForm Model="@user" OnValidSubmit="@UpdateUser">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                    <InputText disabled class="form-control" @bind-Value="user.FullName" placeholder="Full Name" />
+                </div>
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-user-tag"></i></span>
+                    <InputText disabled class="form-control" @bind-Value="user.Username" placeholder="Username" />
+                </div>
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                    <InputText class="form-control" @bind-Value="user.Email" placeholder="Email" required />
+                </div>
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                    <InputText class="form-control" @bind-Value="user.Contact" placeholder="Contact" required />
+                </div>
+
+                <div class="form-label-group input-group form-group">
+                    <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
+                    <InputText class="form-control" @bind-Value="user.Address" placeholder="Address" required />
+                </div>
+
+                <div class="row">
+                    <div class=" form-label-group input-group" id="password">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <InputText class="form-control" type="password" @bind-Value="password" placeholder="Password" />
+                    </div>
+
+                    <div class=" form-label-group  input-group" id="password">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <InputText class="form-control" type="password" @bind-Value="confirmPassword" placeholder="Confirm Password" />
+                    </div>
+                </div>
+                <div class="form-label-group">
+                    <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Update</button>
+                </div>
+            </EditForm>
+
+            @if (!string.IsNullOrWhiteSpace(message) || !string.IsNullOrWhiteSpace(message1))
+            {
+                @if (!string.IsNullOrWhiteSpace(message))
+                {
+                    <div class="alert alert-danger">
+                        @message
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-success">
+                        @message1
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private User user = new User();
+    private string password;
+    private string confirmPassword;
+    string message = String.Empty;
+    private string message1 = String.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = UserService.GetUser();
+    }
+
+    private async Task UpdateUser()
+    {
+        if (password != null && confirmPassword != null)
+        {
+            if (password.Equals(String.Empty) && confirmPassword.Equals(String.Empty))
+            {
+                await UserService.UpdateUser(user);
+                message = String.Empty;
+                message1 = "User successfully updated!";
+            }
+
+            else if (password.Equals(confirmPassword))
+            {
+                user.Password = password;
+                await UserService.UpdateUser(user);
+                message = String.Empty;
+                message1 = "User successfully updated!";
+            }
+            else
+            {
+                message = "Password does not match!";
+                message1 = String.Empty;
+            }
+        }
+        else
+        {
+            if (password == null && confirmPassword == null)
+            {
+                await UserService.UpdateUser(user);
+                message = String.Empty;
+                message1 = "User successfully updated!";
+            }
+            else if (password == null || confirmPassword == null)
+            {
+                password = null;
+                confirmPassword = null;
+
+                message = "Fill in both Password fields or leave them empty!";
+                message1 = String.Empty;
+            }
+        }
+    }
+}

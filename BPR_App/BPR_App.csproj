@@ -50,6 +50,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AndroidResource Remove="Data\**" />
+      <Compile Remove="Data\**" />
+      <Content Remove="Data\**" />
+      <EmbeddedResource Remove="Data\**" />
+      <MauiXaml Remove="Data\**" />
+      <None Remove="Data\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
       <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
       <PackageReference Include="Smart.Blazor" Version="14.4.39" />
@@ -57,10 +66,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BPR_RazorLibrary\BPR_RazorLibrary.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Data\" />
     </ItemGroup>
 
 </Project>

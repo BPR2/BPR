@@ -65,6 +65,10 @@
         #password {
          width:100% !important;
         }
+
+        .signup {
+            max-height: 630px;
+        }
     }
 </style>
 
@@ -72,7 +76,7 @@
 <div class="container d-flex justify-content-center">
     <div class="card signup">
         <div class="card-body">
-            <h5 class="card-title text-center">Sign up</h5>
+            <h5 class="card-title text-center">Create User Account</h5>
             <EditForm Model="@newUser" OnValidSubmit="@AddNewUser">
             <DataAnnotationsValidator />
             <ValidationSummary />
@@ -143,7 +147,7 @@
             newUser.Password = password;
 
             UsersService.CreateUser(newUser);
-            NavigationManager.NavigateTo("/login");
+            NavigationManager.NavigateTo("/adminUnitManage");
         }
         else
         {

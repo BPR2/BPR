@@ -7,6 +7,7 @@
 @inject IUserService UserService
 @inject IReceiverService ReceiverService
 @inject IFieldService FieldService
+@inject NavigationManager NavigationManager
 
 <style>
     tbody tr:nth-child(odd) {
@@ -143,6 +144,9 @@
                                     <td data-label="Receiver @k">@receivers[k-i].SerialNumber</td>
                                 }
                             }
+                            <td data-label="Update User" style="height:50px;">
+                                <button type="button" style="width:100px; float: right; font-size: 14px;" class="btn btn-danger" @onclick=" () => navigateToEditPassword(user)">Update</button>
+                            </td>
                         }
                     </tr>
                 }
@@ -213,6 +217,17 @@
                                 </tr>
                             }
                         }
+                        <tr style="display: none"></tr>
+                        <tr class="expandedRow">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" style="margin-top:5px; width:120px; float: right; font-size: 15px;" class="btn btn-danger" @onclick=" () => navigateToEditPassword(user)">Update User</button>
+                            </td>
+                            
+                        </tr>
                     }
                 }
             </tbody>
@@ -269,5 +284,11 @@ else
 
         user.IsRowExpanded = !user.IsRowExpanded;
         StateHasChanged();
+    }
+
+    private void navigateToEditPassword(User? user)
+    {
+        UserService.SetUser(user);
+        NavigationManager.NavigateTo("/updateUser");
     }
 }
