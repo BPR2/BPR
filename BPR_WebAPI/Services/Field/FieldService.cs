@@ -31,18 +31,18 @@ public class FieldService : IFieldService
         return await fieldRepo.GetLatestFieldByUserId(userId);
     }
 
-    public async Task<WebResponse> UnassignReceiver(int fieldId, int receiverId)
+    public async Task<WebResponse> UnassignReceiver(string receiverSerialNumber)
     {
-        var result = await fieldRepo.UnassignReceiver(fieldId, receiverId);
+        var result = await fieldRepo.UnassignReceiver(receiverSerialNumber);
 
         if (result != WebResponse.ContentRetrievalSuccess) return result;
 
         return result;
     }
 
-    public async Task<WebContent> UpdateFieldAsync(BPR_RazorLibrary.Models.Field field)
+    public async Task<WebContent> UpdateFieldAsync(BPR_RazorLibrary.Models.Field field, string receiverSerialNumber)
     {
-        var result = await fieldRepo.UpdateField(field);
+        var result = await fieldRepo.UpdateField(field, receiverSerialNumber);
 
         if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 

@@ -149,4 +149,29 @@ public class ReceiverService : IReceiverService
             return null;
         }
     }
+
+    public async Task<Receiver> GetReceiverBySerialNumber(string serialNumber)
+    {
+        string message = await client.GetStringAsync($"{url}/getReceiverBySerialNumber?serialNumber={serialNumber}");
+        try
+        {
+            WebContent result = JsonSerializer.Deserialize<WebContent>(message);
+
+            if (result.response != WebResponse.ContentRetrievalSuccess)
+            {
+                return null;
+            }
+
+            var json = JsonSerializer.Serialize(result.content);
+
+            var contentResult = JsonSerializer.Deserialize<Receiver>(json);
+
+            return contentResult;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+    }
 }

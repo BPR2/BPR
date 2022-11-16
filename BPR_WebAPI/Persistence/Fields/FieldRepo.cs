@@ -28,7 +28,7 @@ namespace BPR_WebAPI.Persistence.Fields
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
-				string command1 = "SELECT f.fieldid,f.name, f.pawLevelLimit, f.location, f.description as field_description, r.receiverid, " +
+				string command1 = "SELECT f.fieldid,f.name, f.pawLevelLimit, f.description as field_description, r.receiverid, " +
 							"r.serialnumber, r.description as receiver_description, rd.timestamp, rd.longitude, rd.latitude, r.time_interval " +
 							"FROM public.field f LEFT JOIN public.receiver r on f.fieldid = r.fieldid " +
 							"LEFT JOIN receiverdata rd ON rd.receiverid = r.receiverid where r.accountId = @UserId " +
@@ -66,7 +66,6 @@ namespace BPR_WebAPI.Persistence.Fields
 									Id = int.Parse(reader["fieldid"].ToString()),
 									Name = reader["name"].ToString(),
 									PawLevelLimit = int.Parse(reader["pawLevelLimit"].ToString()),
-									Location = reader["location"].ToString(),
 									Description = reader["field_description"].ToString(),
 									Receiver = receiver
 								});
@@ -188,18 +187,17 @@ namespace BPR_WebAPI.Persistence.Fields
 			}
 		}
     
-     public async Task<WebResponse> UnassignReceiver(int fieldId, int receiverId)
+     public async Task<WebResponse> UnassignReceiver(string receiverSerialNumber)
         {
             try
             {
                 using var con = new NpgsqlConnection(connectionString);
                 con.Open();
 
-                string command = $"UPDATE public.receiver SET fieldid = null where receiverId = @receiverId AND fieldid = @fieldid;";
+                string command = $"UPDATE public.receiver SET fieldid = null where SerialNumber = @SerialNumber;";
                 await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
                 {
-                    cmd.Parameters.AddWithValue("@fieldId", fieldId);
-                    cmd.Parameters.AddWithValue("@receiverId", receiverId);
+                    cmd.Parameters.AddWithValue("@SerialNumber", receiverSerialNumber);
                     cmd.ExecuteNonQuery();
                 }
                 con.Close();
@@ -211,10 +209,10 @@ namespace BPR_WebAPI.Persistence.Fields
             }
         }
 
-        public async Task<WebContent> UpdateField(Field field)
+        public async Task<WebContent> UpdateField(Field field, string receiverSerialNumber)
         {
             if (string.IsNullOrEmpty(field.Name)) return new WebContent(WebResponse.ContentDataCorrupted, field);
-
+			UnassignReceiver(field.Receiver.SerialNumber);
             try
             {
                 using var con = new NpgsqlConnection(connectionString);
@@ -229,7 +227,7 @@ namespace BPR_WebAPI.Persistence.Fields
                     cmd.Parameters.AddWithValue("@name", field.PawLevelLimit);
                     cmd.Parameters.AddWithValue("@description", field.Description);
                     cmd.Parameters.AddWithValue("@pawLevelLimit", field.PawLevelLimit);
-                    cmd.Parameters.AddWithValue("@serialnumber", field.Receiver.SerialNumber);
+                    cmd.Parameters.AddWithValue("@serialnumber", receiverSerialNumber);
                     cmd.ExecuteNonQuery();
                 }
 

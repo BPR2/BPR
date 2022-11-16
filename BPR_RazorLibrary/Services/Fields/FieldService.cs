@@ -54,7 +54,7 @@ public class FieldService : IFieldService
         this.field = field;
     }
 
-    public async Task UpdateField(Field field)
+    public async Task UpdateField(Field field, string receiverSerialNumber)
     {
         string fieldSerialized = JsonSerializer.Serialize(field);
 
@@ -63,19 +63,19 @@ public class FieldService : IFieldService
                 Encoding.UTF8,
                 "application/json"
                 );
-        await client.PutAsync($"{url}/updateField", content);
+        await client.PutAsync($"{url}/updateField?serialNumber={receiverSerialNumber}", content);
     }
 
-    public async Task<string> UnassignReceiver(int fieldId, int receiverId)
+    public async Task<string> UnassignReceiver(string receiverSerialNumber)
     {
-        string fieldIdSerialized = JsonSerializer.Serialize(fieldId);
+        string fieldIdSerialized = JsonSerializer.Serialize(receiverSerialNumber);
         HttpContent content = new StringContent(
                 fieldIdSerialized,
                 Encoding.UTF8,
                 "application/json"
                 );
         
-        var message = await client.PutAsync($"{url}/unassignReceiver?fieldId={fieldId}&receiverId={receiverId}", content);
+        var message = await client.PutAsync($"{url}/unassignReceiver?receiverSerialNumber={receiverSerialNumber}", content);
         
         try
         {

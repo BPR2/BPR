@@ -57,5 +57,12 @@ namespace BPR_WebAPI.Controllers
             var result = await receiverService.UpdateReceiverTimeInterval(timeInterval, serialNumber);
             return Ok(result);
         }
+
+        [HttpGet("getReceiverBySerialNumber")]
+        public async Task<ActionResult<WebResponse>> GetReceiverBySerialNumber([FromQuery] string serialNumber)
+        {
+            var result = await receiverService.GetReceiverBySerialNumber(serialNumber);
+            return Ok(result);
+        }
     }
 }

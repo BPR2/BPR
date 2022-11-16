@@ -7,7 +7,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
 @inject IFieldService FieldService;
-@inject IReceiverService ReceiverService
+@inject IReceiverService ReceiverService;
 @inject IUserService UserService;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
@@ -47,7 +47,7 @@
         padding: 20px !important;
     }
 
-    input:focus {
+    input:focus, select:focus {
         outline: 0 0 0 0 !important;
         box-shadow: 0 0 0 0 !important;
     }
@@ -79,8 +79,7 @@
 
                 <div class="form-label-group input-group form-group">
                     <span class="input-group-text"><i class="fa-solid fa-tower-cell"></i> </span>
-                    <input id="SensorSerialNumber" readonly type="text" class="form-control" placeholder="Sensor Serial Number" list="receiverSearch" @bind-value="field.Receiver.SerialNumber" required />
-                    <span class="input-group-text" style="background:red!important" @onclick="UnassignReceiver"><i class="fa-solid fa-trash-can"></i> </span>
+                    <input id="SensorSerialNumber" type="text" class="form-control" placeholder="Sensor Serial Number" list="receiverSearch" @bind-value="receiverSerialNumber" required />
                 </div>
 
                 <datalist id="receiverSearch">
@@ -90,9 +89,9 @@
                     }
                 </datalist>
 
-                <div class="form-label-group input-group form-group">
+                <div class="form-label-group input-group form-group timeInterval" id="timeInterval">
                     <span class="input-group-text"> <i class="fa-sharp fa-solid fa-clock"></i> </span>
-                    <select name="school" id="schoolContainer" @bind="@selectedTimeInterval">
+                    <select class="form-select" @bind="@selectedTimeInterval">
                         <option value=7200>Every 2 hours</option>
                         <option value=21600>Every 6 hours</option>
                         <option value=43200>Every 12 hours</option>
@@ -100,7 +99,7 @@
                     </select>
                 </div>
 
-                <div class="form-label-group input-group form-group width">
+                <div class="form-label-group input-group form-group">
                     <span class="input-group-text"><i class="fa-solid fa-align-left"></i></span>
                     <InputTextArea class="form-control" @bind-Value="@field.Description" />
                 </div>
@@ -109,7 +108,7 @@
                 {
                     @foreach (var s in field.Receiver.Sensors)
                     {
-                        <div class="form-label-group input-group form-group width">
+                        <div class="form-label-group input-group form-group">
 
                             <span class="input-group-text" title="@s.TagNumber"><i class="fa-solid fa-tower-broadcast" title="@s.TagNumber"></i> </span>
                             <InputTextArea class="form-control" @bind-Value="@s.Description" />
@@ -125,9 +124,18 @@
 
             @if (!string.IsNullOrWhiteSpace(message))
             {
-                <div class="alert alert-danger">
-                    @message
-                </div>
+                if (message.ToLower().Contains("updated"))
+                {
+                    <div class="alert alert-success">
+                        @message
+                    </div>
+                }
+                else 
+                {
+                    <div class="alert alert-danger">
+                        @message
+                    </div>
+                }                
             }
         </div>
     </div>
@@ -138,12 +146,14 @@
     private Field? field = new Field();
     private string? message = string.Empty;
     List<Receiver> receivers = new List<Receiver>();
+    private string receiverSerialNumber = string.Empty;
     private string currentReceiverNO = string.Empty;
     private int selectedTimeInterval;
 
     protected override async Task OnInitializedAsync()
     {
         field = FieldService.GetField();
+        receiverSerialNumber = field.Receiver.SerialNumber;
         currentReceiverNO = field.Receiver.SerialNumber;
         receivers = await ReceiverService.GetReceiversByUserID(UserService.GetUserId());
         selectedTimeInterval = field.Receiver.TimeInterval;
@@ -151,16 +161,16 @@
 
     private async Task UpdateField()
     {
-        await FieldService.UpdateField(field);
-        await ReceiverService.UpdateReceiverTimeInterval(selectedTimeInterval, field.Receiver.SerialNumber);
-        await JS.InvokeAsync<string>("disableReadonly");
-    }
-
-    private async Task UnassignReceiver()
-    {
-        await FieldService.UnassignReceiver(field.Id, field.Receiver.ReceiverId);
-        field.Receiver.SerialNumber = string.Empty;
-        field.Receiver.Sensors.Clear();
-        await JS.InvokeAsync<string>("disableReadonly");
+        if (receivers.Exists(x => x.SerialNumber == receiverSerialNumber))
+        {
+            await FieldService.UpdateField(field, receiverSerialNumber);
+            field.Receiver = await ReceiverService.GetReceiverBySerialNumber(receiverSerialNumber);
+            await ReceiverService.UpdateReceiverTimeInterval(selectedTimeInterval, field.Receiver.SerialNumber);
+            message = "Field Updated!";
+        }
+        else 
+        {
+            message = "Reciver does not exist!";
+        }
     }
 }
