@@ -5,8 +5,8 @@ namespace BPR_WebAPI.Services.Field;
 public interface IFieldService
 {
     Task<WebContent> GetAllFieldsByUserId(int userId);
-    Task<WebContent> UpdateFieldAsync(BPR_RazorLibrary.Models.Field field);
-    Task<WebResponse> UnassignReceiver(int fieldId, int receiverId);
+    Task<WebContent> UpdateFieldAsync(BPR_RazorLibrary.Models.Field field, string receiverSerialNumber);
+    Task<WebResponse> UnassignReceiver(string receiverSerialNumber);
 	  Task<WebResponse> CreateFieldAsync(BPR_RazorLibrary.Models.Field field);
 	  Task<WebContent> GetLatestFieldByUserId(int userId);
 }

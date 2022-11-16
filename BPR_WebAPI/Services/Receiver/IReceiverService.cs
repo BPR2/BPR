@@ -10,4 +10,5 @@ public interface IReceiverService
 	Task<WebResponse> AssignFieldToReceiver(int receiverID, int fieldID);
     Task<WebContent> GetAllReceiversList();
     Task<WebResponse> UpdateReceiverTimeInterval(int timeInterval, string serialNumber);
+    Task<WebContent> GetReceiverBySerialNumber(string serialNumber);
 }

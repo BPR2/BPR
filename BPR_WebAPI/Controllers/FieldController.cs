@@ -27,16 +27,16 @@ public class FieldController : ControllerBase
     [HttpPut("updateField")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<WebContent>> UpdateField(Field field)
+    public async Task<ActionResult<WebContent>> UpdateField(Field field, [FromQuery] string serialNumber)
     {
-        var result = await fieldService.UpdateFieldAsync(field);
+        var result = await fieldService.UpdateFieldAsync(field, serialNumber);
         return Ok(result);
     }
 
     [HttpPut("unassignReceiver")]
-    public async Task<ActionResult<WebResponse>> UnassignReceiver([FromQuery] int fieldId, [FromQuery] int receiverId)
+    public async Task<ActionResult<WebResponse>> UnassignReceiver([FromQuery] string receiverSerialNumber)
     {
-        var result = await fieldService.UnassignReceiver(fieldId, receiverId);
+        var result = await fieldService.UnassignReceiver(receiverSerialNumber);
         return Ok(result);
     }
 

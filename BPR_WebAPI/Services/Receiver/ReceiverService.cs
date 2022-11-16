@@ -40,5 +40,10 @@ public class ReceiverService : IReceiverService
     {
         return await receiverRepo.UpdateReceiverTimeInterval(timeInterval, serialNumber);
     }
+
+    public async Task<WebContent> GetReceiverBySerialNumber(string serialNumber)
+    {
+        return await receiverRepo.GetReceiverBySerialNumber(serialNumber);
+    }
 }
 

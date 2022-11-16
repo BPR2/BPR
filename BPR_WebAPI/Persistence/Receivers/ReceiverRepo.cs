@@ -262,4 +262,77 @@ public class ReceiverRepo : IReceiverRepo
             return WebResponse.ContentUpdateFailure;
         }
     }
+
+	public async Task<WebContent> GetReceiverBySerialNumber(string serialNumber)
+	{
+		Receiver receiver = new Receiver();
+        try
+        {
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            string command = $"SELECT * FROM public.Receiver WHERE serialNumber = @serialNumber;";
+
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                cmd.Parameters.AddWithValue("@serialNumber", serialNumber);
+
+                await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
+                    {
+                        receiver = new Receiver
+                        {
+                            SerialNumber = reader["serialnumber"].ToString(),
+							AccountId = int.Parse(reader["accountid"].ToString()),
+                            ReceiverId = int.Parse(reader["receiverid"].ToString()),
+                            FieldId = reader["fieldid"] as int?,
+                            Description = reader["Description"].ToString(),
+                            TimeInterval = int.Parse(reader["time_interval"].ToString())
+                        };
+                    }
+            }
+
+                List<Sensor> sensors = new List<Sensor>();
+                SensorMeasurement measurement;
+
+                string command2 = "SELECT s.sensorid, s.tagnumber, sm.temperature, sm.humidity, s.batterylow, s.description, sm.timestamp" +
+                    " FROM public.sensor s LEFT JOIN sensormeasurement sm ON sm.sensorid = s.sensorid where s.receiverId = @ReceiverId " +
+                    "order by timestamp desc limit (select count(*) FROM sensor where receiverid = @ReceiverId)";
+
+                await using (NpgsqlCommand cmd = new NpgsqlCommand(command2, con))
+                {
+                    cmd.Parameters.AddWithValue("@ReceiverId", NpgsqlTypes.NpgsqlDbType.Integer, receiver.ReceiverId);
+                    await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        while (await reader.ReadAsync())
+                        {
+                            measurement = new SensorMeasurement
+                            {
+                                SensorId = int.Parse(reader["sensorid"].ToString()),
+                                Temperature = float.Parse(reader["temperature"].ToString()),
+                                Humidity = float.Parse(reader["humidity"].ToString()),
+                                Timestamp = DateTime.Parse(reader["timestamp"].ToString()),
+                            };
+
+                            sensors.Add(
+                                    new Sensor
+                                    {
+                                        SensorId = int.Parse(reader["sensorid"].ToString()),
+                                        ReceiverId = receiver.ReceiverId,
+                                        TagNumber = reader["tagnumber"].ToString(),
+                                        BatteryLow = bool.Parse(reader["batterylow"].ToString()),
+                                        Description = reader["description"].ToString(),
+                                        LatestSensorMeasurement = measurement
+                                    });
+                        }
+                }
+			receiver.Sensors = sensors;
+
+            con.Close();
+            return new WebContent(WebResponse.ContentRetrievalSuccess, receiver);
+        }
+        catch (Exception e)
+        {
+            return new WebContent(WebResponse.ContentRetrievalFailure, null);
+        }
+    }
 }
