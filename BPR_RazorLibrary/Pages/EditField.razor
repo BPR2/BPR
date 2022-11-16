@@ -78,14 +78,20 @@
                 </div>
 
                 <div class="form-label-group input-group form-group">
+                    <span class="input-group-text"><i class="fa-solid fa-align-left"></i></span>
+                    <InputTextArea class="form-control" @bind-Value="@field.Description" />
+                </div>
+
+                <div class="form-label-group input-group form-group">
                     <span class="input-group-text"><i class="fa-solid fa-tower-cell"></i> </span>
-                    <input id="SensorSerialNumber" type="text" class="form-control" placeholder="Sensor Serial Number" list="receiverSearch" @bind-value="receiverSerialNumber" required />
+                    <input id="SensorSerialNumber" type="text" class="form-control" placeholder="Sensor Serial Number" list="receiverSearch" @bind-value="receiverSerialNumber" required/>
+                    <span class="input-group-text" style="background:#1DB922!important" @onclick="Changed"><i class="fa-solid fa-rotate-right"></i> </span>
                 </div>
 
                 <datalist id="receiverSearch">
                     @foreach (var item in receivers)
                     {
-                        <option>@item.SerialNumber</option>
+                        <option onchange="Changed">@item.SerialNumber</option>
                     }
                 </datalist>
 
@@ -97,11 +103,6 @@
                         <option value=43200>Every 12 hours</option>
                         <option value=86400>Every 24 hours</option>
                     </select>
-                </div>
-
-                <div class="form-label-group input-group form-group">
-                    <span class="input-group-text"><i class="fa-solid fa-align-left"></i></span>
-                    <InputTextArea class="form-control" @bind-Value="@field.Description" />
                 </div>
 
                 @if (field.Receiver != null && field.Receiver.Sensors.Any())
@@ -130,12 +131,12 @@
                         @message
                     </div>
                 }
-                else 
+                else
                 {
                     <div class="alert alert-danger">
                         @message
                     </div>
-                }                
+                }
             }
         </div>
     </div>
@@ -168,9 +169,22 @@
             await ReceiverService.UpdateReceiverTimeInterval(selectedTimeInterval, field.Receiver.SerialNumber);
             message = "Field Updated!";
         }
-        else 
+        else
         {
             message = "Reciver does not exist!";
+        }
+    }
+
+    private async void Changed()
+    {
+        if (!field.Receiver.SerialNumber.Equals(receiverSerialNumber))
+        {
+            if (receivers.Exists(x => x.SerialNumber == receiverSerialNumber))
+            {
+                field.Receiver = await ReceiverService.GetReceiverBySerialNumber(receiverSerialNumber);
+                selectedTimeInterval = field.Receiver.TimeInterval;
+                StateHasChanged();
+            }
         }
     }
 }
