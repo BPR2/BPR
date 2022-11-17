@@ -7,6 +7,7 @@
 @inject IUserService UserService;
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <style>
     .container, .card {
@@ -146,16 +147,39 @@
 @code {
     private int userId;
     private List<Field> fields = new List<Field>();
+
     protected override async Task OnInitializedAsync()
     {
         userId = UserService.GetUserId();
-        fields = await FieldService.GetAllFieldsByUserId(userId);
+
+        fields = await localStorage.GetItemAsync<List<Field>>("FieldList");
+        DateTime? cacheDate = await localStorage.GetItemAsync<DateTime?>("CacheDate");
+
+        double cacheAge = 0;
+
+        if (cacheDate != null)
+        {
+            cacheAge = DateTime.UtcNow.Subtract((DateTime)cacheDate).TotalMinutes;
+        }
+
+        if (fields == null || cacheDate == null || cacheAge > 10) //if no data was stored, or the cachedate doesn't exist, or if the cache is too old, do the following
+        {
+            try
+            {
+                fields = await FieldService.GetAllFieldsByUserId(userId);
+                await localStorage.SetItemAsync("FieldList", fields);
+                await localStorage.SetItemAsync("CacheDate", DateTime.UtcNow);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
     }
 
     private void navigateToEditField(Field field)
     {
         FieldService.SetField(field);
         NavigationManager.NavigateTo("/editField");
-
     }
 }
