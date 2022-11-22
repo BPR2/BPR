@@ -93,7 +93,7 @@
 
 <div class="tabcontent">
     <div class="tab">
-        
+
         <button style="@(tab3?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(3))">Users</button>
 
         <button class="rightButtons" style="@(tab4?"background-color: #7fc469;color:white;":"")" @onclick="(x=>DisplayTab(4))">Receivers</button>
@@ -121,8 +121,19 @@
 
                                 <div class="form-label-group input-group form-group">
                                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                                    <DropDownList DataSource="@userNames" Filterable="true" OnItemClick="OnUserSelected" />
+                                    <DropDownList DataSource="@userNames" Filterable="true" OnItemClick="OnUserSelected" required />
                                 </div>
+
+                                <div class="form-label-group input-group form-group">
+                                    <span title="Max Transmission" class="input-group-text"><i class="fa-solid fa-battery-full"></i> </span>
+                                    <input min="0" type="number" class="form-control" placeholder="Receiver's Max Transsmissons" @bind-value="maxTransmission" required />
+                                </div>
+
+                                <div class="form-label-group input-group form-group width">
+                                    <span title="Left Transmisson" class="input-group-text"><i class="fa-solid fa-battery-half"></i> </span>
+                                    <input min="0" type="number" class="form-control" placeholder="Receiver's Left Transsmissons" @bind-value="leftTransmission" required />
+                                </div>
+
                             </div>
                         </div>
                     }
@@ -207,6 +218,9 @@
     private bool tab3 = true;
     private bool tab4 = false;
 
+    private int maxTransmission = 0;
+    private int leftTransmission = 0;
+
     protected override async Task OnInitializedAsync()
     {
         users = await UserService.GetAllUsers();
@@ -233,23 +247,33 @@
 
     private async Task AssignNewReceiver()
     {
-        string responese = await _ReceiverService.AssignReceiver(serialNumber, username);
-        if (responese.Equals("13"))
+        if (maxTransmission >= leftTransmission)
         {
-            message = "Serial Number is already assigned!";
-            message1 = String.Empty;
-        }
-        else if (responese.Equals("10"))
-        {
-            message = "Provided User doesn't exist!";
-            message1 = String.Empty;
+            string responese = await _ReceiverService.AssignReceiver(serialNumber, username, maxTransmission, leftTransmission);
+            if (responese.Equals("13"))
+            {
+                message = "Serial Number is already assigned!";
+                message1 = String.Empty;
+            }
+            else if (responese.Equals("10") || username.Equals(String.Empty))
+            {
+                message = "Provided User doesn't exist!";
+                message1 = String.Empty;
+            }
+            else
+            {
+                message = String.Empty;
+                message1 = "Receiver successfully assigned!";
+                serialNumber = String.Empty;
+                username = String.Empty;
+                maxTransmission = 0;
+                leftTransmission = 0;
+            }
         }
         else
         {
-            message = String.Empty;
-            message1 = "Receiver successfully assigned!";
-            serialNumber = String.Empty;
-            username = String.Empty;
+            message = "Max Transmissions has to be >= Left Transmission!";
+            message1 = String.Empty;
         }
         receivers.Clear();
         receivers = await _ReceiverService.GetAllReceivers();
