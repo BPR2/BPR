@@ -4,7 +4,7 @@ namespace BPR_WebAPI.Persistence.Receivers;
 
 public interface IReceiverRepo
 {
-    Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName);
+    Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName, int maxTransmission, int leftTransmission);
     Task<List<Receiver>> GetAllReceivers();
     Task<WebContent> GetReceiversByUserID(int userID);
     Task<WebContent> GetAllReceiversList();

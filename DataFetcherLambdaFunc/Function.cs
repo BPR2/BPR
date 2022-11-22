@@ -54,7 +54,27 @@ public class Function
             Console.WriteLine(ex.StackTrace);
         }
 
+        await DecreaseLeftTranssmissonsForReceivers();
         await GetDataFromAllReceivers(resultReceiverDataList);
+    }
+
+    public async Task DecreaseLeftTranssmissonsForReceivers()
+    {
+        using var con = new NpgsqlConnection(_dbConnectionString);
+        con.Open();
+
+        foreach (var serialNumber in _serialNumbers)
+        {
+            string command = $"UPDATE public.receiver SET left_transmission= left_transmission -1 WHERE serialnumber = @serialNumber;";
+
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                cmd.Parameters.AddWithValue("@serialNumber", serialNumber);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+        con.Close();
     }
 
     public async Task GetDataFromAllReceivers(List<ReceiverDataModel> resultReceiverDataList)

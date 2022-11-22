@@ -6,8 +6,8 @@ public class SensorService : ISensorService
 #if DEBUG
     string url = "https://localhost:7109/api/Sensor";
 #else
-       
-       string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Sensor";
+
+    string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Sensor";
 #endif
 
     HttpClient client;
