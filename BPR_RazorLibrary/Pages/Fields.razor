@@ -125,6 +125,7 @@
                         </div>
                     </div>
                     <button type="button" style="margin-top:5px;" class="btn btn-primary" @onclick=" () => navigateToEditField(field)">Edit</button>
+                    <button type="button" style="margin-top:5px;" class="btn btn-info" @onclick=" () => NavigateToChartPage(field)"><i class="fa-solid fa-chart-line"></i> Chart</button>
                 </div>
             </div>
         }
@@ -157,5 +158,11 @@
         FieldService.SetField(field);
         NavigationManager.NavigateTo("/editField");
 
+    }
+
+    private void NavigateToChartPage(Field field)
+    {
+        FieldService.SetField(field);
+        NavigationManager.NavigateTo("/chart");
     }
 }

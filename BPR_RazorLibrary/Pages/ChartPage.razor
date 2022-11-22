@@ -1,0 +1,48 @@
+﻿@page "/chart"
+@using BPR_RazorLibrary.Services.Charts;
+@using BPR_RazorLibrary.Services.Fields;
+@using BPR_RazorLibrary.Models;
+@using BPR_RazorLibrary.Services.Receivers
+@using BPR_RazorLibrary.Services.Users;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject IChartService ChartService
+@inject IFieldService FieldService
+
+<style>
+    .container, .card {
+        margin-top: 10px;
+    }
+
+    .card {
+        border-radius: 20px !important;
+        width:fit-content
+    }
+</style>
+
+<div class="container justify-content-center">
+    <div class="card">
+        <div class="card-body">
+            <div id="chart_div"></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<ChartData> datas = new List<ChartData>();
+    private Field? field = new Field();
+    private DateTime from = new DateTime();
+    private DateTime to = new DateTime();
+
+    protected override async Task OnInitializedAsync()
+    {
+        from = DateTime.Now;
+        to = DateTime.Now.AddDays(7);
+        field = FieldService.GetField();
+        datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
+        await JS.InvokeAsync<string>("getchart", datas);
+    }
+
+
+}
