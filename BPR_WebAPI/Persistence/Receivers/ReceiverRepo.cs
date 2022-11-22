@@ -139,7 +139,6 @@ public class ReceiverRepo : IReceiverRepo
 							SerialNumber = reader["serialnumber"].ToString(),
 							ReceiverId = int.Parse(reader["receiverid"].ToString()),
 							FieldId = reader["fieldid"] as int?,
-							Description = reader["Description"].ToString(),
 							TimeInterval = int.Parse(reader["time_interval"].ToString())
                         });
 					}
@@ -286,7 +285,6 @@ public class ReceiverRepo : IReceiverRepo
 							AccountId = int.Parse(reader["accountid"].ToString()),
                             ReceiverId = int.Parse(reader["receiverid"].ToString()),
                             FieldId = reader["fieldid"] as int?,
-                            Description = reader["Description"].ToString(),
                             TimeInterval = int.Parse(reader["time_interval"].ToString())
                         };
                     }
