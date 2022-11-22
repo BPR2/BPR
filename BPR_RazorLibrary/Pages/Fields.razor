@@ -152,6 +152,23 @@
     {
         userId = UserService.GetUserId();
 
+        try
+        {
+            fields = await FieldService.GetAllFieldsByUserId(userId);
+
+            if (fields.Count > 0) //only cache the field data if we managed to get anything
+            {
+                await localStorage.SetItemAsync("FieldList", fields);
+                await localStorage.SetItemAsync("CacheDate", DateTime.UtcNow);
+            }
+        }
+        catch (Exception e)
+        {
+            //we are here if we can't establish connection to the webapi, so we'll use cached data instead
+            fields = await localStorage.GetItemAsync<List<Field>>("FieldList");
+        }
+
+        /*
         fields = await localStorage.GetItemAsync<List<Field>>("FieldList");
         DateTime? cacheDate = await localStorage.GetItemAsync<DateTime?>("CacheDate");
 
@@ -175,6 +192,7 @@
                 Console.WriteLine(e.Message);
             }
         }
+        */
     }
 
     private void navigateToEditField(Field field)
