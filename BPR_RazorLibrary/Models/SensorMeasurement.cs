@@ -8,6 +8,8 @@ public class SensorMeasurement
     public int MeasurementId { get; set; }
     [JsonPropertyName("sensorId")]
     public int SensorId { get; set; }
+    [JsonPropertyName("tagNumber")]
+    public string TagNumber { get; set; }
     [JsonPropertyName("timestamp")]
     public DateTime Timestamp { get; set; }
     [JsonPropertyName("temperature")]
