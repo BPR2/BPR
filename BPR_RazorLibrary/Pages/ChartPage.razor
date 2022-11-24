@@ -32,16 +32,34 @@
 @code {
     private List<ChartData> datas = new List<ChartData>();
     private Field? field = new Field();
+    private List<SensorMeasurement> sensorMeasurements = new List<SensorMeasurement>();
     private DateTime from = new DateTime();
     private DateTime to = new DateTime();
 
     protected override async Task OnInitializedAsync()
     {
-        from = DateTime.Now;
-        to = DateTime.Now.AddDays(7);
+        to = DateTime.Now;
+        from = DateTime.Now.AddDays(-7);
         field = FieldService.GetField();
         datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
-        await JS.InvokeAsync<string>("getchart", datas);
+        foreach (var s in field.Receiver.Sensors)
+        {
+            foreach (var d in datas)
+            {
+                if (d.TagNumber.Equals(s.TagNumber)) {
+                    foreach (var m in d.Measurements)
+                    {
+                        var date = new DateTime(0001, 01, 01);
+                        date = date + m.Time;
+                        s.SensorMeasuremens.Add(new SensorMeasurement() { Timestamp = date, Temperature = m.Temperature, Humidity = m.Humidity });
+                    }
+                    
+                }
+            }
+
+        }
+
+        await JS.InvokeAsync<string>("getchart", datas, field.Receiver.Sensors);
     }
 
 

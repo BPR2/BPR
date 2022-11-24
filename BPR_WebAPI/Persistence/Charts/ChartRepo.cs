@@ -29,6 +29,8 @@ public class ChartRepo : IChartRepo
 
             string command1 = "select f.fieldid, sm.timestamp, s.sensorid, s.tagnumber, sm.temperature, sm.humidity\r\nfrom field f\r\njoin receiver r\r\non r.fieldid = f.fieldid\r\njoin sensor s\r\non s.receiverid = r.receiverid\r\njoin sensormeasurement sm\r\non sm.sensorid = s.sensorid\r\nwhere f.fieldid = @FieldId and timestamp > @StartDate and sm.timestamp < @EndDate\r\norder by sm.timestamp ";
 
+            List<SensorMeasurement> chartMeasurements = new List<SensorMeasurement>();
+
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command1, con))
             {
                 cmd.Parameters.AddWithValue("@FieldId", NpgsqlTypes.NpgsqlDbType.Integer, fieldId);
@@ -68,28 +70,29 @@ public class ChartRepo : IChartRepo
                             TagNumber = tagNumber
 
                         };
-                        List<ChartMeasurement> chartMeasurements = new List<ChartMeasurement>();
+
                         foreach (var chartMeasurement in chartCompareMeasurements)
                         {
                             if (chartMeasurement.Time.Date.Equals(date) && chartMeasurement.TagNumber.Equals(tagNumber))
                             {
-                                chartMeasurements.Add(new ChartMeasurement
+                                chartMeasurements.Add(new SensorMeasurement
                                 {
-                                    Time = chartMeasurement.Time.TimeOfDay,
+                                    TagNumber = chartMeasurement.TagNumber,
+                                    Timestamp = chartMeasurement.Time,
                                     Temperature = chartMeasurement.Temperature,
                                     Humidity = chartMeasurement.Humidity
                                 });
                             }
-                            
+
                         }
-                        chartData.Measurements = chartMeasurements;
-                        chartDataList.Add(chartData);
+                        /*chartData.Measurements = chartMeasurements;
+                        chartDataList.Add(chartData);*/
                     }
                 }
             }
             con.Close();
 
-            return new WebContent(WebResponse.ContentRetrievalSuccess, chartDataList);
+            return new WebContent(WebResponse.ContentRetrievalSuccess, chartMeasurements);
         }
         catch (Exception e)
         {
