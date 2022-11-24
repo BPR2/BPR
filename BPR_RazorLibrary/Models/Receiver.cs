@@ -27,6 +27,10 @@ public class Receiver
 
     [JsonPropertyName("TimeInterval")]
     public int TimeInterval { get; set; }
+    [JsonPropertyName("maxTransmission")]
+    public int MaxTransmission { get; set; }
+    [JsonPropertyName("leftTransmission")]
+    public int LeftTransmission { get; set; }
 }
 
 public class IntervalSecond

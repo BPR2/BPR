@@ -17,9 +17,9 @@ namespace BPR_WebAPI.Controllers
         }
 
         [HttpPost("assignReceiver")]
-        public async Task<ActionResult<WebResponse>> AssignReceiver([FromQuery] string serialNumber, [FromQuery] string username)
+        public async Task<ActionResult<WebResponse>> AssignReceiver([FromQuery] string serialNumber, [FromQuery] string username, [FromQuery] int maxTransmission, [FromQuery] int leftTransmission)
         {
-            var result = await receiverService.AssignReceiverAsync(serialNumber, username);
+            var result = await receiverService.AssignReceiverAsync(serialNumber, username, maxTransmission,leftTransmission);
             return Ok(result);
         }
 

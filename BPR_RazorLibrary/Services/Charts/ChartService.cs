@@ -8,7 +8,7 @@ public class ChartService : IChartService
 #if DEBUG
     string url = "https://localhost:7109/api/Chart";
 #else
-   
+
     string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Chart";
 #endif
 

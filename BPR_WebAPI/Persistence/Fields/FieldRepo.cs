@@ -29,7 +29,7 @@ namespace BPR_WebAPI.Persistence.Fields
 				con.Open();
 
 				string command1 = "SELECT f.fieldid,f.name, f.pawLevelLimit, f.description as field_description, r.receiverid, " +
-							"r.serialnumber, rd.timestamp, rd.longitude, rd.latitude, r.time_interval " +
+							"r.serialnumber, rd.timestamp, rd.longitude, rd.latitude, r.time_interval, r.max_transmission, r.left_transmission " +
 							"FROM public.field f LEFT JOIN public.receiver r on f.fieldid = r.fieldid " +
 							"LEFT JOIN receiverdata rd ON rd.receiverid = r.receiverid where r.accountId = @UserId " +
 							"order by timestamp desc limit 1";
@@ -56,7 +56,9 @@ namespace BPR_WebAPI.Persistence.Fields
 								AccountId = userId,
 								FieldId = int.Parse(reader["fieldid"].ToString()),
 								ReceiverLatestData = receiverData,
-								TimeInterval = int.Parse(reader["time_interval"].ToString())
+								TimeInterval = int.Parse(reader["time_interval"].ToString()),
+								MaxTransmission = int.Parse(reader["max_transmission"].ToString()),
+                                LeftTransmission = int.Parse(reader["left_transmission"].ToString())
                             };
 
 							fields.Add(

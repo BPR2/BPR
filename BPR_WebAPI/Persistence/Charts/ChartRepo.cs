@@ -18,7 +18,6 @@ public class ChartRepo : IChartRepo
     public async Task<WebContent> GetChartDataByFieldId(int fieldId, DateTime startDate, DateTime endDate)
     {
         List<DateTime> dates = new List<DateTime>();
-        List<string> tagNumbers = new List<string>();
         List<ChartCompareMeasurement> chartCompareMeasurements = new List<ChartCompareMeasurement>();
         List<ChartData> chartDataList = new List<ChartData>();
 
@@ -29,7 +28,7 @@ public class ChartRepo : IChartRepo
 
             string command1 = "select f.fieldid, sm.timestamp, s.sensorid, s.tagnumber, sm.temperature, sm.humidity\r\nfrom field f\r\njoin receiver r\r\non r.fieldid = f.fieldid\r\njoin sensor s\r\non s.receiverid = r.receiverid\r\njoin sensormeasurement sm\r\non sm.sensorid = s.sensorid\r\nwhere f.fieldid = @FieldId and timestamp > @StartDate and sm.timestamp < @EndDate\r\norder by sm.timestamp ";
 
-            List<SensorMeasurement> chartMeasurements = new List<SensorMeasurement>();
+
 
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command1, con))
             {
@@ -40,14 +39,9 @@ public class ChartRepo : IChartRepo
                 await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
                     while (await reader.ReadAsync())
                     {
-                        if (!dates.Contains(DateTime.Parse(reader["timestamp"].ToString()).Date))
+                        if (!dates.Contains(DateTime.Parse(reader["timestamp"].ToString())))
                         {
-                            dates.Add(DateTime.Parse(reader["timestamp"].ToString()).Date);
-                        }
-
-                        if (!tagNumbers.Contains(reader["tagnumber"].ToString()))
-                        {
-                            tagNumbers.Add(reader["tagnumber"].ToString());
+                            dates.Add(DateTime.Parse(reader["timestamp"].ToString()));
                         }
 
                         chartCompareMeasurements.Add(new ChartCompareMeasurement
@@ -62,32 +56,30 @@ public class ChartRepo : IChartRepo
 
                 foreach (var date in dates)
                 {
-                    foreach (var tagNumber in tagNumbers)
+                    List<SensorMeasurement> sensorMeasurements = new List<SensorMeasurement>();
+
+                    ChartData chartData = new ChartData
                     {
-                        ChartData chartData = new ChartData
-                        {
-                            Date = date,
-                            TagNumber = tagNumber
+                        Date = date.ToLocalTime()
 
-                        };
+                    };
 
-                        foreach (var chartMeasurement in chartCompareMeasurements)
+                    foreach (var chartMeasurement in chartCompareMeasurements)
+                    {
+                        if (chartMeasurement.Time.Equals(date.ToLocalTime()))
                         {
-                            if (chartMeasurement.Time.Date.Equals(date) && chartMeasurement.TagNumber.Equals(tagNumber))
+                            sensorMeasurements.Add(new SensorMeasurement
                             {
-                                chartMeasurements.Add(new SensorMeasurement
-                                {
-                                    TagNumber = chartMeasurement.TagNumber,
-                                    Timestamp = chartMeasurement.Time,
-                                    Temperature = chartMeasurement.Temperature,
-                                    Humidity = chartMeasurement.Humidity
-                                });
-                            }
-
+                                TagNumber = chartMeasurement.TagNumber,
+                                Timestamp = chartMeasurement.Time,
+                                Temperature = chartMeasurement.Temperature,
+                                Humidity = chartMeasurement.Humidity
+                            });
                         }
-                        /*chartData.Measurements = chartMeasurements;
-                        chartDataList.Add(chartData);*/
+
                     }
+                    chartData.Measurements = sensorMeasurements;
+                    chartDataList.Add(chartData);
                 }
             }
             con.Close();
