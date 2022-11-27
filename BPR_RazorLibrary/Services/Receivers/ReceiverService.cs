@@ -11,8 +11,8 @@ public class ReceiverService : IReceiverService
 #if DEBUG
     string url = "https://localhost:7109/api/Receiver";
 #else
-       
-        string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Receiver";
+
+    string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Receiver";
 #endif
 
     private HttpClient client;
@@ -22,9 +22,9 @@ public class ReceiverService : IReceiverService
         client = new HttpClient();
     }
 
-    public async Task<string> AssignReceiver(string serialNumber, string username)
+    public async Task<string> AssignReceiver(string serialNumber, string username, int maxTransmission, int leftTransmission)
     {
-        HttpResponseMessage message = await client.PostAsync($"{url}/assignReceiver?serialNumber={serialNumber}&username={username}", null);
+        HttpResponseMessage message = await client.PostAsync($"{url}/assignReceiver?serialNumber={serialNumber}&username={username}&maxTransmission={maxTransmission}&leftTransmission={leftTransmission}", null);
         try
         {
             string result = await message.Content.ReadAsStringAsync();

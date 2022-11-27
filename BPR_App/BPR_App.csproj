@@ -13,7 +13,7 @@
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
         <!-- Display name -->
-        <ApplicationTitle>BPR_App</ApplicationTitle>
+        <ApplicationTitle>Fasterholt</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>com.companyname.bpr_app</ApplicationId>

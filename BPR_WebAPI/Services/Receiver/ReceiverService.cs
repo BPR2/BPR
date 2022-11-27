@@ -11,9 +11,9 @@ public class ReceiverService : IReceiverService
         receiverRepo = new ReceiverRepo(configuration);
     }
 
-    public async Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName)
+    public async Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName, int maxTransmission, int leftTransmission)
     {
-        return await receiverRepo.AssignReceiverAsync(serialNumber, userName);
+        return await receiverRepo.AssignReceiverAsync(serialNumber, userName,maxTransmission,leftTransmission);
     }
 
     public async Task<List<BPR_RazorLibrary.Models.Receiver>> GetAllReceiversAsync()

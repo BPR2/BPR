@@ -12,9 +12,9 @@ namespace BPR_RazorLibrary.Services.Fields;
 public class FieldService : IFieldService
 {
 #if DEBUG
-	string url = "https://localhost:7109/api/Field";
+    string url = "https://localhost:7109/api/Field";
 #else
-   
+
     string url = "http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/Field";
 #endif
 

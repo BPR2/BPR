@@ -78,6 +78,7 @@
                                     <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 24 hours)</h5>
                                     break;
                             }
+                            <h5><i class="fa-solid fa-battery-three-quarters"></i> Estimated Receiver Battery: @CalculateBattery((int)@field?.Receiver.LeftTransmission, (int) @field?.Receiver.MaxTransmission, (int)@field?.Receiver.TimeInterval)</h5>
                             <h5><i class="fa-solid fa-tower-broadcast"></i> Sensors:</h5>
 
                             <ul>
@@ -199,5 +200,13 @@
     {
         FieldService.SetField(field);
         NavigationManager.NavigateTo("/editField");
+    }
+
+    private string CalculateBattery(int left, int max, int receiverTimeInterval)
+    {
+        double result = (double)left / (double)max * 100;
+        double daysLeft = left/(24/(receiverTimeInterval / 3600));
+
+        return result.ToString("0.0") + "% (~" + daysLeft.ToString("0") + " days left)";
     }
 }

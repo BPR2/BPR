@@ -17,7 +17,7 @@ public class ReceiverRepo : IReceiverRepo
 		connectionString = configuration["ConnectionStrings:DefaultConnection"];
 	}
 
-	public async Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName)
+	public async Task<WebResponse> AssignReceiverAsync(string serialNumber, string userName, int maxTransmission, int leftTransmission)
 	{
 		try
 		{
@@ -28,13 +28,15 @@ public class ReceiverRepo : IReceiverRepo
 			using var con = new NpgsqlConnection(connectionString);
 			con.Open();
 
-			string command = $"INSERT INTO public.receiver(accountid, serialnumber) VALUES ((SELECT accountid FROM account where username = @username), @serialNumber);";
+			string command = $"INSERT INTO public.receiver(accountid, serialnumber, max_transmission, left_transmission) VALUES ((SELECT accountid FROM account where username = @username), @serialNumber, @maxTransmission, @leftTransmission);";
 			await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
 			{
 				cmd.Parameters.AddWithValue("@username", userName);
 				cmd.Parameters.AddWithValue("@serialNumber", serialNumber);
+                cmd.Parameters.AddWithValue("@maxTransmission", maxTransmission);
+                cmd.Parameters.AddWithValue("@leftTransmission", leftTransmission);
 
-				cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQuery();
 			}
 			con.Close();
 			return WebResponse.ContentCreateSuccess;
