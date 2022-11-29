@@ -157,16 +157,13 @@
 
         try
         {
-            Console.WriteLine("hére");
             fields = await FieldService.GetAllFieldsByUserId(userId);
-
 
             if (fields.Count > 0) //only cache the field data if we managed to get anything
             {
                 await localStorage.SetItemAsync("FieldList", fields);
             }
 
-            Console.WriteLine("hére2");
             var now = DateTime.Now;
             var weekAgo = DateTime.Now.AddDays(-7); //because we want to cache a week worth of measurement data
 
@@ -174,7 +171,6 @@
 
             double cacheAge = 0;
 
-            Console.WriteLine("hére3");
             if (cacheDate != null)
                 cacheAge = DateTime.UtcNow.Subtract((DateTime)cacheDate).TotalDays;
 
@@ -191,7 +187,6 @@
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
             //we are here if we can't establish connection to the webapi, so we'll use cached data instead
             fields = await localStorage.GetItemAsync<List<Field>>("FieldList");
         }
