@@ -1,5 +1,4 @@
 ﻿using BPR_RazorLibrary.Models;
-using BPR_RazorLibrary.Pages;
 using BPR_WebAPI.Persistence.Fields;
 
 namespace BPR_WebAPI.Services.Field;
@@ -45,6 +44,15 @@ public class FieldService : IFieldService
         var result = await fieldRepo.UpdateField(field, receiverSerialNumber);
 
         if (result.response != WebResponse.ContentRetrievalSuccess) return result;
+
+        return result;
+    }
+
+    public async Task<WebResponse> RemoveFieldFromUser(int fieldId)
+    {
+        var result = await fieldRepo.RemoveFieldFromUser(fieldId);
+
+        //if (result != WebResponse.ContentRetrievalSuccess) return result;
 
         return result;
     }

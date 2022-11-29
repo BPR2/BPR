@@ -130,4 +130,20 @@ public class FieldService : IFieldService
 			throw;
 		}
 	}
+
+    public async Task<string> RemoveField(int fieldId)
+    {
+        var message = await client.PutAsync($"{url}/removeField?fieldId={fieldId}", null);
+
+        try
+        {
+            string result = await message.Content.ReadAsStringAsync();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+    }
 }

@@ -9,5 +9,6 @@ namespace BPR_WebAPI.Persistence.Fields
         Task<WebContent> UpdateField(Field field, string receiverSerialNumber);
         Task<WebResponse> CreateFieldAsync(Field field);
         Task<WebContent> GetLatestFieldByUserId(int userId);
+        Task<WebResponse> RemoveFieldFromUser(int fieldId);
     }
 }

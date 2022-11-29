@@ -11,5 +11,6 @@ namespace BPR_RazorLibrary.Services.Fields
         Task<string> UnassignReceiver(string receiverSerialNumber);
         Task<string> CreateFieldAsync(Field field);
         Task<Field> GetLatestFieldFromUser(int userId);
+        Task<string> RemoveField(int fieldId);
     }
 }

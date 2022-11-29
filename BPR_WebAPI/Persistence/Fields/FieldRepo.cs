@@ -28,11 +28,11 @@ namespace BPR_WebAPI.Persistence.Fields
 				using var con = new NpgsqlConnection(connectionString);
 				con.Open();
 
-				string command1 = "SELECT f.fieldid,f.name, f.pawLevelLimit, f.description as field_description, r.receiverid, " +
-							"r.serialnumber, rd.timestamp, rd.longitude, rd.latitude, r.time_interval, r.max_transmission, r.left_transmission " +
-							"FROM public.field f LEFT JOIN public.receiver r on f.fieldid = r.fieldid " +
-							"LEFT JOIN receiverdata rd ON rd.receiverid = r.receiverid where r.accountId = @UserId " +
-							"order by timestamp desc limit 1";
+				string command1 = "SELECT DISTINCT ON(f.fieldid) f.fieldid ,f.name, f.pawLevelLimit, f.description as field_description, r.receiverid, " +
+                            "r.serialnumber, rd.timestamp, rd.longitude, rd.latitude, r.time_interval, r.max_transmission, r.left_transmission " +
+                            "FROM public.field f JOIN public.receiver r on f.fieldid = r.fieldid " +
+                            "JOIN receiverdata rd ON rd.receiverid = r.receiverid where r.accountId = @UserId " +
+                            "order by f.fieldid, rd.timestamp desc";
 
 				await using (NpgsqlCommand cmd = new NpgsqlCommand(command1, con))
 				{
@@ -247,6 +247,28 @@ namespace BPR_WebAPI.Persistence.Fields
             catch (Exception e)
             {
                 return new WebContent(WebResponse.ContentUpdateFailure, field);
+            }
+        }
+
+		public async Task<WebResponse> RemoveFieldFromUser(int fieldId)
+		{
+            try
+            {
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+
+                string command = $"UPDATE public.receiver SET fieldid = null where fieldid = @FieldId;";
+                await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+                {
+                    cmd.Parameters.AddWithValue("@FieldId", fieldId);
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
+                return WebResponse.ContentUpdateSuccess;
+            }
+            catch (Exception e)
+            {
+                return WebResponse.ContentUpdateFailure;
             }
         }
 	}
