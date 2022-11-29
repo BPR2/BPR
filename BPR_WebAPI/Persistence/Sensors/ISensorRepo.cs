@@ -6,4 +6,7 @@ public interface ISensorRepo
 {
     Task<WebResponse> AddNewSensorAsync(string tagNumber, string serialNumber);
     Task<List<Sensor>> getAllSensorsByReceiverId(int receiverId);
+
+    Task<WebResponse> UpdateSensorAsync(string tagNumber, string serialNumber);
+    Task<WebResponse> UnassignSensorAsync(string tagNumber);
 }

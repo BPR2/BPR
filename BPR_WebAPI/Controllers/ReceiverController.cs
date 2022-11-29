@@ -64,5 +64,19 @@ namespace BPR_WebAPI.Controllers
             var result = await receiverService.GetReceiverBySerialNumber(serialNumber);
             return Ok(result);
         }
+
+        [HttpPut("unassignReceiverFromUser")]
+        public async Task<ActionResult<WebResponse>> UnAssignReceiverFromUser([FromQuery] string serialNumber)
+        {
+            var result = await receiverService.UnassignReceiverFromUser(serialNumber);
+            return Ok(result);
+        }
+
+        [HttpPut("updateReceiverToUser")]
+        public async Task<ActionResult<WebResponse>> UpdateReceiverToUser([FromQuery] string serialNumber, [FromQuery] string userName)
+        {
+            var result = await receiverService.UpdateReceiverToUser(serialNumber,userName);
+            return Ok(result);
+        }
     }
 }

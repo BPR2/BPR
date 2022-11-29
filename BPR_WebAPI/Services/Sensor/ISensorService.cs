@@ -5,4 +5,6 @@ namespace BPR_WebAPI.Services.Sensor;
 public interface ISensorService
 {
     Task<WebResponse> AddNewSensorAsync(string tagNumber, string serialNumber);
+    Task<WebResponse> UpdateSensorAsync(string tagNumber, string serialNumber);
+    Task<WebResponse> UnassignSensorAsync(string tagNumber);
 }
