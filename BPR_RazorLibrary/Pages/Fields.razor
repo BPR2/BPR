@@ -42,7 +42,7 @@
         border-radius: 20px !important;
     }
 
-    .fa-solid {
+    h5 .fa-solid {
         margin-top: 10px;
     }
 </style>
@@ -126,6 +126,7 @@
                         </div>
                     </div>
                     <button type="button" style="margin-top:5px;" class="btn btn-primary" @onclick=" () => navigateToEditField(field)">Edit</button>
+                    <button type="button" style="margin-top:5px;" class="btn btn-info" @onclick=" () => NavigateToChartPage(field)"><i class="fa-solid fa-chart-line"></i> Chart</button>
                 </div>
             </div>
         }
@@ -147,6 +148,7 @@
 @code {
     private int userId;
     private List<Field> fields = new List<Field>();
+    
     protected override async Task OnInitializedAsync()
     {
         userId = UserService.GetUserId();
@@ -165,5 +167,11 @@
         double daysLeft = left/(24/(receiverTimeInterval / 3600));
 
         return result.ToString("0.0") + "% (~" + daysLeft.ToString("0") + " days left)";
+    }
+
+    private void NavigateToChartPage(Field field)
+    {
+        FieldService.SetField(field);
+        NavigationManager.NavigateTo("/chart");
     }
 }

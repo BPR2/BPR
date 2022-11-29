@@ -49,3 +49,81 @@ function showPassword() {
     }
 }
 
+/* tmp values used for resizing charts (Making charts responsive)*/
+var tmpDatas;
+var tmpSensors;
+
+function getCharts(datas, sensors)
+{
+    tmpDatas = datas;
+    tmpSensors = sensors;
+    google.charts.load('current', { 'packages': ['line', 'corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawChart2);
+
+    function drawChart() {
+        var chartDiv = document.getElementById('chart_div');
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Day');
+        for (var i = 0; i < sensors.length; i++) {
+            data.addColumn('number', sensors[i].TagNumber);
+        }
+
+        const arr = [];
+        for (var i = 0; i < datas.length; i++) {
+            var dt = new Date(datas[i].date)
+            arr.push(new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate(), dt.getUTCHours(), dt.getUTCMinutes()))
+            for (var j = 0; j < datas[i].measurements.length; j++) {
+                arr.push(datas[i].measurements[j].temperature)
+            }
+            data.addRow(arr);
+            arr.length = 0;
+        }
+
+        var materialOptions = {
+            chart: {
+                title: 'Temperature of soil °C'
+            },
+            height: 500
+        };
+
+        var materialChart = new google.charts.Line(chartDiv);
+        materialChart.draw(data, materialOptions);
+    }
+
+    function drawChart2() {
+        var chartDiv = document.getElementById('chart_div2');
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Day');
+        for (var i = 0; i < sensors.length; i++) {
+            data.addColumn('number', sensors[i].TagNumber);
+        }
+
+        const arr = [];
+        for (var i = 0; i < datas.length; i++) {
+            var dt = new Date(datas[i].date)
+            arr.push(new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate(), dt.getUTCHours(), dt.getUTCMinutes()))
+            for (var j = 0; j < datas[i].measurements.length; j++) {
+                arr.push(datas[i].measurements[j].humidity)
+            }
+            data.addRow(arr);
+            arr.length = 0;
+        }
+
+        var materialOptions = {
+            chart: {
+                title: 'Humidity of soil %'
+            },
+            height: 500
+        };
+
+        var materialChart = new google.charts.Line(chartDiv);
+        materialChart.draw(data, materialOptions);
+    }
+}
+
+$(window).resize(function () {
+    if (tmpDatas != null && tmpSensors != null)
+        getCharts(tmpDatas, tmpSensors);
+});
+

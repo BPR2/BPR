@@ -16,4 +16,6 @@ public class Sensor
     public string? Description { get; set; }
     [JsonPropertyName("latestSensorMeasurement")]
     public SensorMeasurement? LatestSensorMeasurement { get; set; }
+
+    public List<SensorMeasurement>? SensorMeasuremens { get; set; }
 }
