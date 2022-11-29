@@ -19,7 +19,7 @@ public class ChartController : ControllerBase
     [HttpGet("getChartDataByFieldId")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<WebContent>> GetAllFieldsByUserId([FromQuery] int fieldId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+    public async Task<ActionResult<WebContent>> GetChartDataByFieldId([FromQuery] int fieldId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
     {
         var result = await chartService.GetChartDataByFieldId(fieldId,startDate,endDate.AddDays(1));
         return Ok(result);
