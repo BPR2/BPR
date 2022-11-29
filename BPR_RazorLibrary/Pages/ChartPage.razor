@@ -17,14 +17,65 @@
 
     .card {
         border-radius: 20px !important;
-        width:fit-content
     }
-</style>
+
+    .input-group
+    {
+        width:unset !important;
+    }
+
+    .alert
+    {
+        margin-top:5px !important;
+        width: fit-content;    
+    }
+
+    .btn-outline-primary {
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+    }
+
+    .form-label-group, .searchBtn {
+        margin:5px;
+    }
+    </style>
 
 <div class="container justify-content-center">
     <div class="card">
         <div class="card-body">
-            <div id="chart_div"></div>
+            <div class="row">
+                <div class="col-4 form-label-group input-group">
+                    <span class="input-group-text">From</span>
+                    <input id="startDate" class="form-control" type="date" @bind-value="from"/>
+                </div>
+                <div class="col-4 form-label-group  input-group">
+                    <span class="input-group-text">To</span>
+                    <input id="startDate" class="form-control" type="date" @bind-value="to"/>
+                </div>
+                <div class="col-2 searchBtn">
+                    <button class="btn btn-outline-primary" @onclick="search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(message))
+            {
+                <div class="alert alert-danger">
+                    @message
+                </div>
+            }
+
+        </div>
+    </div>
+    <div class="chart">
+        <div class="card">
+            <div class="card-body">
+                <div id="chart_div"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div id="chart_div2"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -35,32 +86,32 @@
     private List<SensorMeasurement> sensorMeasurements = new List<SensorMeasurement>();
     private DateTime from = new DateTime();
     private DateTime to = new DateTime();
-
+    private string message = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         to = DateTime.Now;
         from = DateTime.Now.AddDays(-7);
         field = FieldService.GetField();
         datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
-        foreach (var s in field.Receiver.Sensors)
-        {
-            foreach (var d in datas)
-            {
-                if (d.TagNumber.Equals(s.TagNumber)) {
-                    foreach (var m in d.Measurements)
-                    {
-                        var date = new DateTime(0001, 01, 01);
-                        date = date + m.Time;
-                        s.SensorMeasuremens.Add(new SensorMeasurement() { Timestamp = date, Temperature = m.Temperature, Humidity = m.Humidity });
-                    }
-                    
-                }
-            }
-
-        }
-
-        await JS.InvokeAsync<string>("getchart", datas, field.Receiver.Sensors);
+        await JS.InvokeAsync<string>("getCharts", datas, field.Receiver.Sensors);
     }
 
-
+    private async Task search() 
+    {
+        var diff = to.Day - from.Day;
+        if (diff > 7)
+        {
+            message = "Difference between From and To date cannot be more than 7 days!";
+        }
+        else if (from > to)
+        {
+            message = "From date cannot be bigger than To date!";
+        }
+        else
+        {
+            message = string.Empty;
+            datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
+            await JS.InvokeAsync<string>("getCharts", datas, field.Receiver.Sensors);
+        }
+    }
 }

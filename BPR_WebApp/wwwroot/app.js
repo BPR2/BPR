@@ -49,80 +49,81 @@ function showPassword() {
     }
 }
 
+/* tmp values used for resizing charts (Making charts responsive)*/
+var tmpDatas;
+var tmpSensors;
 
-function getchart(datas, sensors)
+function getCharts(datas, sensors)
 {
-    var chartData = datas;
+    tmpDatas = datas;
+    tmpSensors = sensors;
     google.charts.load('current', { 'packages': ['line', 'corechart'] });
     google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawChart2);
 
     function drawChart() {
         var chartDiv = document.getElementById('chart_div');
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Day');
-        //data.addColumn('number', "Temperature");
-        //data.addColumn('number', "Humidity");
         for (var i = 0; i < sensors.length; i++) {
             data.addColumn('number', sensors[i].TagNumber);
         }
 
-        for (var i = 0; i < chartData.length / sensors.length; i + sensors.length) {  
-            var dt = new Date(chartData[i].date);
-            for (var j = 0; j < chartData[i].measurements.length; j++) {
-                var dt2 = new Date("0001-01-01T"+chartData[i].measurements[j].time)
-                dt.setHours(dt2.getHours(), dt2.getMinutes(), dt2.getSeconds());
-                data.addRow([new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate(), dt.getUTCHours(), dt.getUTCMinutes()), chartData[i].measurements[j].temperature]);
-
+        const arr = [];
+        for (var i = 0; i < datas.length; i++) {
+            var dt = new Date(datas[i].date)
+            arr.push(new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate(), dt.getUTCHours(), dt.getUTCMinutes()))
+            for (var j = 0; j < datas[i].measurements.length; j++) {
+                arr.push(datas[i].measurements[j].temperature)
             }
+            data.addRow(arr);
+            arr.length = 0;
         }
-
-        //new Date(dt.getFullYear(), dt.getMonth(), dt.getDay())
-
-
-        //data.addRows([
-        //    [new Date(2022, 0, 1, 1), -.5, 20],
-        //    [new Date(2022, 0, 1, 3), .4, 35],
-        //    [new Date(2022, 0, 1, 5), .5, 40],
-        //    [new Date(2022, 0, 1, 7), 2.9, 45],
-        //    [new Date(2022, 0, 1, 9), 6.3, 50],
-        //    [new Date(2022, 0, 1, 11), 9, 40],
-        //    [new Date(2022, 0, 1, 13), 10.6, 35],
-        //    [new Date(2022, 0, 1, 15), 11, 40],
-        //    [new Date(2022, 0, 1, 17), 13.6, 45],
-        //    [new Date(2022, 0, 1, 19), 12.6, 50],
-        //    [new Date(2022, 0, 1, 21), 5.6, 45],
-        //    [new Date(2022, 0, 1, 23), 4, 45],
-        //    [new Date(2022, 0, 2, 1), 3, 55],
-        //    [new Date(2022, 0, 2, 3), .4, 50],
-        //    [new Date(2022, 0, 2, 5), .5, 55]
-        //]);
 
         var materialOptions = {
             chart: {
-                title: 'Temperature and Humidity of soil'
+                title: 'Temperature of soil °C'
             },
-            width: 900,
             height: 500
-            //series: {
-            //    // Gives each series an axis name that matches the Y-axis below.
-            //    0: { axis: 'Temps' },
-            //    1: { axis: 'Humidity' }
-            //}
-            //axes: {
-            //    // Adds labels to each axis; they don't have to match the axis names.
-            //    y: {
-            //        Temps: { label: 'Temps °C' },
-            //        Humidity: { label: 'Humidity %' }
-            //    }
-            //}
         };
 
-        function drawMaterialChart() {
-            var materialChart = new google.charts.Line(chartDiv);
-            materialChart.draw(data, materialOptions);
+        var materialChart = new google.charts.Line(chartDiv);
+        materialChart.draw(data, materialOptions);
+    }
+
+    function drawChart2() {
+        var chartDiv = document.getElementById('chart_div2');
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Day');
+        for (var i = 0; i < sensors.length; i++) {
+            data.addColumn('number', sensors[i].TagNumber);
         }
 
-        drawMaterialChart();
+        const arr = [];
+        for (var i = 0; i < datas.length; i++) {
+            var dt = new Date(datas[i].date)
+            arr.push(new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate(), dt.getUTCHours(), dt.getUTCMinutes()))
+            for (var j = 0; j < datas[i].measurements.length; j++) {
+                arr.push(datas[i].measurements[j].humidity)
+            }
+            data.addRow(arr);
+            arr.length = 0;
+        }
+
+        var materialOptions = {
+            chart: {
+                title: 'Humidity of soil %'
+            },
+            height: 500
+        };
+
+        var materialChart = new google.charts.Line(chartDiv);
+        materialChart.draw(data, materialOptions);
     }
 }
+
+$(window).resize(function () {
+    if (tmpDatas != null && tmpSensors != null)
+        getCharts(tmpDatas, tmpSensors);
+});
 

@@ -84,7 +84,7 @@ public class ChartRepo : IChartRepo
             }
             con.Close();
 
-            return new WebContent(WebResponse.ContentRetrievalSuccess, chartMeasurements);
+            return new WebContent(WebResponse.ContentRetrievalSuccess, chartDataList);
         }
         catch (Exception e)
         {
