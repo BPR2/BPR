@@ -43,6 +43,48 @@ public class SensorRepo : ISensorRepo
         }
     }
 
+    public async Task<WebResponse> UpdateSensorAsync(string tagNumber, string serialNumber)
+    {
+        try
+        {
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            string receiverCheckCommand = $"SELECT receiverid FROM public.sensor WHERE tagNumber = @TagNumber;";
+            string receiverCheck = "";
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(receiverCheckCommand, con))
+            {
+                cmd.Parameters.AddWithValue("@TagNumber", NpgsqlTypes.NpgsqlDbType.Varchar, tagNumber);
+
+                await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
+                    {
+                        receiverCheck = reader["receiverid"].ToString();
+                    }
+            }
+
+            if (!receiverCheck.Equals(""))
+            {
+                return WebResponse.ContentUpdateFailure;
+            }
+
+            string command = $"UPDATE public.sensor SET receiverid= (SELECT receiverid FROM receiver where serialnumber = @SerialNumber) WHERE tagNumber = @TagNumber;";
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                cmd.Parameters.AddWithValue("@TagNumber", tagNumber);
+                cmd.Parameters.AddWithValue("@SerialNumber", serialNumber);
+
+                cmd.ExecuteNonQuery();
+            }
+            con.Close();
+            return WebResponse.ContentUpdateSuccess;
+        }
+        catch (Exception e)
+        {
+            return WebResponse.ContentUpdateFailure;
+        }
+    }
+
     private async Task<bool> IsSensorAlreadyExist(string desiredTagNumber)
     {
         var result = await GetSensorAsyncTagNumber(desiredTagNumber);
@@ -116,6 +158,29 @@ public class SensorRepo : ISensorRepo
         {
 
             throw;
+        }
+    }
+
+    public async Task<WebResponse> UnassignSensorAsync(string tagNumber)
+    {
+        try
+        {
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            string command = $"UPDATE public.sensor SET receiverid = null WHERE tagNumber = @TagNumber;";
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                cmd.Parameters.AddWithValue("@TagNumber", tagNumber);
+
+                cmd.ExecuteNonQuery();
+            }
+            con.Close();
+            return WebResponse.ContentUpdateSuccess;
+        }
+        catch (Exception e)
+        {
+            return WebResponse.ContentUpdateFailure;
         }
     }
 }

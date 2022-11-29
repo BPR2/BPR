@@ -1,12 +1,27 @@
 ﻿@using BPR_RazorLibrary.Models
 @using BPR_RazorLibrary.Services.Fields
 @using BPR_RazorLibrary.Services.Receivers
+@using BPR_RazorLibrary.Services.Sensor
 @using BPR_RazorLibrary.Services.Users
 @using System.Text.Json
+@using Microsoft.JSInterop
 
 @inject IReceiverService ReceiverService
+@inject ISensorService SensorService
+@inject IJSRuntime JSRuntime
 
 <style>
+
+
+    .form-label-group, .form-label-group label {
+        margin-top: 0.1rem !important;
+    }
+
+    .fa-solid {
+        color: white;
+        top: 3px;
+    }
+
     tbody tr:nth-child(odd) {
         background-color: #eee;
     }
@@ -97,7 +112,7 @@
         border-bottom: 1px solid #ddd;
     }
 
-     .card {
+    .card {
         margin-top: 10px;
     }
 
@@ -134,9 +149,19 @@
 
                         @if (receiver.IsRowExpanded)
                         {
-                            @for (int i = 1; i <= receiver.Sensors.Count; i++)
+                            foreach (var sensor in receiver.Sensors)
                             {
-                                <td data-label="Sensor @i">@receiver.Sensors[i-1].TagNumber</td>
+                                <td data-label="@sensor.TagNumber">
+                                    <div class="form-label-group input-group form-group">
+                                        <span class="input-group-text" style="background:red!important; float: left;" @onclick=" () => UnassignSensor(sensor.TagNumber)"><i class="fa-solid fa-circle-xmark"></i> </span>
+                                    </div>
+                                </td>
+                            }
+                            @if (!receiver.Description.Equals("Not Assigned"))
+                            {
+                                <td data-label="Unassign Receiver">
+                                    <button type="button" style="width:100px; float: none; font-size: 14px;" class="btn btn-danger" @onclick=" () => UnassignReceiverFromUser(receiver)">Unassign</button>
+                                </td>
                             }
                         }
                     </tr>
@@ -170,14 +195,32 @@
                     </tr>
                     @if (receiver.IsRowExpanded)
                     {
-                        @for (int i = 1; i <= receiver.Sensors.Count; i++)
+                        int i = 1;
+                        foreach (var item in receiver.Sensors)
                         {
                             <tr style="display: none"></tr>
                             <tr class="expandedRow">
                                 <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">
                                     Sensor @i:
                                 </td>
-                                <td>@receiver.Sensors[i-1].TagNumber</td>
+                                <td>@item.TagNumber</td>
+                                <td>
+                                    <div class="form-label-group input-group form-group">
+                                        <span class="input-group-text" style="background:red!important; float: right;" @onclick=" () => UnassignSensor(item.TagNumber)"><i class="fa-solid fa-circle-xmark"></i> </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+
+                        @if (!receiver.Description.Equals("Not Assigned"))
+                        {
+                            <tr style="display: none"></tr>
+                            <tr class="expandedRow">
+                                <td>
+                                    <button type="button" style="width:100px; float: none; font-size: 14px;" class="btn btn-danger" @onclick=" () => UnassignReceiverFromUser(receiver)">Unassign Receiver</button>
+                                </td>
+                                <td></td>
                                 <td></td>
                             </tr>
                         }
@@ -220,6 +263,33 @@ else
 
         receiver.IsRowExpanded = !receiver.IsRowExpanded;
         StateHasChanged();
+    }
+
+    public async Task UnassignSensor(string TagNumber)
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to unassign sensor '{TagNumber}'?"))
+            return;
+
+        await SensorService.UnassignSensor(TagNumber);
+
+        await OnInitializedAsync();
+    }
+
+    public async Task UnassignReceiverFromUser(Receiver receiver)
+    {
+        if (receiver.FieldId == 0)
+        {
+            if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to unassign receiver '{receiver.SerialNumber}' from the user?"))
+                return;
+
+            await ReceiverService.UnassignReceiverFromUser(receiver.SerialNumber);
+ 
+            await OnInitializedAsync();
+        }
+        else
+        {
+            await JSRuntime.InvokeAsync<bool>("confirm", "This receiver is assigned to a field, so it can't be unassigned!");
+        }
     }
 }
 
