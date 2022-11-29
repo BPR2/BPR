@@ -40,7 +40,14 @@ public class FieldController : ControllerBase
         return Ok(result);
     }
 
-	[HttpPost("createField")]
+    [HttpPut("removeField")]
+    public async Task<ActionResult<WebResponse>> removeField([FromQuery] int fieldId)
+    {
+        var result = await fieldService.RemoveFieldFromUser(fieldId);
+        return Ok(result);
+    }
+
+    [HttpPost("createField")]
 	public async Task<ActionResult<WebResponse>> CreateField([FromBody] Field field)
 	{
 		var result = await fieldService.CreateFieldAsync(field);

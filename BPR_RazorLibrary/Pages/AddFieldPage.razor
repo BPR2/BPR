@@ -99,25 +99,33 @@
                 </div>
                 <div class="form-label-group input-group form-group width">
                     <span class="input-group-text"><i class="fa-solid fa-satellite-dish"></i></span>
-                    <input class="form-control" type="text" placeholder="Receiver serial number" list="receiverSearch" @bind-value="selectedReceiverSerial" required />
+                    <select class="form-select" @bind="@selectedReceiverSerial">
+                        @foreach (var item in receivers)
+                        {
+                            <option value=@item.SerialNumber>@item.SerialNumber</option>
+                        }
+                    </select>
                 </div>
-                <datalist id="receiverSearch">
-                    @foreach (var item in receivers)
-                    {
-                        <option>@item.SerialNumber</option>
-                    }
-                </datalist>
 
                 <div class="form-label-group">
                     <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
                 </div>
             </EditForm>
 
-            @if (!string.IsNullOrWhiteSpace(message))
+            @if (!string.IsNullOrWhiteSpace(message) || !string.IsNullOrWhiteSpace(message1))
             {
-                <div class="alert alert-danger">
-                    @message
-                </div>
+                @if (!string.IsNullOrWhiteSpace(message))
+                {
+                    <div class="alert alert-danger">
+                        @message
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-success">
+                        @message1
+                    </div>
+                }
             }
         </div>
     </div>
@@ -127,6 +135,7 @@
 @code {
     int? userID;
     List<Receiver> receivers = new();
+    List<Receiver> receiversForRemove = new();
 
     //new field
     Field newField = new();
@@ -136,7 +145,8 @@
 
     string selectedReceiverSerial = String.Empty;
 
-    string message = String.Empty;
+    private string message = String.Empty;
+    private string message1 = String.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -145,17 +155,23 @@
         if (userID == null)
         {
             message = "Unable to find user ID. Please log-in and reload the page";
+            message1 = String.Empty;
         }
 
         receivers = await _ReceiverService.GetReceiversByUserID((int)userID);
 
         //if the receiver already has an assigned field, don't display it to the user
-        for (int i = 0; i < receivers.Count; i++)
+        foreach (var receiver in receivers)
         {
-            if (receivers[i].FieldId != null)
+            if (receiver.FieldId != null)
             {
-                receivers.Remove(receivers[i]);
+                receiversForRemove.Add(receiver);
             }
+        }
+
+        foreach (var item in receiversForRemove)
+        {
+            receivers.Remove(item);
         }
     }
 
@@ -164,24 +180,28 @@
         if (String.IsNullOrEmpty(selectedReceiverSerial))
         {
             message = "Please select a receiver to assign to field";
+            message1 = String.Empty;
             return;
         }
 
         if (pawLevelLimit < 0)
         {
             message = "Paw Level Limit cannot be less than zero";
+            message1 = String.Empty;
             return;
         }
 
         if (IsDigitsOnly(selectedReceiverSerial) == false)
         {
             message = "Invalid receiver serial number";
+            message1 = String.Empty;
             return;
         }
 
         if(!receivers.Any(r => r.SerialNumber == selectedReceiverSerial))
         {
             message = "Please select an existing receiver!";
+            message1 = String.Empty;
             return;
         }
 
@@ -195,16 +215,19 @@
         if (responseMessage.Equals("13"))
         {
             message = "Field already exists!";
+            message1 = String.Empty;
             return;
         }
         else if (responseMessage.Equals("10"))
         {
             message = "An error happened when adding field!";
+            message1 = String.Empty;
             return;
         }
         else
         {
-            message = "Field successfully created!";
+            message1 = "Field successfully created!";
+            message = String.Empty;
             name = String.Empty;
             description = String.Empty;
             pawLevelLimit = 0;
@@ -215,6 +238,7 @@
         if (!addedField.Equals(newField))
         {
             message = "An error happened when adding field!";
+            message1 = String.Empty;
             return;
         }
 
@@ -227,14 +251,17 @@
         if (responseMessage.Equals("13"))
         {
             message = "Field already exists!";
+            message1 = String.Empty;
         }
         else if (responseMessage.Equals("10"))
         {
             message = "An error happened when adding field!";
+            message1 = String.Empty;
         }
         else
         {
-            message = "Field successfully created!";
+            message1 = "Field successfully created!";
+            message = String.Empty;
             name = String.Empty;
             description = String.Empty;
             pawLevelLimit = 0;

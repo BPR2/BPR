@@ -84,16 +84,14 @@
 
                 <div class="form-label-group input-group form-group">
                     <span class="input-group-text"><i class="fa-solid fa-tower-cell"></i> </span>
-                    <input id="SensorSerialNumber" type="text" class="form-control" placeholder="Sensor Serial Number" list="receiverSearch" @bind-value="receiverSerialNumber" required/>
+                    <select class="form-select" @bind="@receiverSerialNumber">
+                        @foreach (var item in receivers)
+                        {
+                            <option value=@item.SerialNumber>@item.SerialNumber</option>
+                        }
+                    </select>
                     <span class="input-group-text" style="background:#1DB922!important" @onclick="Changed"><i class="fa-solid fa-rotate-right"></i> </span>
                 </div>
-
-                <datalist id="receiverSearch">
-                    @foreach (var item in receivers)
-                    {
-                        <option onchange="Changed">@item.SerialNumber</option>
-                    }
-                </datalist>
 
                 <div class="form-label-group input-group form-group timeInterval" id="timeInterval">
                     <span class="input-group-text"> <i class="fa-sharp fa-solid fa-clock"></i> </span>
@@ -110,7 +108,6 @@
                     @foreach (var s in field.Receiver.Sensors)
                     {
                         <div class="form-label-group input-group form-group">
-
                             <span class="input-group-text" title="@s.TagNumber"><i class="fa-solid fa-tower-broadcast" title="@s.TagNumber"></i> </span>
                             <InputTextArea class="form-control" @bind-Value="@s.Description" placeholder="@s.TagNumber" />
                         </div>
@@ -146,10 +143,11 @@
 @code {
     private Field? field = new Field();
     private string? message = string.Empty;
-    List<Receiver> receivers = new List<Receiver>();
+    private List<Receiver> receivers = new List<Receiver>();
     private string receiverSerialNumber = string.Empty;
     private string currentReceiverNO = string.Empty;
     private int selectedTimeInterval;
+    private List<Receiver> receiversForRemove = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,6 +156,19 @@
         currentReceiverNO = field.Receiver.SerialNumber;
         receivers = await ReceiverService.GetReceiversByUserID(UserService.GetUserId());
         selectedTimeInterval = field.Receiver.TimeInterval;
+
+        foreach (var receiver in receivers)
+        {
+            if (receiver.FieldId != null && receiver.SerialNumber != currentReceiverNO)
+            {
+                receiversForRemove.Add(receiver);
+            }
+        }
+
+        foreach (var item in receiversForRemove)
+        {
+            receivers.Remove(item);
+        }
     }
 
     private async Task UpdateField()
@@ -177,14 +188,14 @@
 
     private async void Changed()
     {
-        if (!field.Receiver.SerialNumber.Equals(receiverSerialNumber))
+        /*if (!field.Receiver.SerialNumber.Equals(receiverSerialNumber))
         {
             if (receivers.Exists(x => x.SerialNumber == receiverSerialNumber))
-            {
+            {*/
                 field.Receiver = await ReceiverService.GetReceiverBySerialNumber(receiverSerialNumber);
                 selectedTimeInterval = field.Receiver.TimeInterval;
                 StateHasChanged();
-            }
-        }
+            //}
+        //}
     }
 }
