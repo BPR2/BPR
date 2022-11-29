@@ -252,8 +252,18 @@
             string responese = await _ReceiverService.AssignReceiver(serialNumber, username, maxTransmission, leftTransmission);
             if (responese.Equals("13"))
             {
-                message = "Serial Number is already assigned!";
-                message1 = String.Empty;
+                string response1 = await _ReceiverService.UpdateReceiverToUser(serialNumber, username);
+
+                if (response1.Equals("8"))
+                {
+                    message = "Receiver is already assigned!";
+                    message1 = String.Empty;
+                }
+                else if (response1.Equals("7"))
+                {
+                    message1 = "Receiver successfully reassigned!";
+                    message = String.Empty;
+                }
             }
             else if (responese.Equals("10") || username.Equals(String.Empty))
             {
@@ -263,7 +273,7 @@
             else
             {
                 message = String.Empty;
-                message1 = "Receiver successfully assigned!";
+                message1 = "Receiver successfully added!";
                 serialNumber = String.Empty;
                 username = String.Empty;
                 maxTransmission = 0;
@@ -284,8 +294,17 @@
         string responese = await _SensorService.AddNewSensor(tagNumber, sensorSerialNumber);
         if (responese.Equals("13"))
         {
-            message = "Tag Number is already assigned!";
-            message1 = String.Empty;
+            string response1 = await _SensorService.UpdateSensor(tagNumber, sensorSerialNumber);
+            if (response1.Equals("8"))
+            {
+                message = "Tag Number is already assigned!";
+                message1 = String.Empty;
+            }
+            else if (response1.Equals("7"))
+            {
+                message1 = "Sensor successfully assigned!";
+                message = String.Empty;
+            }
         }
         else if (responese.Equals("10"))
         {

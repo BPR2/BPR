@@ -15,4 +15,14 @@ public class SensorService : ISensorService
     {
        return await sensorRepo.AddNewSensorAsync(tagNumber, serialNumber);
     }
+
+    public async Task<WebResponse> UnassignSensorAsync(string tagNumber)
+    {
+        return await sensorRepo.UnassignSensorAsync(tagNumber);
+    }
+
+    public async Task<WebResponse> UpdateSensorAsync(string tagNumber, string serialNumber)
+    {
+        return await sensorRepo.UpdateSensorAsync(tagNumber, serialNumber);
+    }
 }

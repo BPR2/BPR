@@ -10,4 +10,6 @@ public interface IReceiverService
     Task<string> AssignFieldToReceiver(Receiver receiver);
     Task<string> UpdateReceiverTimeInterval(int timeInterval, string serialNumber);
     Task<Receiver> GetReceiverBySerialNumber(string serialNumber);
+    Task<string> UnassignReceiverFromUser(string serialNumber);
+    Task<string> UpdateReceiverToUser(string serialNumber, string userName);
 }

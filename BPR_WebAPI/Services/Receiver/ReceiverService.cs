@@ -45,5 +45,15 @@ public class ReceiverService : IReceiverService
     {
         return await receiverRepo.GetReceiverBySerialNumber(serialNumber);
     }
+
+    public async Task<WebResponse> UnassignReceiverFromUser(string serialNumber)
+    {
+        return await receiverRepo.UnassignReceiverFromUser(serialNumber);
+    }
+
+    public async Task<WebResponse> UpdateReceiverToUser(string serialNumber, string userName)
+    {
+        return await receiverRepo.UpdateReceiverToUser(serialNumber, userName);
+    }
 }
 

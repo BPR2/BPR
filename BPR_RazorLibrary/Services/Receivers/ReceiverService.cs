@@ -129,7 +129,6 @@ public class ReceiverService : IReceiverService
 
     public async Task<string> UpdateReceiverTimeInterval(int timeInterval, string serialNumber)
     {
-        //Fasterholt API
         HttpContent content = new StringContent(
                 timeInterval.ToString(),
                 Encoding.UTF8,
@@ -167,6 +166,38 @@ public class ReceiverService : IReceiverService
             var contentResult = JsonSerializer.Deserialize<Receiver>(json);
 
             return contentResult;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+    }
+
+    public async Task<string> UnassignReceiverFromUser(string serialNumber)
+    {
+        var message = await client.PutAsync($"{url}/unassignReceiverFromUser?serialNumber={serialNumber}", null);
+
+        try
+        {
+            string result = await message.Content.ReadAsStringAsync();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+    }
+
+    public async Task<string> UpdateReceiverToUser(string serialNumber, string userName)
+    {
+        var message = await client.PutAsync($"{url}/updateReceiverToUser?serialNumber={serialNumber}&userName={userName}", null);
+
+        try
+        {
+            string result = await message.Content.ReadAsStringAsync();
+            return result;
         }
         catch (Exception ex)
         {
