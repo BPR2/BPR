@@ -11,13 +11,13 @@
     }
 }
 
-function getMap(long, lat) {
+function getMap(fieldId, long, lat) {
     latlng = new google.maps.LatLng(lat, long);
     var options = {
         zoom: 18, center: latlng,
         mapTypeId: 'satellite'
     };
-    map = new google.maps.Map(document.getElementById("map"), options);
+    map = new google.maps.Map(document.getElementById(fieldId), options);
 
     new google.maps.Marker({
         position: latlng,
