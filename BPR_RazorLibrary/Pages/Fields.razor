@@ -138,9 +138,12 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" style="margin-top:5px;" class="btn btn-primary" @onclick=" () => navigateToEditField(field)">Edit</button>
-                    <button type="button" style="margin-top:5px;" class="btn btn-info" @onclick=" () => NavigateToChartPage(field)"><i class="fa-solid fa-chart-line"></i> Chart</button>
-                    <button type="button" style="margin-top:5px;" class="btn btn-danger">Delete field</button>
+                    <button type="button" style="margin:5px;" class="btn btn-primary" @onclick=" () => navigateToEditField(field)">Edit</button>
+                    @if (field?.Receiver?.Sensors.Count > 0) 
+                    {
+                        <button type="button" style="margin:5px;" class="btn btn-info" @onclick=" () => NavigateToChartPage(field)"><i class="fa-solid fa-chart-line"></i> Chart</button>
+                    }
+                    <button type="button" style="margin:5px;" class="btn btn-danger">Delete field</button>
                 </div>
             </div>
         }
