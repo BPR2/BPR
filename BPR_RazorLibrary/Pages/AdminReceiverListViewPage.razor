@@ -20,6 +20,7 @@
     .fa-solid {
         color: white;
         top: 3px;
+        position:inherit !important;
     }
 
     tbody tr:nth-child(odd) {
@@ -120,8 +121,9 @@
         border-radius: 20px !important;
     }
 
-    .fa-solid {
-        margin-top: 10px;
+    .col-2{
+    float:right;
+    width:fit-content !important;
     }
 
 </style>
@@ -152,9 +154,7 @@
                             foreach (var sensor in receiver.Sensors)
                             {
                                 <td data-label="@sensor.TagNumber">
-                                    <div class="form-label-group input-group form-group">
-                                        <span class="input-group-text" style="background:red!important; float: left;" @onclick=" () => UnassignSensor(sensor.TagNumber)"><i class="fa-solid fa-circle-xmark"></i> </span>
-                                    </div>
+                                    <button type="button" style="margin-top:5px;" class="btn btn-danger" @onclick=" () => UnassignSensor(sensor.TagNumber)"><i class="fa-solid fa-circle-xmark"></i></button>
                                 </td>
                             }
                             @if (!receiver.Description.Equals("Not Assigned"))
@@ -204,10 +204,8 @@
                                     Sensor @i:
                                 </td>
                                 <td>@item.TagNumber</td>
-                                <td>
-                                    <div class="form-label-group input-group form-group">
-                                        <span class="input-group-text" style="background:red!important; float: right;" @onclick=" () => UnassignSensor(item.TagNumber)"><i class="fa-solid fa-circle-xmark"></i> </span>
-                                    </div>
+                                <td>                                    
+                                     <button type="button" style="margin-top:5px;" class="btn btn-danger" @onclick=" () => UnassignSensor(item.TagNumber)"><i class="fa-solid fa-circle-xmark"></i></button>
                                 </td>
                             </tr>
                             i++;
