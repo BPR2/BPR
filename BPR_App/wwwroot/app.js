@@ -62,7 +62,7 @@ function getCharts(datas, sensors) {
     function drawChart() {
         var chartDiv = document.getElementById('chart_div');
         var data = new google.visualization.DataTable();
-        data.addColumn('date', 'Day');
+        data.addColumn('date', '');
         for (var i = 0; i < sensors.length; i++) {
             data.addColumn('number', sensors[i].TagNumber);
         }
@@ -92,7 +92,7 @@ function getCharts(datas, sensors) {
     function drawChart2() {
         var chartDiv = document.getElementById('chart_div2');
         var data = new google.visualization.DataTable();
-        data.addColumn('date', 'Day');
+        data.addColumn('date', '');
         for (var i = 0; i < sensors.length; i++) {
             data.addColumn('number', sensors[i].TagNumber);
         }
