@@ -67,7 +67,7 @@
         @foreach (var field in fields)
         {
             <div class="card">
-                <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#field_@field.Id" onclick="expandCollapse(this); getMap(@field.Receiver.ReceiverLatestData.Longitude, @field.Receiver.ReceiverLatestData.Latitude);">
+                <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#field_@field.Id" onclick="expandCollapse(this); getMap(@field.Receiver.ReceiverId.ToString(),@field.Receiver.ReceiverLatestData.Longitude, @field.Receiver.ReceiverLatestData.Latitude);">
                     <i class="fa-solid fa-wheat-awn"></i> <span> @field.Name <i class="fa-solid fa-angle-down"></i></span>
                 </button>
                 <div class="card-body collapse" id="field_@field.Id">
@@ -127,7 +127,7 @@
                             </ul>
                         </div>
                         <div class="col-md-6">
-                            <div id="map" class="card map">
+                            <div id="@field.Receiver.ReceiverId.ToString()" class="card map">
                             </div>
                             <div>
                                 <h6><i class="fa-solid fa-align-left"></i> Description:</h6>
