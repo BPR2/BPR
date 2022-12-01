@@ -143,7 +143,7 @@
                         <button type="button" style="margin:5px;" class="btn btn-info" @onclick=" () => NavigateToChartPage(field)"><i class="fa-solid fa-chart-line"></i> Chart</button>
                     }
                     <button type="button" style="margin:5px;" class="btn btn-primary" @onclick=" () => navigateToEditField(field)">Edit</button>
-                    <button type="button" style="margin:5px;" class="btn btn-danger">Delete field</button>
+                    <button type="button" style="margin:5px;" class="btn btn-danger" @onclick=" () => RemoveField(field)">Remove field</button>
                 </div>
             </div>
         }
@@ -190,5 +190,14 @@
     {
         FieldService.SetField(field);
         NavigationManager.NavigateTo("/chart");
+    }
+
+    private async Task RemoveField(Field field)
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to remove '{field.Name}' field?"))
+            return;
+
+        await FieldService.RemoveField(field.Id);
+        await OnInitializedAsync();
     }
 }
