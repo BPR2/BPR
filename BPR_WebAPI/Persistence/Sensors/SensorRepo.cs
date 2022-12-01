@@ -183,4 +183,28 @@ public class SensorRepo : ISensorRepo
             return WebResponse.ContentUpdateFailure;
         }
     }
+
+    public async Task<WebResponse> UpdateSensorDescription(string tagNumber, string description)
+    {
+        try
+        {
+            using var con = new NpgsqlConnection(connectionString);
+            con.Open();
+
+            string command = $"UPDATE public.sensor SET description = @Description WHERE tagNumber = @TagNumber;";
+            await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+            {
+                cmd.Parameters.AddWithValue("@TagNumber", tagNumber);
+                cmd.Parameters.AddWithValue("@Description", description);
+
+                cmd.ExecuteNonQuery();
+            }
+            con.Close();
+            return WebResponse.ContentUpdateSuccess;
+        }
+        catch (Exception e)
+        {
+            return WebResponse.ContentUpdateFailure;
+        }
+    }
 }

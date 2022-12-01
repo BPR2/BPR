@@ -29,6 +29,13 @@ public class SensorController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("updateSensorDescription")]
+    public async Task<ActionResult<WebResponse>> UpdateSensorDescription([FromQuery] string tagNumber, [FromQuery] string description)
+    {
+        var result = await sensorService.UpdateSensorDescription(tagNumber, description);
+        return Ok(result);
+    }
+
     [HttpPut("unassignSensor")]
     public async Task<ActionResult<WebResponse>> UnassignSensor([FromQuery] string tagNumber)
     {

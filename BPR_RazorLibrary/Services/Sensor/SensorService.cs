@@ -61,4 +61,19 @@ public class SensorService : ISensorService
             return null;
         }
     }
+
+    public async Task<string> UpdateSensorDescription(string tagNumber, string description)
+    {
+        HttpResponseMessage message = await client.PutAsync($"{url}/updateSensorDescription?tagNumber={tagNumber}&description={description}", null);
+        try
+        {
+            string result = await message.Content.ReadAsStringAsync();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+    }
 }
