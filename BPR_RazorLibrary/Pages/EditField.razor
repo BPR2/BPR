@@ -3,12 +3,15 @@
 @using BPR_RazorLibrary.Services.Fields;
 @using BPR_RazorLibrary.Models;
 @using BPR_RazorLibrary.Services.Receivers
+@using BPR_RazorLibrary.Services.Sensor;
 @using BPR_RazorLibrary.Services.Users;
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
+
 @inject IFieldService FieldService;
 @inject IReceiverService ReceiverService;
 @inject IUserService UserService;
+@inject ISensorService SensorService;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 
@@ -148,6 +151,7 @@
     private string currentReceiverNO = string.Empty;
     private int selectedTimeInterval;
     private List<Receiver> receiversForRemove = new();
+    private bool canUpdate = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -175,10 +179,23 @@
     {
         if (receivers.Exists(x => x.SerialNumber == receiverSerialNumber))
         {
-            await FieldService.UpdateField(field, receiverSerialNumber);
-            field.Receiver = await ReceiverService.GetReceiverBySerialNumber(receiverSerialNumber);
-            await ReceiverService.UpdateReceiverTimeInterval(selectedTimeInterval, field.Receiver.SerialNumber);
-            message = "Field Updated!";
+            if (canUpdate && field.Receiver.SerialNumber == receiverSerialNumber)
+            {
+                foreach (var sensor in field.Receiver.Sensors)
+                {
+                    await SensorService.UpdateSensorDescription(sensor.TagNumber, sensor.Description);
+                }
+                field.Receiver = await ReceiverService.GetReceiverBySerialNumber(receiverSerialNumber);
+                await FieldService.UpdateField(field.Id, field.Name, field.Description, field.PawLevelLimit, field.Receiver.SerialNumber, currentReceiverNO);
+                currentReceiverNO = field.Receiver.SerialNumber;
+                await ReceiverService.UpdateReceiverTimeInterval(selectedTimeInterval, field.Receiver.SerialNumber);
+                message = "Field Updated!";
+                canUpdate = false;
+            }
+            else
+            {
+                message = "Press receiver refresh button!";
+            }
         }
         else
         {
@@ -188,14 +205,9 @@
 
     private async void Changed()
     {
-        /*if (!field.Receiver.SerialNumber.Equals(receiverSerialNumber))
-        {
-            if (receivers.Exists(x => x.SerialNumber == receiverSerialNumber))
-            {*/
-                field.Receiver = await ReceiverService.GetReceiverBySerialNumber(receiverSerialNumber);
-                selectedTimeInterval = field.Receiver.TimeInterval;
-                StateHasChanged();
-            //}
-        //}
+        field.Receiver = await ReceiverService.GetReceiverBySerialNumber(receiverSerialNumber);
+        selectedTimeInterval = field.Receiver.TimeInterval;
+        canUpdate = true;
+        StateHasChanged();
     }
 }

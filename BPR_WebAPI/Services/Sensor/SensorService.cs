@@ -25,4 +25,9 @@ public class SensorService : ISensorService
     {
         return await sensorRepo.UpdateSensorAsync(tagNumber, serialNumber);
     }
+
+    public async Task<WebResponse> UpdateSensorDescription(string tagNumber, string description)
+    {
+        return await sensorRepo.UpdateSensorDescription(tagNumber, description);
+    }
 }

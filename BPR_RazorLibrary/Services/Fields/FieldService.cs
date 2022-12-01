@@ -1,8 +1,11 @@
 using BPR_RazorLibrary.Models;
 using BPR_RazorLibrary.Pages;
+using Smart.Blazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -54,16 +57,9 @@ public class FieldService : IFieldService
         this.field = field;
     }
 
-    public async Task UpdateField(Field field, string receiverSerialNumber)
+    public async Task UpdateField(int FieldId, string FieldName, string FieldDescription, int? FieldPawLevel, string SerialNumber, string unassignReceiver)
     {
-        string fieldSerialized = JsonSerializer.Serialize(field);
-
-        HttpContent content = new StringContent(
-                fieldSerialized,
-                Encoding.UTF8,
-                "application/json"
-                );
-        await client.PutAsync($"{url}/updateField?serialNumber={receiverSerialNumber}", content);
+        await client.PutAsync($"{url}/updateField?FieldId={FieldId}&FieldName={FieldName}&FieldDescription={FieldDescription}&FieldPawLevel={FieldPawLevel}&SerialNumber={SerialNumber}&unassignReceiver={unassignReceiver}", null);
     }
 
     public async Task<string> UnassignReceiver(string receiverSerialNumber)
