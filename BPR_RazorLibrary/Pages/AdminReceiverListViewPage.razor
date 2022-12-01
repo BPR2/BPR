@@ -24,11 +24,11 @@
     }
 
     tbody tr:nth-child(odd) {
-        background-color: #eee;
+        background-color: #e2e3e5;
     }
 
     tbody tr:nth-child(even) {
-        background-color: #D3D3D3;
+        background-color: white;
     }
 
     table {
@@ -79,13 +79,11 @@
             }
 
             table tr {
-                border-bottom: 3px solid #ddd;
                 display: block;
                 margin-bottom: .625em;
             }
 
             table td {
-                border-bottom: 1px solid #ddd;
                 display: block;
                 font-size: .8em;
                 text-align: right;
@@ -110,19 +108,19 @@
 
     .expandedRow {
         border-top: 0;
-        border-bottom: 1px solid #ddd;
     }
 
     .card {
         margin-top: 10px;
-    }
-
-    .card {
-        border-radius: 20px !important;
+        padding:0px !important;
     }
 
     .col-2{
     float:right;
+    width:fit-content !important;
+    }
+
+    .btn-danger{
     width:fit-content !important;
     }
 
@@ -132,100 +130,104 @@
 @if (receivers.Any())
 {
     <div class="smallTable">
-        <table class="table">
-            <tbody>
-                @foreach (var receiver in receivers.OrderBy(r => r.SerialNumber))
-                {
-                    <tr @onclick="() => TrClickedAtIndex(receiver, receivers)">
-                        <td data-label="Serial Number">@receiver.SerialNumber</td>
-                        <td data-label="Assigned User">@receiver.Description</td>
-                        @if (@receiver.ReceiverLatestData != null)
-                        {
-                            <td data-label="Last Update">@receiver.ReceiverLatestData.Timestamp</td>
-                        }
-                        else
-                        {
-                            <td data-label="Last Update">No update</td>
-                        }
+        <div class="card">
+            <table class="table">
+                <tbody>
+                    @foreach (var receiver in receivers.OrderBy(r => r.SerialNumber))
+                    {
+                        <tr @onclick="() => TrClickedAtIndex(receiver, receivers)">
+                            <td data-label="Serial Number">@receiver.SerialNumber</td>
+                            <td data-label="Assigned User">@receiver.Description</td>
+                            @if (@receiver.ReceiverLatestData != null)
+                            {
+                                <td data-label="Last Update">@receiver.ReceiverLatestData.Timestamp</td>
+                            }
+                            else
+                            {
+                                <td data-label="Last Update">No update</td>
+                            }
 
 
-                        @if (receiver.IsRowExpanded)
-                        {
-                            foreach (var sensor in receiver.Sensors)
+                            @if (receiver.IsRowExpanded)
                             {
-                                <td data-label="@sensor.TagNumber">
-                                    <button type="button" style="margin-top:5px;" class="btn btn-danger" @onclick=" () => UnassignSensor(sensor.TagNumber)"><i class="fa-solid fa-circle-xmark"></i></button>
-                                </td>
+                                foreach (var sensor in receiver.Sensors)
+                                {
+                                    <td data-label="@sensor.TagNumber">
+                                        <button type="button" style="margin-top:5px;" class="btn btn-danger btn-sm" @onclick=" () => UnassignSensor(sensor.TagNumber)"><i class="fa-solid fa-circle-xmark"></i></button>
+                                    </td>
+                                }
+                                @if (!receiver.Description.Equals("Not Assigned"))
+                                {
+                                    <td data-label="Unassign Receiver">
+                                        <button type="button" style="width:100px; float: none; font-size: 14px;" class="btn btn-danger btn-sm" @onclick=" () => UnassignReceiverFromUser(receiver)">Unassign</button>
+                                    </td>
+                                }
                             }
-                            @if (!receiver.Description.Equals("Not Assigned"))
-                            {
-                                <td data-label="Unassign Receiver">
-                                    <button type="button" style="width:100px; float: none; font-size: 14px;" class="btn btn-danger" @onclick=" () => UnassignReceiverFromUser(receiver)">Unassign</button>
-                                </td>
-                            }
-                        }
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="bigTable">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Serial Number</th>
-                    <th>Assigned User</th>
-                    <th>Last Update</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var receiver in receivers.OrderBy(r => r.SerialNumber))
-                {
-                    <tr @onclick="() => TrClickedAtIndex(receiver, receivers)">
-                        <td data-label="Serial Number">@receiver.SerialNumber</td>
-                        <td data-label="Assigned User">@receiver.Description</td>
-                        @if (@receiver.ReceiverLatestData != null)
-                        {
-                            <td data-label="Last Update">@receiver.ReceiverLatestData.Timestamp</td>
-                        }
-                        else
-                        {
-                            <td data-label="Last Update">No update</td>
-                        }
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Serial Number</th>
+                        <th>Assigned User</th>
+                        <th>Last Update</th>
                     </tr>
-                    @if (receiver.IsRowExpanded)
+                </thead>
+                <tbody>
+                    @foreach (var receiver in receivers.OrderBy(r => r.SerialNumber))
                     {
-                        int i = 1;
-                        foreach (var item in receiver.Sensors)
+                        <tr @onclick="() => TrClickedAtIndex(receiver, receivers)">
+                            <td data-label="Serial Number">@receiver.SerialNumber</td>
+                            <td data-label="Assigned User">@receiver.Description</td>
+                            @if (@receiver.ReceiverLatestData != null)
+                            {
+                                <td data-label="Last Update">@receiver.ReceiverLatestData.Timestamp</td>
+                            }
+                            else
+                            {
+                                <td data-label="Last Update">No update</td>
+                            }
+                        </tr>
+                        @if (receiver.IsRowExpanded)
                         {
-                            <tr style="display: none"></tr>
-                            <tr class="expandedRow">
-                                <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">
-                                    Sensor @i:
-                                </td>
-                                <td>@item.TagNumber</td>
-                                <td>                                    
-                                     <button type="button" style="margin-top:5px;" class="btn btn-danger" @onclick=" () => UnassignSensor(item.TagNumber)"><i class="fa-solid fa-circle-xmark"></i></button>
-                                </td>
-                            </tr>
-                            i++;
-                        }
+                            int i = 1;
+                            foreach (var item in receiver.Sensors)
+                            {
+                                <tr style="display: none"></tr>
+                                <tr class="expandedRow">
+                                    <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">
+                                        Sensor @i:
+                                    </td>
+                                    <td>@item.TagNumber</td>
+                                    <td>
+                                        <button type="button" style="margin-top:5px;" class="btn btn-danger btn-sm" @onclick=" () => UnassignSensor(item.TagNumber)"><i class="fa-solid fa-circle-xmark"></i></button>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
 
-                        @if (!receiver.Description.Equals("Not Assigned"))
-                        {
-                            <tr style="display: none"></tr>
-                            <tr class="expandedRow">
-                                <td>
-                                    <button type="button" style="width:100px; float: none; font-size: 14px;" class="btn btn-danger" @onclick=" () => UnassignReceiverFromUser(receiver)">Unassign Receiver</button>
-                                </td>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                            @if (!receiver.Description.Equals("Not Assigned"))
+                            {
+                                <tr style="display: none"></tr>
+                                <tr class="expandedRow">
+                                    <td>
+                                        <button type="button" style="width:100px; float: none; font-size: 14px;" class="btn btn-danger btn-sm" @onclick=" () => UnassignReceiverFromUser(receiver)">Unassign Receiver</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            }
                         }
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 }
 else
