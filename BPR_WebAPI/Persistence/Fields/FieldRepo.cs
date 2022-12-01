@@ -260,5 +260,45 @@ namespace BPR_WebAPI.Persistence.Fields
                 return WebResponse.ContentUpdateFailure;
             }
         }
+
+        public async Task<WebContent> GetLatestFieldByUser(string fieldName, string description, int pawLevelLimit)
+        {
+            Field field = new Field();
+
+            try
+            {
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+
+                string command = $"select f.fieldid, f.name, f.description, f.pawlevellimit from field f \r\nwhere f.name = @FieldName and f.description = @FieldDesc and f.pawlevellimit = @FieldPawLevel order by fieldid desc limit 1;";
+
+                await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
+                {
+                    cmd.Parameters.AddWithValue("@FieldName", fieldName);
+                    cmd.Parameters.AddWithValue("@FieldDesc", description);
+                    cmd.Parameters.AddWithValue("@FieldPawLevel", NpgsqlTypes.NpgsqlDbType.Integer, pawLevelLimit);
+
+                    await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        while (await reader.ReadAsync())
+                        {
+                            field = new Field
+                            {
+                                Id = int.Parse(reader["fieldid"].ToString()),
+                                Name = reader["name"].ToString(),
+                                PawLevelLimit = int.Parse(reader["pawLevelLimit"].ToString()),
+                                Description = reader["description"].ToString()
+                            };
+                        }
+
+                    cmd.ExecuteNonQuery();
+                }
+                con.Close();
+                return new WebContent(WebResponse.ContentCreateSuccess, field);
+            }
+            catch (Exception e)
+            {
+                return new WebContent(WebResponse.ContentCreateFailure, null);
+            }
+        }
     }
 }

@@ -152,6 +152,7 @@
     {
         userID = UserService.GetUserId();
 
+
         if (userID == null)
         {
             message = "Unable to find user ID. Please log-in and reload the page";
@@ -172,6 +173,11 @@
         foreach (var item in receiversForRemove)
         {
             receivers.Remove(item);
+        }
+
+        if (receivers.Count > 0)
+        {
+            selectedReceiverSerial = receivers.Select(x => x.SerialNumber).First();
         }
     }
 
@@ -198,7 +204,7 @@
             return;
         }
 
-        if(!receivers.Any(r => r.SerialNumber == selectedReceiverSerial))
+        if (!receivers.Any(r => r.SerialNumber == selectedReceiverSerial))
         {
             message = "Please select an existing receiver!";
             message1 = String.Empty;
@@ -233,7 +239,8 @@
             pawLevelLimit = 0;
         }
 
-        Field addedField = await FieldService.GetLatestFieldFromUser((int)userID);
+        //Field addedField = await FieldService.GetLatestFieldFromUser((int)userID);
+        Field addedField = await FieldService.GetLatestFieldFromUser(newField.Name, newField.Description, (int)newField.PawLevelLimit);
 
         if (!addedField.Equals(newField))
         {

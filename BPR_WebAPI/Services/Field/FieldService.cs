@@ -56,4 +56,9 @@ public class FieldService : IFieldService
 
         return result;
     }
+
+    public async Task<WebContent> GetLatestFieldByUser(string fieldName, string description, int pawLevelLimit)
+    {
+        return await fieldRepo.GetLatestFieldByUser(fieldName,description,pawLevelLimit);
+    }
 }

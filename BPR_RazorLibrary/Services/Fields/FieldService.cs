@@ -142,4 +142,21 @@ public class FieldService : IFieldService
             return null;
         }
     }
+
+    public async Task<Field> GetLatestFieldFromUser(string fieldName, string description, int pawLevelLimit)
+    {
+        string message = await client.GetStringAsync($"{url}/getLatestFieldByUser?fieldName={fieldName}&description={description}&pawLevelLimit={pawLevelLimit}");
+
+        try
+        {
+            WebContent result = JsonSerializer.Deserialize<WebContent>(message);
+            var json = JsonSerializer.Serialize(result.content);
+            var field = JsonSerializer.Deserialize<Field>(json);
+            return field;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 }

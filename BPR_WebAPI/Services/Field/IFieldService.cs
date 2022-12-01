@@ -9,5 +9,6 @@ public interface IFieldService
     Task<WebResponse> UnassignReceiver(string receiverSerialNumber);
     Task<WebResponse> CreateFieldAsync(BPR_RazorLibrary.Models.Field field);
     Task<WebContent> GetLatestFieldByUserId(int userId);
+    Task<WebContent> GetLatestFieldByUser(string fieldName, string description, int pawLevelLimit);
     Task<WebResponse> RemoveFieldFromUser(int fieldId);
 }

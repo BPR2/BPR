@@ -62,4 +62,13 @@ public class FieldController : ControllerBase
         var result = await fieldService.GetLatestFieldByUserId(userId);
         return Ok(result);
     }
+
+    [HttpGet("getLatestFieldByUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<WebContent>> GetLatestFieldByUser([FromQuery] string fieldName, [FromQuery] string description, [FromQuery] int pawLevelLimit)
+    {
+        var result = await fieldService.GetLatestFieldByUser(fieldName,description,pawLevelLimit);
+        return Ok(result);
+    }
 }
