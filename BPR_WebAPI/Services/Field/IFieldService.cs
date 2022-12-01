@@ -5,8 +5,10 @@ namespace BPR_WebAPI.Services.Field;
 public interface IFieldService
 {
     Task<WebContent> GetAllFieldsByUserId(int userId);
-    Task<WebContent> UpdateFieldAsync(BPR_RazorLibrary.Models.Field field, string receiverSerialNumber);
+    Task<WebContent> UpdateField(int FieldId, string FieldName, string FieldDescription, int FieldPawLevel, string SerialNumber, string unassignReceiver);
     Task<WebResponse> UnassignReceiver(string receiverSerialNumber);
-	  Task<WebResponse> CreateFieldAsync(BPR_RazorLibrary.Models.Field field);
-	  Task<WebContent> GetLatestFieldByUserId(int userId);
+    Task<WebResponse> CreateFieldAsync(BPR_RazorLibrary.Models.Field field);
+    Task<WebContent> GetLatestFieldByUserId(int userId);
+    Task<WebContent> GetLatestFieldByUser(string fieldName, string description, int pawLevelLimit);
+    Task<WebResponse> RemoveFieldFromUser(int fieldId);
 }

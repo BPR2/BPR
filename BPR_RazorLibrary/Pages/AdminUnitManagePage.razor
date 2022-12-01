@@ -67,7 +67,7 @@
         padding: 20px !important;
     }
 
-    input:focus {
+    input:focus, .smart-drop-down-list.smart-element:focus {
         outline: 0 0 0 0 !important;
         box-shadow: 0 0 0 0 !important;
     }
@@ -86,6 +86,12 @@
         .tab button {
             width: 50%;
         }
+    }
+
+   .smart-drop-down-list.smart-element {
+        padding: 0 !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
     }
 
 </style>
@@ -121,7 +127,7 @@
 
                                 <div class="form-label-group input-group form-group">
                                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                                    <DropDownList DataSource="@userNames" Filterable="true" OnItemClick="OnUserSelected" required />
+                                    <DropDownList class="form-control" DataSource="@userNames" Filterable="true" OnItemClick="OnUserSelected" required />
                                 </div>
 
                                 <div class="form-label-group input-group form-group">
@@ -151,7 +157,7 @@
 
                                 <div class="form-label-group input-group form-group">
                                     <span class="input-group-text"><i class="fa-solid fa-qrcode"></i></span>
-                                    <DropDownList DataSource="@serialNumbers" Filterable="true" OnItemClick="OnReceiverSelected" />
+                                    <DropDownList class="form-control" DataSource="@serialNumbers" Filterable="true" OnItemClick="OnReceiverSelected" />
                                 </div>
                             </div>
 

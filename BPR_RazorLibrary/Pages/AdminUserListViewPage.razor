@@ -11,11 +11,11 @@
 
 <style>
     tbody tr:nth-child(odd) {
-        background-color: #eee;
+        background-color: #e2e3e5;
     }
 
     tbody tr:nth-child(even) {
-        background-color: #D3D3D3;
+        background-color: white;
     }
 
     table {
@@ -66,13 +66,11 @@
             }
 
             table tr {
-                border-bottom: 3px solid #ddd;
                 display: block;
                 margin-bottom: .625em;
             }
 
             table td {
-                border-bottom: 1px solid #ddd;
                 display: block;
                 font-size: .8em;
                 text-align: right;
@@ -97,15 +95,11 @@
 
     .expandedRow {
         border-top: 0;
-        border-bottom: 1px solid #ddd;
     }
 
     .card {
         margin-top: 10px;
-    }
-
-    .card {
-        border-radius: 20px !important;
+        padding:0px !important;
     }
 
     .fa-solid {
@@ -117,121 +111,125 @@
 @if (allUsers.Any())
 {
     <div class="smallTable">
-        <table class="table">
-            <tbody>
-                @foreach (var user in allUsers.OrderBy(a => a.Username))
-                {
-                    <tr @onclick="() => TrClickedAtIndex((int) user.AccountId, user, allUsers)">
-                        <td data-label="Username">@user.Username</td>
-                        <td data-label="Full Name">@user.FullName</td>
-                        <td data-label="Email">@user.Email</td>
+        <div class="card">
+            <table class="table">
+                <tbody>
+                    @foreach (var user in allUsers.OrderBy(a => a.Username))
+                    {
+                        <tr @onclick="() => TrClickedAtIndex((int) user.AccountId, user, allUsers)">
+                            <td data-label="Username">@user.Username</td>
+                            <td data-label="Full Name">@user.FullName</td>
+                            <td data-label="Email">@user.Email</td>
 
-                        @if (user.IsRowExpanded)
-                        {
+                            @if (user.IsRowExpanded)
+                            {
+                                <td data-label="Contact">@user.Contact</td>
+                                <td data-label="Address">@user.Address</td>
+                                @for (int i = 1; i <= fields.Count; i++)
+                                {
+                                    <td data-label="Field @i">@fields[i-1].Name</td>
+                                    <td data-label="Last Update">@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToLocalTime()</td>
+                                    <td data-label="Receiver @i on Field @i">@fields[i-1].Receiver.SerialNumber</td>
+                                    @for (int j = 1; j <= fields[i - 1].Receiver.Sensors.Count; j++)
+                                    {
+                                        <td data-label="Receiver @i's sensor @j">@fields[i-1].Receiver.Sensors[j-1].TagNumber</td>
+                                    }
+                                    @for (int k = i + 1; k <= receivers.Count; k++)
+                                    {
+                                        <td data-label="Receiver @k">@receivers[k-i].SerialNumber</td>
+                                    }
+                                }
+                                <td data-label="Update User" style="height:50px;">
+                                    <button type="button" style="width:100px; float: right; font-size: 14px;" class="btn btn-danger" @onclick=" () => navigateToEditPassword(user)">Update</button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="bigTable">
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Contact</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in allUsers.OrderBy(a => a.Username))
+                    {
+                        <tr @onclick="() => TrClickedAtIndex((int) user.AccountId, user, allUsers)">
+                            <td data-label="Username">@user.Username</td>
+                            <td data-label="Full Name">@user.FullName</td>
+                            <td data-label="Email">@user.Email</td>
                             <td data-label="Contact">@user.Contact</td>
                             <td data-label="Address">@user.Address</td>
+                        </tr>
+                        @if (user.IsRowExpanded)
+                        {
                             @for (int i = 1; i <= fields.Count; i++)
                             {
-                                <td data-label="Field @i">@fields[i-1].Name</td>
-                                <td data-label="Last Update">@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToLocalTime()</td>
-                                <td data-label="Receiver @i on Field @i">@fields[i-1].Receiver.SerialNumber</td>
+                                <tr style="display: none"></tr>
+                                <tr class="expandedRow">
+                                    <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Field @i:</td>
+                                    <td>@fields[i-1].Name</td>
+                                    <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Last Update:</td>
+                                    <td>@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToString(@"dd\/MM\/yyyy")</td>
+                                    <td>@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToLocalTime().ToString(@"hh\:mm\:ss\ tt")</td>
+                                </tr>
+                                <tr style="display: none"></tr>
+                                <tr class="expandedRow">
+                                    <td></td>
+                                    <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @i on Field @i:</td>
+                                    <td>@fields[i-1].Receiver.SerialNumber</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
                                 @for (int j = 1; j <= fields[i - 1].Receiver.Sensors.Count; j++)
                                 {
-                                    <td data-label="Receiver @i's sensor @j">@fields[i-1].Receiver.Sensors[j-1].TagNumber</td>
+                                    <tr style="display: none"></tr>
+                                    <tr class="expandedRow">
+                                        <td></td>
+                                        <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @i's sensor @j:</td>
+                                        <td>@fields[i-1].Receiver.Sensors[j-1].TagNumber</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
                                 }
                                 @for (int k = i + 1; k <= receivers.Count; k++)
                                 {
-                                    <td data-label="Receiver @k">@receivers[k-i].SerialNumber</td>
+                                    <tr style="display: none"></tr>
+                                    <tr class="expandedRow">
+                                        <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @k:</td>
+                                        <td>@receivers[k-i].SerialNumber</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
                                 }
                             }
-                            <td data-label="Update User" style="height:50px;">
-                                <button type="button" style="width:100px; float: right; font-size: 14px;" class="btn btn-danger" @onclick=" () => navigateToEditPassword(user)">Update</button>
-                            </td>
-                        }
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <div class="bigTable">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Full Name</th>
-                    <th>Contact</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in allUsers.OrderBy(a => a.Username))
-                {
-                    <tr @onclick="() => TrClickedAtIndex((int) user.AccountId, user, allUsers)">
-                        <td data-label="Username">@user.Username</td>
-                        <td data-label="Full Name">@user.FullName</td>
-                        <td data-label="Email">@user.Email</td>
-                        <td data-label="Contact">@user.Contact</td>
-                        <td data-label="Address">@user.Address</td>
-                    </tr>
-                    @if (user.IsRowExpanded)
-                    {
-                        @for (int i = 1; i <= fields.Count; i++)
-                        {
-                            <tr style="display: none"></tr>
-                            <tr class="expandedRow">
-                                <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Field @i:</td>
-                                <td>@fields[i-1].Name</td>
-                                <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Last Update:</td>
-                                <td>@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToString(@"dd\/MM\/yyyy")</td>
-                                <td>@fields[i-1].Receiver.ReceiverLatestData.Timestamp.ToLocalTime().ToString(@"hh\:mm\:ss\ tt")</td>
-                            </tr>
                             <tr style="display: none"></tr>
                             <tr class="expandedRow">
                                 <td></td>
-                                <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @i on Field @i:</td>
-                                <td>@fields[i-1].Receiver.SerialNumber</td>
                                 <td></td>
                                 <td></td>
-                            </tr>
-                            @for (int j = 1; j <= fields[i - 1].Receiver.Sensors.Count; j++)
-                            {
-                                <tr style="display: none"></tr>
-                                <tr class="expandedRow">
-                                    <td></td>
-                                    <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @i's sensor @j:</td>
-                                    <td>@fields[i-1].Receiver.Sensors[j-1].TagNumber</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            }
-                            @for (int k = i + 1; k <= receivers.Count; k++)
-                            {
-                                <tr style="display: none"></tr>
-                                <tr class="expandedRow">
-                                    <td style="font-weight: bold; font-size: .85em; letter-spacing: .1em; text-transform: uppercase;">Receiver @k:</td>
-                                    <td>@receivers[k-i].SerialNumber</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            }
-                        }
-                        <tr style="display: none"></tr>
-                        <tr class="expandedRow">
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <button type="button" style="margin-top:5px; width:120px; float: right; font-size: 15px;" class="btn btn-danger" @onclick=" () => navigateToEditPassword(user)">Update User</button>
-                            </td>
+                                <td></td>
+                                <td>
+                                    <button type="button" style="margin-top:5px; width:120px; float: right; font-size: 15px;" class="btn btn-danger" @onclick=" () => navigateToEditPassword(user)">Update User</button>
+                                </td>
                             
-                        </tr>
+                            </tr>
+                        }
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 }
 else

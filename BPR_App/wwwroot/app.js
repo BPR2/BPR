@@ -11,13 +11,13 @@
     }
 }
 
-function getMap(long, lat) {
+function getMap(fieldId, long, lat) {
     latlng = new google.maps.LatLng(lat, long);
     var options = {
         zoom: 18, center: latlng,
         mapTypeId: 'satellite'
     };
-    map = new google.maps.Map(document.getElementById("map"), options);
+    map = new google.maps.Map(document.getElementById(fieldId), options);
 
     new google.maps.Marker({
         position: latlng,
@@ -62,7 +62,7 @@ function getCharts(datas, sensors) {
     function drawChart() {
         var chartDiv = document.getElementById('chart_div');
         var data = new google.visualization.DataTable();
-        data.addColumn('date', 'Day');
+        data.addColumn('date', '');
         for (var i = 0; i < sensors.length; i++) {
             data.addColumn('number', sensors[i].TagNumber);
         }
@@ -92,7 +92,7 @@ function getCharts(datas, sensors) {
     function drawChart2() {
         var chartDiv = document.getElementById('chart_div2');
         var data = new google.visualization.DataTable();
-        data.addColumn('date', 'Day');
+        data.addColumn('date', '');
         for (var i = 0; i < sensors.length; i++) {
             data.addColumn('number', sensors[i].TagNumber);
         }

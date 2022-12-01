@@ -10,12 +10,12 @@ public class FieldController : ControllerBase
 {
     private IFieldService fieldService;
 
-	public FieldController(IFieldService fieldService)
-	{
-		this.fieldService = fieldService;
-	}
+    public FieldController(IFieldService fieldService)
+    {
+        this.fieldService = fieldService;
+    }
 
-	[HttpGet("getAllFieldsByUserId")]
+    [HttpGet("getAllFieldsByUserId")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<WebContent>> GetAllFieldsByUserId([FromQuery] int userId)
@@ -27,9 +27,9 @@ public class FieldController : ControllerBase
     [HttpPut("updateField")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<WebContent>> UpdateField(Field field, [FromQuery] string serialNumber)
+    public async Task<ActionResult<WebContent>> UpdateFieldTest([FromQuery] int FieldId, [FromQuery] string FieldName, [FromQuery] string FieldDescription, [FromQuery] int FieldPawLevel, [FromQuery] string SerialNumber, [FromQuery] string unassignReceiver)
     {
-        var result = await fieldService.UpdateFieldAsync(field, serialNumber);
+        var result = await fieldService.UpdateField(FieldId, FieldName, FieldDescription, FieldPawLevel, SerialNumber, unassignReceiver);
         return Ok(result);
     }
 
@@ -40,19 +40,35 @@ public class FieldController : ControllerBase
         return Ok(result);
     }
 
-	[HttpPost("createField")]
-	public async Task<ActionResult<WebResponse>> CreateField([FromBody] Field field)
-	{
-		var result = await fieldService.CreateFieldAsync(field);
-		return Ok(result);
-	}
+    [HttpPut("removeField")]
+    public async Task<ActionResult<WebResponse>> removeField([FromQuery] int fieldId)
+    {
+        var result = await fieldService.RemoveFieldFromUser(fieldId);
+        return Ok(result);
+    }
 
-	[HttpGet("getLatestFieldByUserId")]
-	[ProducesResponseType(StatusCodes.Status200OK)]
-	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-	public async Task<ActionResult<WebContent>> GetLatestFieldByUserId([FromQuery] int userId)
-	{
-		var result = await fieldService.GetLatestFieldByUserId(userId);
-		return Ok(result);
-	}
+    [HttpPost("createField")]
+    public async Task<ActionResult<WebResponse>> CreateField([FromBody] Field field)
+    {
+        var result = await fieldService.CreateFieldAsync(field);
+        return Ok(result);
+    }
+
+    [HttpGet("getLatestFieldByUserId")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<WebContent>> GetLatestFieldByUserId([FromQuery] int userId)
+    {
+        var result = await fieldService.GetLatestFieldByUserId(userId);
+        return Ok(result);
+    }
+
+    [HttpGet("getLatestFieldByUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<WebContent>> GetLatestFieldByUser([FromQuery] string fieldName, [FromQuery] string description, [FromQuery] int pawLevelLimit)
+    {
+        var result = await fieldService.GetLatestFieldByUser(fieldName,description,pawLevelLimit);
+        return Ok(result);
+    }
 }

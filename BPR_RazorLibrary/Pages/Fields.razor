@@ -41,12 +41,25 @@
             background-color: #70a94c !important;
         }
 
+    .btn-danger{
+    float:right;
+    }
     .card {
         border-radius: 20px !important;
     }
 
     h5 .fa-solid {
         margin-top: 10px;
+    }
+
+    .col
+    {
+        width:fit-content;
+    }
+
+    p span
+    {
+        font-size: 18px;
     }
 </style>
 
@@ -57,31 +70,31 @@
         @foreach (var field in fields)
         {
             <div class="card">
-                <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#field_@field.Id" onclick="expandCollapse(this); getMap(@field.Receiver.ReceiverLatestData.Longitude, @field.Receiver.ReceiverLatestData.Latitude);">
+                <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#field_@field.Id" onclick="expandCollapse(this); getMap(@field.Receiver.ReceiverId.ToString(),@field.Receiver.ReceiverLatestData.Longitude, @field.Receiver.ReceiverLatestData.Latitude);">
                     <i class="fa-solid fa-wheat-awn"></i> <span> @field.Name <i class="fa-solid fa-angle-down"></i></span>
                 </button>
                 <div class="card-body collapse" id="field_@field.Id">
                     <div class="row">
                         <div class=" fields col-md-6">
-                            <h5><i class="fa-solid fa-leaf"></i> PAW level limit: @field.PawLevelLimit %</h5>
-                            <h5><i class="fa-solid fa-tower-cell"></i> Receiver Serial Number: @field?.Receiver.SerialNumber</h5>
+                            <p><span class="bold"><i class="fa-solid fa-leaf"></i> PAW level limit:</span> @field.PawLevelLimit %</p>
+                            <p><span class="bold"><i class="fa-solid fa-tower-cell"></i> Receiver Serial Number:</span> @field?.Receiver.SerialNumber</p>
                             @switch (@field?.Receiver.TimeInterval)
                             {
                                 case 7200:
-                                    <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 2 hours)</h5>
+                                    <p><span class="bold"><i class="fa-solid fa-clock"></i> Last update: </span> @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 2 hours)</p>
                                     break;
                                 case 21600:
-                                    <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 6 hours)</h5>
+                                    <p><span class="bold"><i class="fa-solid fa-clock"></i> Last update: </span> @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 6 hours)</p>
                                     break;
                                 case 43200:
-                                    <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 12 hours)</h5>
+                                    <p><span class="bold"><i class="fa-solid fa-clock"></i> Last update: </span> @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 12 hours)</p>
                                     break;
                                 case 86400:
-                                    <h5><i class="fa-solid fa-clock"></i> Last update: @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 24 hours)</h5>
+                                    <p><span class="bold"><i class="fa-solid fa-clock"></i> Last update: </span> @field?.Receiver.ReceiverLatestData.Timestamp.ToLocalTime()   (Every 24 hours)</p>
                                     break;
                             }
-                            <h5><i class="fa-solid fa-battery-three-quarters"></i> Estimated Receiver Battery: @CalculateBattery((int)@field?.Receiver.LeftTransmission, (int) @field?.Receiver.MaxTransmission, (int)@field?.Receiver.TimeInterval)</h5>
-                            <h5><i class="fa-solid fa-tower-broadcast"></i> Sensors:</h5>
+                            <p><span class="bold"><i class="fa-solid fa-battery-three-quarters"></i> Estimated Receiver Battery: </span> @CalculateBattery((int)@field?.Receiver.LeftTransmission, (int) @field?.Receiver.MaxTransmission, (int)@field?.Receiver.TimeInterval)</p>
+                            <p><span class="bold"><i class="fa-solid fa-tower-broadcast"></i> Sensors: </span></p>
 
                             <ul>
                                 @foreach (var s in field?.Receiver?.Sensors)
@@ -96,28 +109,28 @@
                                         </button>
                                         <ul class="collapse" id="sensor_@s.SensorId">
                                             <li>
-                                                <i class="fa-solid fa-tag"></i> Tag number: @s.TagNumber
+                                                <i class="fa-solid fa-temperature-high"></i> Latest Temperature: @s?.LatestSensorMeasurement?.Temperature
                                             </li>
                                             <li>
-                                                <i class="fa-solid fa-temperature-high"></i> latest Temperature: @s?.LatestSensorMeasurement?.Temperature
-                                            </li>
-                                            <li>
-                                                <i class="fa-solid fa-droplet"></i> latest Humidity: @s?.LatestSensorMeasurement?.Humidity %
+                                                <i class="fa-solid fa-droplet"></i> Latest Humidity: @s?.LatestSensorMeasurement?.Humidity %
                                             </li>
                                             <li>
                                                 <i class="fa-solid fa-battery-empty"></i> Battery low: @IsBatteryLow
                                             </li>
-                                            <li>
-                                                <i class="fa-solid fa-align-left"></i> Description:
-                                                <p>@s.Description</p>
-                                            </li>
+                                            @if (!string.IsNullOrEmpty(s.Description))
+                                            {
+                                                <li>
+                                                    <i class="fa-solid fa-align-left"></i> Description:
+                                                    <p>@s.Description</p>
+                                                </li>
+                                            }
                                         </ul>
                                     </li>
                                 }
                             </ul>
                         </div>
                         <div class="col-md-6">
-                            <div id="map" class="card map">
+                            <div id="@field.Receiver.ReceiverId.ToString()" class="card map">
                             </div>
                             <div>
                                 <h6><i class="fa-solid fa-align-left"></i> Description:</h6>
@@ -128,8 +141,12 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" style="margin-top:5px;" class="btn btn-primary" @onclick=" () => navigateToEditField(field)">Edit</button>
-                    <button type="button" style="margin-top:5px;" class="btn btn-info" @onclick=" () => NavigateToChartPage(field)"><i class="fa-solid fa-chart-line"></i> Chart</button>
+                    @if (field?.Receiver?.Sensors.Count > 0)
+                    {
+                        <button type="button" style="margin:5px;" class="btn btn-info" @onclick=" () => NavigateToChartPage(field)"><i class="fa-solid fa-chart-line"></i> Chart</button>
+                    }
+                    <button type="button" style="margin:5px;" class="btn btn-primary" @onclick=" () => navigateToEditField(field)">Edit</button>
+                    <button type="button" style="margin:5px;" class="btn btn-danger" @onclick=" () => RemoveField(field)">Remove field</button>
                 </div>
             </div>
         }
@@ -211,5 +228,14 @@
     {
         FieldService.SetField(field);
         NavigationManager.NavigateTo("/chart");
+    }
+
+    private async Task RemoveField(Field field)
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to remove '{field.Name}' field?"))
+            return;
+
+        await FieldService.RemoveField(field.Id);
+        await OnInitializedAsync();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using BPR_RazorLibrary.Models;
-using BPR_RazorLibrary.Pages;
 using BPR_WebAPI.Persistence.Fields;
 
 namespace BPR_WebAPI.Services.Field;
@@ -40,12 +39,26 @@ public class FieldService : IFieldService
         return result;
     }
 
-    public async Task<WebContent> UpdateFieldAsync(BPR_RazorLibrary.Models.Field field, string receiverSerialNumber)
+    public async Task<WebResponse> RemoveFieldFromUser(int fieldId)
     {
-        var result = await fieldRepo.UpdateField(field, receiverSerialNumber);
+        var result = await fieldRepo.RemoveFieldFromUser(fieldId);
+
+        if (result != WebResponse.ContentRetrievalSuccess) return result;
+
+        return result;
+    }
+
+    public async Task<WebContent> UpdateField(int FieldId, string FieldName, string FieldDescription, int FieldPawLevel, string SerialNumber, string unassignReceiver)
+    {
+        var result = await fieldRepo.UpdateField(FieldId,FieldName,FieldDescription,FieldPawLevel,SerialNumber, unassignReceiver);
 
         if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 
         return result;
+    }
+
+    public async Task<WebContent> GetLatestFieldByUser(string fieldName, string description, int pawLevelLimit)
+    {
+        return await fieldRepo.GetLatestFieldByUser(fieldName,description,pawLevelLimit);
     }
 }
