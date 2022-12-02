@@ -107,7 +107,7 @@
 
     private async Task search()
     {
-        var diff = to.Day - from.Day;
+        var diff = (to - from).Days;
         if (diff > 7)
         {
             message = "Difference between From and To date cannot be more than 7 days!";
