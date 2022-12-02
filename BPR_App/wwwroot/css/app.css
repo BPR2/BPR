@@ -5,8 +5,8 @@ html, body {
 }
 
 body {
-    background-image: url('../img/bg.png');
-    background-repeat: repeat;
+    background-image: url('../img/bg.png') !important;
+    background-repeat: repeat !important;
 }
 
 h1:focus {
