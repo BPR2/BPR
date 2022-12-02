@@ -10,13 +10,15 @@
 @inject IChartService ChartService
 @inject IFieldService FieldService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@using Radzen
+@using Radzen.Blazor
 
 <style>
     .container, .card {
         margin-top: 10px;
     }
 
-    .card {
+    .card, RadzenCard {
         border-radius: 20px !important;
     }
 
@@ -26,7 +28,7 @@
 
     .alert {
         margin-top: 5px !important;
-        width: fit-content;
+        width:fit-content;
     }
 
     .btn-outline-primary {
@@ -36,48 +38,89 @@
 
     .form-label-group, .searchBtn {
         margin: 5px;
+        min-width: 200px;
     }
+
+    .rz-chart {
+    height:400px !important;
+    }
+
+    @@media (max-width: 500px) {
+        .btn-outline-primary  {
+        width: -webkit-fill-available;
+       }
+    }
+
 </style>
 
-<div class="container justify-content-center">
-    <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-4 form-label-group input-group">
-                    <span class="input-group-text">From</span>
-                    <input id="startDate" class="form-control" type="date" @bind-value="from" />
-                </div>
-                <div class="col-4 form-label-group  input-group">
-                    <span class="input-group-text">To</span>
-                    <input id="startDate" class="form-control" type="date" @bind-value="to" />
-                </div>
-                <div class="col-2 searchBtn">
-                    <button class="btn btn-outline-primary" @onclick="search"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 my-5">
+                <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem" >
+                    <div class="row">
+                        <div class="col form-label-group input-group">
+                            <span class="input-group-text">From</span>
+                            <input id="startDate" class="form-control" type="date" @bind-value="from" />
+                        </div>
+                        <div class="col form-label-group  input-group">
+                            <span class="input-group-text">To</span>
+                            <input id="startDate" class="form-control" type="date" @bind-value="to" />
+                        </div>
+                        <div class=" col searchBtn">
+                            <button class="btn btn-outline-primary" @onclick="search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(message))
+                    {
+                        <div class="alert alert-danger">
+                            @message
+                        </div>
+                    }
+                </RadzenCard>
+
+                 <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem" >
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="my-4">
+                            Temperature °C
+                    </RadzenText>
+                    <RadzenChart>
+
+                        @foreach (var s in field.Receiver.Sensors)
+                        {
+                            <RadzenLineSeries Data="@dataItems(true, s.TagNumber)" CategoryProperty="Date" Title="@s.TagNumber" ValueProperty="Mesurement">
+                                <RadzenMarkers MarkerType="MarkerType.None" />
+                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            </RadzenLineSeries>
+                        }
+                        <RadzenCategoryAxis Formatter="@FormatAsWeekDay" />
+                        <RadzenValueAxis>
+                            <RadzenGridLines Visible="true" />
+                        </RadzenValueAxis>
+                    </RadzenChart>
+                </RadzenCard>
+
+                <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem" >
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="my-4">
+                        Humidity %
+                    </RadzenText>
+                    <RadzenChart>
+
+                        @foreach (var s in field.Receiver.Sensors)
+                        {
+                            <RadzenLineSeries Data="@dataItems(false, s.TagNumber)" CategoryProperty="Date" Title="@s.TagNumber" ValueProperty="Mesurement">
+                                <RadzenMarkers MarkerType="MarkerType.None" />
+                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            </RadzenLineSeries>
+                        }
+                        <RadzenCategoryAxis Formatter="@FormatAsWeekDay" />
+                        <RadzenValueAxis>
+                            <RadzenGridLines Visible="true" />
+                        </RadzenValueAxis>
+                    </RadzenChart>
+                </RadzenCard>
+
             </div>
-
-            @if (!string.IsNullOrWhiteSpace(message))
-            {
-                <div class="alert alert-danger">
-                    @message
-                </div>
-            }
-
         </div>
     </div>
-    <div class="chart">
-        <div class="card">
-            <div class="card-body">
-                <div id="chart_div"></div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <div id="chart_div2"></div>
-            </div>
-        </div>
-    </div>
-</div>
 
 @code {
     private List<ChartData> datas = new List<ChartData>();
@@ -86,6 +129,8 @@
     private DateTime from = new DateTime();
     private DateTime to = new DateTime();
     private string message = string.Empty;
+    bool showDataLabels = false;
+
     protected override async Task OnInitializedAsync()
     {
         to = DateTime.Now;
@@ -101,8 +146,6 @@
             //we are here if we can't establish connection to the webapi, so we'll use cached data instead
             datas = await localStorage.GetItemAsync<List<ChartData>>("Field" + field.Id);
         }
-
-        await JS.InvokeAsync<string>("getCharts", datas, field.Receiver.Sensors);
     }
 
     private async Task search()
@@ -120,7 +163,47 @@
         {
             message = string.Empty;
             datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
-            await JS.InvokeAsync<string>("getCharts", datas, field.Receiver.Sensors);
         }
+    }
+
+    class DataItem
+    {
+        public DateTime Date { get; set; }
+        public double Mesurement { get; set; }
+    }
+
+    private List<DataItem> dataItems(bool isTemperature, string tagNumber)
+    {
+        var measurements = new List<DataItem>();
+        foreach (var d in datas)
+        {
+            var dataItem = new DataItem();
+            foreach (var m in d.Measurements)
+            {
+                dataItem.Date = d.Date;
+                if (isTemperature)
+                {
+                    if(tagNumber.Equals(m.TagNumber))
+                        dataItem.Mesurement = Math.Floor(m.Temperature * 100) / 100;
+                }
+                else 
+                {
+                    if (tagNumber.Equals(m.TagNumber))
+                        dataItem.Mesurement = Math.Floor(m.Humidity * 100) / 100;
+                }
+            }
+            measurements.Add(dataItem);
+        }
+        return measurements;
+    }
+
+    string FormatAsWeekDay(object value)
+    {
+        if (value != null)
+        {
+            return Convert.ToDateTime(value).ToString("MM-dd HH:mm");
+        }
+
+        return string.Empty;
     }
 }

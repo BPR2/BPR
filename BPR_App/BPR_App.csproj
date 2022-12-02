@@ -61,6 +61,7 @@
     <ItemGroup>
       <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
       <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
+      <PackageReference Include="Radzen.Blazor" Version="4.4.1" />
       <PackageReference Include="Smart.Blazor" Version="14.4.39" />
     </ItemGroup>
 
