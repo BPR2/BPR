@@ -9,6 +9,7 @@
 @inject IJSRuntime JS
 @inject IChartService ChartService
 @inject IFieldService FieldService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <style>
     .container, .card {
@@ -19,15 +20,13 @@
         border-radius: 20px !important;
     }
 
-    .input-group
-    {
-        width:unset !important;
+    .input-group {
+        width: unset !important;
     }
 
-    .alert
-    {
-        margin-top:5px !important;
-        width: fit-content;    
+    .alert {
+        margin-top: 5px !important;
+        width: fit-content;
     }
 
     .btn-outline-primary {
@@ -36,9 +35,9 @@
     }
 
     .form-label-group, .searchBtn {
-        margin:5px;
+        margin: 5px;
     }
-    </style>
+</style>
 
 <div class="container justify-content-center">
     <div class="card">
@@ -46,11 +45,11 @@
             <div class="row">
                 <div class="col-4 form-label-group input-group">
                     <span class="input-group-text">From</span>
-                    <input id="startDate" class="form-control" type="date" @bind-value="from"/>
+                    <input id="startDate" class="form-control" type="date" @bind-value="from" />
                 </div>
                 <div class="col-4 form-label-group  input-group">
                     <span class="input-group-text">To</span>
-                    <input id="startDate" class="form-control" type="date" @bind-value="to"/>
+                    <input id="startDate" class="form-control" type="date" @bind-value="to" />
                 </div>
                 <div class="col-2 searchBtn">
                     <button class="btn btn-outline-primary" @onclick="search"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -92,11 +91,21 @@
         to = DateTime.Now;
         from = DateTime.Now.AddDays(-7);
         field = FieldService.GetField();
-        datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
+
+        try
+        {
+            datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
+        }
+        catch (Exception e)
+        {
+            //we are here if we can't establish connection to the webapi, so we'll use cached data instead
+            datas = await localStorage.GetItemAsync<List<ChartData>>("Field" + field.Id);
+        }
+
         await JS.InvokeAsync<string>("getCharts", datas, field.Receiver.Sensors);
     }
 
-    private async Task search() 
+    private async Task search()
     {
         var diff = to.Day - from.Day;
         if (diff > 7)

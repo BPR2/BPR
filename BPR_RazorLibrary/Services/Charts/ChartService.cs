@@ -21,7 +21,7 @@ public class ChartService : IChartService
 
     public async Task<List<ChartData>> GetAllChartDataByFieldId(int fieldId, DateTime startDate, DateTime endDate)
     {
-        string message = await client.GetStringAsync($"{url}/getChartDataByFieldId?fieldId={fieldId}&startDate={startDate}&endDate={endDate}");
+        string message = await client.GetStringAsync($"{url}/getChartDataByFieldId?fieldId={fieldId}&startDate={startDate.ToString("yyyy-MM-dd HH:mm:ss")}&endDate={endDate.ToString("yyyy-MM-dd HH:mm:ss")}");
 
         try
         {

@@ -1,12 +1,15 @@
 ﻿@page "/fields"
+@using BPR_RazorLibrary.Services.Charts
 @using BPR_RazorLibrary.Services.Fields;
 @using BPR_RazorLibrary.Services.Users;
 @using BPR_RazorLibrary.Models;
 @using Microsoft.JSInterop
 @inject IFieldService FieldService;
 @inject IUserService UserService;
+@inject IChartService ChartService;
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <style>
     .container, .card {
@@ -169,7 +172,42 @@
     protected override async Task OnInitializedAsync()
     {
         userId = UserService.GetUserId();
-        fields = await FieldService.GetAllFieldsByUserId(userId);
+
+        try
+        {
+            fields = await FieldService.GetAllFieldsByUserId(userId);
+
+            if (fields.Count > 0) //only cache the field data if we managed to get anything
+            {
+                await localStorage.SetItemAsync("FieldList", fields);
+            }
+
+            var now = DateTime.Now;
+            var weekAgo = DateTime.Now.AddDays(-7); //because we want to cache a week worth of measurement data
+
+            DateTime? cacheDate = await localStorage.GetItemAsync<DateTime?>("CacheDate");
+
+            double cacheAge = 0;
+
+            if (cacheDate != null)
+                cacheAge = DateTime.UtcNow.Subtract((DateTime)cacheDate).TotalDays;
+
+            if (cacheDate == null || cacheAge >= 1) //if we don't have a cachedate or if the cache is more than a day old
+            {
+                //caching all the chart measurements as this is the only place we already have a collection of all the user's fields
+                foreach (var field in fields)
+                {
+                    var fieldMeasurements = await ChartService.GetAllChartDataByFieldId(field.Id, weekAgo, now);
+                    await localStorage.SetItemAsync("Field" + field.Id, fieldMeasurements);
+                    await localStorage.SetItemAsync("CacheDate", now);
+                }
+            }            
+        }
+        catch (Exception e)
+        {
+            //we are here if we can't establish connection to the webapi, so we'll use cached data instead
+            fields = await localStorage.GetItemAsync<List<Field>>("FieldList");
+        }
     }
 
     private void navigateToEditField(Field field)
@@ -181,7 +219,7 @@
     private string CalculateBattery(int left, int max, int receiverTimeInterval)
     {
         double result = (double)left / (double)max * 100;
-        double daysLeft = left/(24/(receiverTimeInterval / 3600));
+        double daysLeft = left / (24 / (receiverTimeInterval / 3600));
 
         return result.ToString("0.0") + "% (~" + daysLeft.ToString("0") + " days left)";
     }
