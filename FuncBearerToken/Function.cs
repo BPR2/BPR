@@ -14,7 +14,9 @@ public class Function
     private HttpClient _client;
     private string _url;
     private HttpContent _content;
-    private string _dbConnectionString = "Host=bpr-db.c7szkct1z4j9.us-east-1.rds.amazonaws.com;Username=bpr_group4;Password=dingdong420 ;Database=postgres";
+
+    //Add Connectionstring here!
+    private string _dbConnectionString = "";
 
     public Function()
     {

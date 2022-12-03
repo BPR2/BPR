@@ -13,7 +13,9 @@ namespace DataFetcherLambdaFunc;
 public class Function
 {
     private List<string> _serialNumbers;
-    private string _dbConnectionString = "Host=bpr-db.c7szkct1z4j9.us-east-1.rds.amazonaws.com;Username=bpr_group4;Password=dingdong420 ;Database=postgres";
+
+    //Add Connectionstring here!
+    private string _dbConnectionString = "";
     private HttpClient _client;
     private string _dateTime;
 
