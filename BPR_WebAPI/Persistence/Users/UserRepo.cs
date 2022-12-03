@@ -48,8 +48,6 @@ public class UserRepo : IUserRepo
         }
     }
 
-
-
     public async Task<WebContent> GetUserAsync(string username)
     {
         if (string.IsNullOrEmpty(username)) return new WebContent(WebResponse.ContentDataCorrupted, null);
@@ -151,7 +149,7 @@ public class UserRepo : IUserRepo
 
             string command = $"UPDATE public.account\r\n\tSET password=@newPassword, contact=@newContact, email=@newEmail, location=@newLocation\r\n\tWHERE accountid = @accountId;";
             await using (NpgsqlCommand cmd = new NpgsqlCommand(command, con))
-            {   
+            {
                 cmd.Parameters.AddWithValue("@newPassword", user.Password);
                 cmd.Parameters.AddWithValue("@newContact", user.Contact);
                 cmd.Parameters.AddWithValue("@newEmail", user.Email);
@@ -220,10 +218,11 @@ public class UserRepo : IUserRepo
                 await using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
                     while (await reader.ReadAsync())
                     {
-                        users.Add(new User { 
+                        users.Add(new User
+                        {
                             Username = reader["username"].ToString(),
                             Password = reader["password"].ToString(),
-                            AccountId = int.Parse(reader["accountid"].ToString()), 
+                            AccountId = int.Parse(reader["accountid"].ToString()),
                             FullName = reader["name"].ToString(),
                             Contact = reader["contact"].ToString(),
                             Email = reader["email"].ToString(),

@@ -1,14 +1,6 @@
 using BPR_RazorLibrary.Models;
-using BPR_RazorLibrary.Pages;
-using Smart.Blazor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace BPR_RazorLibrary.Services.Fields;
 
@@ -70,9 +62,9 @@ public class FieldService : IFieldService
                 Encoding.UTF8,
                 "application/json"
                 );
-        
+
         var message = await client.PutAsync($"{url}/unassignReceiver?receiverSerialNumber={receiverSerialNumber}", content);
-        
+
         try
         {
             string result = await message.Content.ReadAsStringAsync();
@@ -85,47 +77,47 @@ public class FieldService : IFieldService
         }
 
     }
-    
+
     public async Task<string> CreateFieldAsync(Field field)
-	{
-		string fieldSerialized = JsonSerializer.Serialize(field);
+    {
+        string fieldSerialized = JsonSerializer.Serialize(field);
 
-		HttpContent content = new StringContent(
-				fieldSerialized,
-				Encoding.UTF8,
-				"application/json"
-				);
+        HttpContent content = new StringContent(
+                fieldSerialized,
+                Encoding.UTF8,
+                "application/json"
+                );
 
-		HttpResponseMessage message = await client.PostAsync($"{url}/createField", content);
+        HttpResponseMessage message = await client.PostAsync($"{url}/createField", content);
 
-		try
-		{
-			string result = await message.Content.ReadAsStringAsync();
-			return result;
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine(ex.StackTrace);
-			return null;
-		}
-	}
+        try
+        {
+            string result = await message.Content.ReadAsStringAsync();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+    }
 
-	public async Task<Field> GetLatestFieldFromUser(int userId)
-	{
-		string message = await client.GetStringAsync($"{url}/getLatestFieldByUserId?userid={userId}");
+    public async Task<Field> GetLatestFieldFromUser(int userId)
+    {
+        string message = await client.GetStringAsync($"{url}/getLatestFieldByUserId?userid={userId}");
 
-		try
-		{
-			WebContent result = JsonSerializer.Deserialize<WebContent>(message);
-			var json = JsonSerializer.Serialize(result.content);
-			var field = JsonSerializer.Deserialize<Field>(json);
-			return field;
-		}
-		catch (Exception)
-		{
-			throw;
-		}
-	}
+        try
+        {
+            WebContent result = JsonSerializer.Deserialize<WebContent>(message);
+            var json = JsonSerializer.Serialize(result.content);
+            var field = JsonSerializer.Deserialize<Field>(json);
+            return field;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 
     public async Task<string> RemoveField(int fieldId)
     {
