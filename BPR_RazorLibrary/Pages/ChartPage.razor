@@ -1,4 +1,5 @@
 ﻿@page "/chart"
+
 @using BPR_RazorLibrary.Services.Charts;
 @using BPR_RazorLibrary.Services.Fields;
 @using BPR_RazorLibrary.Models;
@@ -6,12 +7,13 @@
 @using BPR_RazorLibrary.Services.Users;
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
+@using Radzen
+@using Radzen.Blazor
+
 @inject IJSRuntime JS
 @inject IChartService ChartService
 @inject IFieldService FieldService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@using Radzen
-@using Radzen.Blazor
 
 <style>
     .container, .card {
@@ -28,7 +30,7 @@
 
     .alert {
         margin-top: 5px !important;
-        width:fit-content;
+        width: fit-content;
     }
 
     .btn-outline-primary {
@@ -42,85 +44,84 @@
     }
 
     .rz-chart {
-    height:400px !important;
+        height: 400px !important;
     }
 
     @@media (max-width: 500px) {
-        .btn-outline-primary  {
-        width: -webkit-fill-available;
-       }
+        .btn-outline-primary {
+            width: -webkit-fill-available;
+        }
     }
-
 </style>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12 my-5">
-                <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem" >
-                    <div class="row">
-                        <div class="col form-label-group input-group">
-                            <span class="input-group-text">From</span>
-                            <input id="startDate" class="form-control" type="date" @bind-value="from" />
-                        </div>
-                        <div class="col form-label-group  input-group">
-                            <span class="input-group-text">To</span>
-                            <input id="startDate" class="form-control" type="date" @bind-value="to" />
-                        </div>
-                        <div class=" col searchBtn">
-                            <button class="btn btn-outline-primary" @onclick="search"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        </div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 my-5">
+            <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem">
+                <div class="row">
+                    <div class="col form-label-group input-group">
+                        <span class="input-group-text">From</span>
+                        <input id="startDate" class="form-control" type="date" @bind-value="from" />
                     </div>
-                    @if (!string.IsNullOrWhiteSpace(message))
+                    <div class="col form-label-group  input-group">
+                        <span class="input-group-text">To</span>
+                        <input id="startDate" class="form-control" type="date" @bind-value="to" />
+                    </div>
+                    <div class=" col searchBtn">
+                        <button class="btn btn-outline-primary" @onclick="search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(message))
+                {
+                    <div class="alert alert-danger">
+                        @message
+                    </div>
+                }
+            </RadzenCard>
+
+            <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem">
+                <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="my-4">
+                    Temperature °C
+                </RadzenText>
+                <RadzenChart>
+
+                    @foreach (var s in field.Receiver.Sensors)
                     {
-                        <div class="alert alert-danger">
-                            @message
-                        </div>
+                        <RadzenLineSeries Data="@dataItems(true, s.TagNumber)" CategoryProperty="Date" Title="@s.TagNumber" ValueProperty="Mesurement">
+                            <RadzenMarkers MarkerType="MarkerType.None" />
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenLineSeries>
                     }
-                </RadzenCard>
+                    <RadzenCategoryAxis Formatter="@FormatAsWeekDay" />
+                    <RadzenValueAxis>
+                        <RadzenGridLines Visible="true" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+            </RadzenCard>
 
-                 <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem" >
-                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="my-4">
-                            Temperature °C
-                    </RadzenText>
-                    <RadzenChart>
+            <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem">
+                <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="my-4">
+                    Humidity %
+                </RadzenText>
+                <RadzenChart>
 
-                        @foreach (var s in field.Receiver.Sensors)
-                        {
-                            <RadzenLineSeries Data="@dataItems(true, s.TagNumber)" CategoryProperty="Date" Title="@s.TagNumber" ValueProperty="Mesurement">
-                                <RadzenMarkers MarkerType="MarkerType.None" />
-                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
-                            </RadzenLineSeries>
-                        }
-                        <RadzenCategoryAxis Formatter="@FormatAsWeekDay" />
-                        <RadzenValueAxis>
-                            <RadzenGridLines Visible="true" />
-                        </RadzenValueAxis>
-                    </RadzenChart>
-                </RadzenCard>
+                    @foreach (var s in field.Receiver.Sensors)
+                    {
+                        <RadzenLineSeries Data="@dataItems(false, s.TagNumber)" CategoryProperty="Date" Title="@s.TagNumber" ValueProperty="Mesurement">
+                            <RadzenMarkers MarkerType="MarkerType.None" />
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </RadzenLineSeries>
+                    }
+                    <RadzenCategoryAxis Formatter="@FormatAsWeekDay" />
+                    <RadzenValueAxis>
+                        <RadzenGridLines Visible="true" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+            </RadzenCard>
 
-                <RadzenCard Class="w-100 mb-4" Style=" align-items: center; gap: 0.5rem" >
-                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="my-4">
-                        Humidity %
-                    </RadzenText>
-                    <RadzenChart>
-
-                        @foreach (var s in field.Receiver.Sensors)
-                        {
-                            <RadzenLineSeries Data="@dataItems(false, s.TagNumber)" CategoryProperty="Date" Title="@s.TagNumber" ValueProperty="Mesurement">
-                                <RadzenMarkers MarkerType="MarkerType.None" />
-                                <RadzenSeriesDataLabels Visible="@showDataLabels" />
-                            </RadzenLineSeries>
-                        }
-                        <RadzenCategoryAxis Formatter="@FormatAsWeekDay" />
-                        <RadzenValueAxis>
-                            <RadzenGridLines Visible="true" />
-                        </RadzenValueAxis>
-                    </RadzenChart>
-                </RadzenCard>
-
-            </div>
         </div>
     </div>
+</div>
 
 @code {
     private List<ChartData> datas = new List<ChartData>();
@@ -183,10 +184,10 @@
                 dataItem.Date = d.Date;
                 if (isTemperature)
                 {
-                    if(tagNumber.Equals(m.TagNumber))
+                    if (tagNumber.Equals(m.TagNumber))
                         dataItem.Mesurement = Math.Floor(m.Temperature * 100) / 100;
                 }
-                else 
+                else
                 {
                     if (tagNumber.Equals(m.TagNumber))
                         dataItem.Mesurement = Math.Floor(m.Humidity * 100) / 100;

@@ -13,38 +13,21 @@ namespace BPR_WebAPI_Unittests;
 [TestClass]
 public class UserControllerTest
 {
-	private readonly Mock<IUserService> _mockService;
-	private readonly UserController _controller;
+    private readonly Mock<IUserService> _mockService;
     private HttpClient _httpClient;
 
     public UserControllerTest()
-	{
-		_mockService = new Mock<IUserService>();
-		_controller = new UserController(_mockService.Object);
+    {
+        _mockService = new Mock<IUserService>();
         var webAppFactory = new WebApplicationFactory<Program>();
         _httpClient = webAppFactory.CreateDefaultClient();
     }
-
-	/*[Fact]
-	public async Task CreateAccount_ReturnsSuccess()
-	{
-		var user = new User { AccountId = 0, Username = "asdf", Password = "1234", FullName = "foo", Contact = "bar", Email = "arf@arf.arf", Address = "somewhere" };
-		_mockService.Setup(v => v.CreateUserAsync(user).Result).Returns(WebResponse.ContentCreateSuccess);
-
-		var result = await _controller.CreateUser(user);
-
-		var resultCast = (OkObjectResult)result.Result;
-
-		var testResponse = Assert.IsType<WebResponse>(resultCast.Value);
-
-		Assert.Equal(WebResponse.ContentCreateSuccess, testResponse);
-	}*/
 
     [TestMethod]
     public async Task ValidateUser_ExsitingUsernameOrPassword_AuthenticationShouldSuccess()
     {
         var response = await _httpClient.GetStringAsync("http://fasterholtwebapi-prod.us-east-1.elasticbeanstalk.com/api/User/validate?username=peter&password=peter");
-        
+
         WebContent result = JsonSerializer.Deserialize<WebContent>(response);
 
         Assert.AreEqual(WebResponse.AuthenticationSuccess, result.response);

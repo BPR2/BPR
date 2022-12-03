@@ -170,7 +170,6 @@
                 await localStorage.SetItemAsync("password", password);
             }
 
-            //UserService.SetUserId(int.Parse(userPrincipal.FindFirst(c => c.Type == ClaimTypes.SerialNumber)?.Value));
             await InvokeAsync(StateHasChanged);
             if (username.Equals("admin"))
             {

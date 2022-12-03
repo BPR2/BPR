@@ -1,8 +1,5 @@
 ﻿using BPR_RazorLibrary.Models;
-using BPR_RazorLibrary.Pages;
 using Npgsql;
-using System.Collections.Generic;
-using static Npgsql.PostgresTypes.PostgresCompositeType;
 
 namespace BPR_WebAPI.Persistence.Receivers;
 
@@ -158,8 +155,6 @@ public class ReceiverRepo : IReceiverRepo
     {
         try
         {
-            //TODO check for receiver already assigned to a field
-
             using var con = new NpgsqlConnection(connectionString);
             con.Open();
 

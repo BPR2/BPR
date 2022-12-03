@@ -18,14 +18,14 @@ public class FieldService : IFieldService
         if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 
         return result;
-	}
+    }
 
-	public async Task<WebResponse> CreateFieldAsync(BPR_RazorLibrary.Models.Field field)
-	{
-		return await fieldRepo.CreateFieldAsync(field);
-	}
+    public async Task<WebResponse> CreateFieldAsync(BPR_RazorLibrary.Models.Field field)
+    {
+        return await fieldRepo.CreateFieldAsync(field);
+    }
 
-	public async Task<WebContent> GetLatestFieldByUserId(int userId)
+    public async Task<WebContent> GetLatestFieldByUserId(int userId)
     {
         return await fieldRepo.GetLatestFieldByUserId(userId);
     }
@@ -50,7 +50,7 @@ public class FieldService : IFieldService
 
     public async Task<WebContent> UpdateField(int FieldId, string FieldName, string FieldDescription, int FieldPawLevel, string SerialNumber, string unassignReceiver)
     {
-        var result = await fieldRepo.UpdateField(FieldId,FieldName,FieldDescription,FieldPawLevel,SerialNumber, unassignReceiver);
+        var result = await fieldRepo.UpdateField(FieldId, FieldName, FieldDescription, FieldPawLevel, SerialNumber, unassignReceiver);
 
         if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 
@@ -59,6 +59,6 @@ public class FieldService : IFieldService
 
     public async Task<WebContent> GetLatestFieldByUser(string fieldName, string description, int pawLevelLimit)
     {
-        return await fieldRepo.GetLatestFieldByUser(fieldName,description,pawLevelLimit);
+        return await fieldRepo.GetLatestFieldByUser(fieldName, description, pawLevelLimit);
     }
 }

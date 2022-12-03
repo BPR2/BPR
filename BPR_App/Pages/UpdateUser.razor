@@ -1,6 +1,6 @@
 ﻿@page "/updateUser"
-@attribute [Authorize(Policy = "Admin")]
 
+@attribute [Authorize(Policy = "Admin")]
 
 <style>
     .middleOfThePageCircle {
@@ -26,12 +26,12 @@
 
 @if (hasInternet)
 {
-        <UpdateUserPage />
+    <UpdateUserPage />
 }
 else
 {
-        <Circle class="middleOfThePageCircle" />
-        <h5 class="middleOfThePage">No internet connection...</h5>
+    <Circle class="middleOfThePageCircle" />
+    <h5 class="middleOfThePage">No internet connection...</h5>
 }
 
 @code {

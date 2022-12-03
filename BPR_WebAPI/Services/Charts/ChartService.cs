@@ -1,6 +1,5 @@
 ﻿using BPR_RazorLibrary.Models;
 using BPR_WebAPI.Persistence.Charts;
-using BPR_WebAPI.Persistence.Fields;
 
 namespace BPR_WebAPI.Services.Charts;
 
@@ -14,7 +13,7 @@ public class ChartService : IChartService
 
     public async Task<WebContent> GetChartDataByFieldId(int fieldId, DateTime startDate, DateTime endDate)
     {
-        var result = await chartRepo.GetChartDataByFieldId(fieldId,startDate,endDate);
+        var result = await chartRepo.GetChartDataByFieldId(fieldId, startDate, endDate);
 
         if (result.response != WebResponse.ContentRetrievalSuccess) return result;
 
