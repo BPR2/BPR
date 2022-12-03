@@ -153,11 +153,11 @@
         var diff = (to - from).Days;
         if (diff > 7)
         {
-            message = "Difference between From and To date cannot be more than 7 days!";
+            message = "Difference between From and To date can't be more than 7 days!";
         }
         else if (from > to)
         {
-            message = "From date cannot be bigger than To date!";
+            message = "From date must be earlier than To date!";
         }
         else
         {
@@ -201,7 +201,7 @@
     {
         if (value != null)
         {
-            return Convert.ToDateTime(value).ToString("MM-dd HH:mm");
+            return Convert.ToDateTime(value).ToString("dd/MM HH:mm");
         }
 
         return string.Empty;

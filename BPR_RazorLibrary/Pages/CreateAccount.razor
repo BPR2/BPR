@@ -147,7 +147,7 @@
             newUser.Password = password;
 
             UsersService.CreateUser(newUser);
-            NavigationManager.NavigateTo("/adminUnitManage");
+            NavigationManager.NavigateTo("/adminUnitManage", forceLoad: true);
         }
         else
         {

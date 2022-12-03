@@ -1,9 +1,11 @@
 ﻿@page "/fields"
+
 @using BPR_RazorLibrary.Services.Charts
 @using BPR_RazorLibrary.Services.Fields;
 @using BPR_RazorLibrary.Services.Users;
 @using BPR_RazorLibrary.Models;
 @using Microsoft.JSInterop
+
 @inject IFieldService FieldService;
 @inject IUserService UserService;
 @inject IChartService ChartService;
@@ -41,9 +43,10 @@
             background-color: #70a94c !important;
         }
 
-    .btn-danger{
-    float:right;
+    .btn-danger {
+        float: right;
     }
+
     .card {
         border-radius: 20px !important;
     }
@@ -52,13 +55,11 @@
         margin-top: 10px;
     }
 
-    .col
-    {
-        width:fit-content;
+    .col {
+        width: fit-content;
     }
 
-    p span
-    {
+    p span {
         font-size: 18px;
     }
 </style>
@@ -109,7 +110,7 @@
                                         </button>
                                         <ul class="collapse" id="sensor_@s.SensorId">
                                             <li>
-                                                <i class="fa-solid fa-temperature-high"></i> Latest Temperature: @s?.LatestSensorMeasurement?.Temperature
+                                                <i class="fa-solid fa-temperature-high"></i> Latest Temperature: @s?.LatestSensorMeasurement?.Temperature °C
                                             </li>
                                             <li>
                                                 <i class="fa-solid fa-droplet"></i> Latest Humidity: @s?.LatestSensorMeasurement?.Humidity %
@@ -150,7 +151,6 @@
                 </div>
             </div>
         }
-
     }
     else
     {
@@ -162,7 +162,6 @@
             </div>
         </div>
     }
-
 </div>
 
 @code {
@@ -201,7 +200,7 @@
                     await localStorage.SetItemAsync("Field" + field.Id, fieldMeasurements);
                     await localStorage.SetItemAsync("CacheDate", now);
                 }
-            }            
+            }
         }
         catch (Exception e)
         {
@@ -232,10 +231,24 @@
 
     private async Task RemoveField(Field field)
     {
-        if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to remove '{field.Name}' field?"))
-            return;
+        List<Field> testList = new List<Field>();
 
-        await FieldService.RemoveField(field.Id);
-        await OnInitializedAsync();
+        try
+        {
+            testList = await FieldService.GetAllFieldsByUserId(userId);
+
+            if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to remove '{field.Name}' field?"))
+                return;
+
+            await FieldService.RemoveField(field.Id);
+            await OnInitializedAsync();
+        }
+        catch (Exception e)
+        {
+            //we are here if we can't establish connection to the webapi
+            if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Without internet it is not possible to remove '{field.Name}'!"))
+                return;
+        }
+
     }
 }
