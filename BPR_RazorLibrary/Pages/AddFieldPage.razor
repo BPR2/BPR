@@ -1,5 +1,7 @@
 ﻿@page "/createfield"
+
 @attribute [Authorize(Policy = "User")]
+
 @using BPR_RazorLibrary.Models
 @using BPR_RazorLibrary.Services.Receivers
 @using BPR_RazorLibrary.Services.Sensor
@@ -8,6 +10,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
+
 @inject IUserService UserService
 @inject IReceiverService _ReceiverService
 @inject ISensorService _SensorService
@@ -239,7 +242,6 @@
             pawLevelLimit = 0;
         }
 
-        //Field addedField = await FieldService.GetLatestFieldFromUser((int)userID);
         Field addedField = await FieldService.GetLatestFieldFromUser(newField.Name, newField.Description, (int)newField.PawLevelLimit);
 
         if (!addedField.Equals(newField))

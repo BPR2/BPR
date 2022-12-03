@@ -1,6 +1,4 @@
 ﻿using BPR_RazorLibrary.Models;
-using Npgsql;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 

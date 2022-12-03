@@ -1,9 +1,8 @@
 ﻿using BPR_RazorLibrary.Models;
 
-namespace BPR_WebAPI.Persistence.Charts
+namespace BPR_WebAPI.Persistence.Charts;
+
+public interface IChartRepo
 {
-    public interface IChartRepo
-    {
-        Task<WebContent> GetChartDataByFieldId(int fieldId, DateTime startDate, DateTime endDate);
-    }
+    Task<WebContent> GetChartDataByFieldId(int fieldId, DateTime startDate, DateTime endDate);
 }

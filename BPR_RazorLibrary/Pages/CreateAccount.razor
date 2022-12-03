@@ -1,7 +1,9 @@
 ﻿@page "/CreateUser"
+
 @using Services.Users
 @using Microsoft.AspNetCore.Components.Forms
 @using Models
+
 @inject IUserService UsersService
 @inject NavigationManager NavigationManager
 
@@ -52,18 +54,19 @@
         box-shadow: 0 0 0 0 !important;
     }
 
-    .fa-solid  {
+    .fa-solid {
         color: white;
         position: absolute;
         top: 11px;
     }
-    #password{
-         width:50% !important;
-        }
+
+    #password {
+        width: 50% !important;
+    }
 
     @@media (max-width: 600px) {
         #password {
-         width:100% !important;
+            width: 100% !important;
         }
 
         .signup {
@@ -72,54 +75,53 @@
     }
 </style>
 
-
 <div class="container d-flex justify-content-center">
     <div class="card signup">
         <div class="card-body">
             <h5 class="card-title text-center">Create User Account</h5>
             <EditForm Model="@newUser" OnValidSubmit="@AddNewUser">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-                    <div class="form-label-group input-group form-group width">
-                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                        <InputText class="form-control" @bind-Value="newUser.FullName" placeholder="Full Name" required />
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                    <InputText class="form-control" @bind-Value="newUser.FullName" placeholder="Full Name" required />
+                </div>
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-user-tag"></i></span>
+                    <InputText class="form-control" @bind-Value="newUser.Username" placeholder="Username" required />
+                </div>
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                    <InputText class="form-control" @bind-Value="newUser.Email" placeholder="Email" required />
+                </div>
+
+                <div class="form-label-group input-group form-group width">
+                    <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                    <InputText class="form-control" @bind-Value="newUser.Contact" placeholder="Contact" required />
+                </div>
+
+                <div class="form-label-group input-group form-group">
+                    <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
+                    <InputText class="form-control" @bind-Value="newUser.Address" placeholder="Address" required />
+                </div>
+
+                <div class="row">
+                    <div class=" form-label-group input-group" id="password">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <InputText class="form-control" type="password" @bind-Value="password" placeholder="Password" required />
                     </div>
 
-                    <div class="form-label-group input-group form-group width">
-                        <span class="input-group-text"><i class="fa-solid fa-user-tag"></i></span>
-                        <InputText class="form-control" @bind-Value="newUser.Username" placeholder="Username" required />
+                    <div class=" form-label-group  input-group" id="password">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                        <InputText class="form-control" type="password" @bind-Value="confirmPassword" placeholder="Confirm Password" required />
                     </div>
-
-                    <div class="form-label-group input-group form-group width">
-                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-                         <InputText class="form-control" @bind-Value="newUser.Email" placeholder="Email" required />
-                    </div>
-
-                    <div class="form-label-group input-group form-group width">
-                        <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
-                        <InputText class="form-control" @bind-Value="newUser.Contact" placeholder="Contact" required />
-                    </div>
-
-                    <div class="form-label-group input-group form-group">
-                        <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
-                        <InputText class="form-control" @bind-Value="newUser.Address" placeholder="Address" required />
-                    </div>
-
-                    <div class="row">
-                        <div class=" form-label-group input-group" id="password">
-                            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                            <InputText class="form-control" type="password" @bind-Value="password" placeholder="Password" required />
-                        </div>
-
-                        <div class=" form-label-group  input-group" id="password">
-                            <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                            <InputText class="form-control" type="password" @bind-Value="confirmPassword" placeholder="Confirm Password" required />
-                        </div>
-                    </div>
-                    <div class="form-label-group">
-                        <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
-                    </div>
+                </div>
+                <div class="form-label-group">
+                    <button class="btn btn-outline-success btn-block text-uppercase" type="submit" style="margin-top: 1rem; margin-bottom: .5rem; ">Create</button>
+                </div>
             </EditForm>
 
             @if (!string.IsNullOrWhiteSpace(message))
@@ -130,7 +132,6 @@
             }
         </div>
     </div>
-
 </div>
 
 @code {

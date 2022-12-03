@@ -1,5 +1,4 @@
 ﻿using BPR_RazorLibrary.Models;
-using BPR_RazorLibrary.Pages;
 using Npgsql;
 
 namespace BPR_WebAPI.Persistence.Charts;

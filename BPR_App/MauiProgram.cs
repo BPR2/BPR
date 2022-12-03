@@ -48,7 +48,8 @@ public static class MauiProgram
             options.AddPolicy("Admin", policy =>
                 policy.RequireAuthenticatedUser().RequireClaim("Username", "admin"));
             options.AddPolicy("User", policy =>
-                policy.RequireAuthenticatedUser().RequireAssertion(context => {
+                policy.RequireAuthenticatedUser().RequireAssertion(context =>
+                {
                     Claim levelClaim = context.User.FindFirst(claim => claim.Type.Equals("Id"));
                     if (levelClaim == null) return false;
                     return int.Parse(levelClaim.Value) > 1;
