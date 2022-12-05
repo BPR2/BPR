@@ -88,10 +88,17 @@
                     @foreach (var s in field.Receiver.Sensors)
                     {
                         <RadzenLineSeries Data="@dataItems(true, s.TagNumber)" CategoryProperty="Date" Title="@s.TagNumber" ValueProperty="Mesurement">
-                            <RadzenMarkers MarkerType="MarkerType.None" />
-                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            <TooltipTemplate Context="data">
+                                <div>
+                                    @data.Date.ToString("dd/MM/yyyy HH:mm")
+                                </div>
+                                <div>
+                                    <strong>@s.TagNumber:</strong> @data.Mesurement °C
+                                </div>
+                            </TooltipTemplate>
                         </RadzenLineSeries>
                     }
+                    <RadzenLegend Position="LegendPosition.Top" />
                     <RadzenCategoryAxis Formatter="@FormatAsWeekDay" />
                     <RadzenValueAxis>
                         <RadzenGridLines Visible="true" />
@@ -108,10 +115,17 @@
                     @foreach (var s in field.Receiver.Sensors)
                     {
                         <RadzenLineSeries Data="@dataItems(false, s.TagNumber)" CategoryProperty="Date" Title="@s.TagNumber" ValueProperty="Mesurement">
-                            <RadzenMarkers MarkerType="MarkerType.None" />
-                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                            <TooltipTemplate Context="data">
+                                <div>
+                                    @data.Date.ToString("dd/MM/yyyy HH:mm")
+                                </div>
+                                <div>
+                                    <strong>@s.TagNumber:</strong> @data.Mesurement %
+                                </div>
+                            </TooltipTemplate>
                         </RadzenLineSeries>
                     }
+                    <RadzenLegend Position="LegendPosition.Top" />
                     <RadzenCategoryAxis Formatter="@FormatAsWeekDay" />
                     <RadzenValueAxis>
                         <RadzenGridLines Visible="true" />
@@ -202,7 +216,7 @@
     {
         if (value != null)
         {
-            return Convert.ToDateTime(value).ToString("dd/MM HH:mm");
+            return Convert.ToDateTime(value).ToString("dd/MM");
         }
 
         return string.Empty;
