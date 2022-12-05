@@ -1,10 +1,80 @@
 @page "/"
+@using BPR_RazorLibrary.Models;
+@using BPR_RazorLibrary.Models.Authentication;
 
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (hasInternet)
+{
+    NavigateToLogin();
+}
+else
+{
+    if (_hasLocalUser)
+    {
+        NavigateToFieldsPage();
+    }
+    else
+    {
+        NavigateToLogin();
+    }
+
+}
 
 @code {
+    private bool hasInternet;
+    private bool _hasLocalUser;
+
     protected override async Task OnInitializedAsync()
+    {
+        await hasLocalUser();
+
+        if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+        {
+            hasInternet = true;
+        }
+        else
+        {
+            hasInternet = false;
+        }
+        Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
+    }
+
+    private void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)
+    {
+        if (e.NetworkAccess == NetworkAccess.Internet)
+        {
+            hasInternet = true;
+        }
+        else
+        {
+            hasInternet = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task hasLocalUser()
+    {
+        if (await localStorage.LengthAsync() > 0)
+        {
+            _hasLocalUser = true;
+            StateHasChanged();
+        }
+        else
+        {
+            _hasLocalUser = false;
+            StateHasChanged();
+        }
+    }
+
+    private void NavigateToFieldsPage()
+    {
+        NavigationManager.NavigateTo("/fields");
+    }
+
+    private void NavigateToLogin()
     {
         NavigationManager.NavigateTo("/login");
     }
