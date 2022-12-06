@@ -25,13 +25,9 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
 
-        //DONT DELETE
-        //Add back when we reales the app
-        /*#if DEBUG
+        #if DEBUG
                 builder.Services.AddBlazorWebViewDeveloperTools();
-        #endif*/
-        builder.Services.AddBlazorWebViewDeveloperTools();
-        //DONT DELETE
+        #endif
 
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
         builder.Services.AddSingleton<IUserService, UserService>();

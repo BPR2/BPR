@@ -168,16 +168,26 @@
         var diff = (to - from).Days;
         if (diff > 7)
         {
-            message = "Difference between From and To date can't be more than 7 days!";
+            message = "Difference between From and To date cannot be more than 7 days!";
         }
         else if (from > to)
         {
-            message = "From date must be earlier than To date!";
+            message = "From date cannot be bigger than To date!";
         }
         else
         {
             message = string.Empty;
-            datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
+
+            try
+            {
+                datas = await ChartService.GetAllChartDataByFieldId(field.Id, from, to);
+            }
+            catch (Exception e)
+            {
+                //we are here if we can't establish connection to the webapi, so we'll use cached data instead
+                message = "No internet connection, you can only see the last 7days!";
+                datas = await localStorage.GetItemAsync<List<ChartData>>("Field" + field.Id);
+            }
         }
     }
 
